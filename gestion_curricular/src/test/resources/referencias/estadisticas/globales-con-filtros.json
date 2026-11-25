@@ -1,0 +1,23 @@
+{
+  "porEstado" : {
+    "APROBADA" : 1,
+    "APROBADA_COORDINADOR" : 1,
+    "APROBADA_FUNCIONARIO" : 1,
+    "ENVIADA" : 1,
+    "RECHAZADA" : 1
+  },
+  "porPrograma" : {
+    "Ingeniería Civil" : 0,
+    "Ingeniería Electrónica" : 0,
+    "Ingeniería de Sistemas" : 1
+  },
+  "porTipoProceso" : {
+    "Homologacion" : 1
+  },
+  "porcentajeAprobacion" : 20.0,
+  "totalAprobadas" : 1,
+  "totalEnProceso" : 2,
+  "totalEnviadas" : 1,
+  "totalRechazadas" : 1,
+  "totalSolicitudes" : 5
+}

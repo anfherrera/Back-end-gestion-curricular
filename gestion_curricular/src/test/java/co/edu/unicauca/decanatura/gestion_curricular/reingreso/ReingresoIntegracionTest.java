@@ -1,18 +1,17 @@
 package co.edu.unicauca.decanatura.gestion_curricular.reingreso;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * ============================================================
@@ -31,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
-@WithMockUser(roles = { "SECRETARIA", "FUNCIONARIO", "COORDINADOR", "ESTUDIANTE" })
+@WithMockUser(username = "juan.perez@unicauca.edu.co", roles = { "Secretario", "Funcionario", "Coordinador", "Estudiante" })
 @DisplayName("Pruebas de Integración - REST API Reingreso")
 class ReingresoIntegracionTest {
 
@@ -41,17 +40,16 @@ class ReingresoIntegracionTest {
     // ==================== PRUEBAS DE CONSULTA ====================
 
     @Test
-    @DisplayName("Test 1: Listar todas las solicitudes de Reingreso")
+    @DisplayName("Test 1: El listado completo sin filtros se retiró (EST-7)")
     void testListarSolicitudesReingreso() throws Exception {
         mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitudes-Reingreso"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+                .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("Test 2: Listar solicitudes por rol - Funcionario")
     void testListarSolicitudesFuncionario() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario"))
+        mockMvc.perform(get("/api/solicitudes-reingreso?rol=funcionario&bandeja=pendientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -59,7 +57,7 @@ class ReingresoIntegracionTest {
     @Test
     @DisplayName("Test 3: Listar solicitudes por rol - Coordinador")
     void testListarSolicitudesCoordinador() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador"))
+        mockMvc.perform(get("/api/solicitudes-reingreso?rol=coordinador&bandeja=pendientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -67,7 +65,7 @@ class ReingresoIntegracionTest {
     @Test
     @DisplayName("Test 4: Listar solicitudes por rol - Secretaria")
     void testListarSolicitudesSecretaria() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreso/Secretaria"))
+        mockMvc.perform(get("/api/solicitudes-reingreso?rol=secretaria&bandeja=pendientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -75,7 +73,7 @@ class ReingresoIntegracionTest {
     @Test
     @DisplayName("Test 5: Listar solicitudes con parámetro de rol")
     void testListarSolicitudesPorRolParametro() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreso/porUser")
+        mockMvc.perform(get("/api/solicitudes-reingreso")
                         .param("rol", "ESTUDIANTE"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -102,7 +100,7 @@ class ReingresoIntegracionTest {
             """;
 
         // Solo validamos que el endpoint existe y responde (puede ser 201, 200 o 400 por validaciones)
-        mockMvc.perform(post("/api/solicitudes-reingreso/crearSolicitud-Reingreso")
+        mockMvc.perform(post("/api/solicitudes-reingreso")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest));
                 // No validamos status específico porque depende de datos en BD
@@ -114,7 +112,7 @@ class ReingresoIntegracionTest {
         String jsonRequest = "{}";
 
         // Debe dar error de validación (400 o 422)
-        mockMvc.perform(post("/api/solicitudes-reingreso/crearSolicitud-Reingreso")
+        mockMvc.perform(post("/api/solicitudes-reingreso")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().is4xxClientError());
@@ -126,7 +124,7 @@ class ReingresoIntegracionTest {
     @DisplayName("Test 8: Buscar solicitud por ID - Valida endpoint")
     void testBuscarSolicitudPorId() throws Exception {
         // Simplemente validamos que el endpoint existe
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreo/3"));
+        mockMvc.perform(get("/api/solicitudes/3"));
                 // Puede ser 200 OK o 404 NOT FOUND dependiendo de si existe el ID
     }
 
@@ -134,23 +132,23 @@ class ReingresoIntegracionTest {
     @DisplayName("Test 9: Buscar solicitud por ID muy grande")
     void testBuscarSolicitudPorIdGrande() throws Exception {
         // Validamos comportamiento con ID inexistente
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreo/999999"));
+        mockMvc.perform(get("/api/solicitudes/999999"));
                 // Puede dar 404 o 500 dependiendo de la implementación
     }
 
     // ==================== PRUEBAS DE VALIDACIÓN ====================
 
     @Test
-    @DisplayName("Test 10: Endpoint raíz de solicitudes funciona")
+    @DisplayName("Test 10: El endpoint raíz sin rol responde 400")
     void testEndpointRaizSolicitudes() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitudes-Reingreso"))
-                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/solicitudes-reingreso"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("Test 11: Validar que la respuesta sea JSON")
     void testRespuestaEsJSON() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitudes-Reingreso"))
+        mockMvc.perform(get("/api/solicitudes-reingreso?rol=funcionario&bandeja=pendientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -158,7 +156,7 @@ class ReingresoIntegracionTest {
     @Test
     @DisplayName("Test 12: Listar solicitudes por rol con usuario específico")
     void testListarPorRolConUsuario() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreso/porUser")
+        mockMvc.perform(get("/api/solicitudes-reingreso")
                         .param("rol", "ESTUDIANTE")
                         .param("idUsuario", "1"))
                 .andExpect(status().isOk())
@@ -177,7 +175,7 @@ class ReingresoIntegracionTest {
             }
             """;
 
-        mockMvc.perform(put("/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso")
+        mockMvc.perform(put(rutaEstado(jsonRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest));
                 // Puede ser 204, 404 o 400 dependiendo de datos en BD
@@ -186,14 +184,10 @@ class ReingresoIntegracionTest {
     // ==================== PRUEBAS DE VALIDACIÓN DE DOCUMENTOS ====================
 
     @Test
-    @DisplayName("Test 14: Validar documentos requeridos - Valida endpoint")
+    @DisplayName("Test 14: La validación de documentos requeridos se retiró (EST-7)")
     void testValidarDocumentosRequeridos() throws Exception {
         mockMvc.perform(get("/api/solicitudes-reingreso/validarDocumentosRequeridos/3"))
-                .andExpect(result -> {
-                    int status = result.getResponse().getStatus();
-                    if (status != 200 && status != 500 && status != 404)
-                        throw new AssertionError("Expected 200, 404 or 500, got " + status);
-                });
+                .andExpect(status().isNotFound());
     }
 
     // ==================== PRUEBAS DE DESCARGA DE OFICIOS ====================
@@ -201,7 +195,7 @@ class ReingresoIntegracionTest {
     @Test
     @DisplayName("Test 15: Obtener lista de oficios - Valida endpoint")
     void testObtenerOficios() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-reingreso/obtenerOficios/3"))
+        mockMvc.perform(get("/api/solicitudes-reingreso/3/oficios"))
                 .andExpect(result -> {
                     int status = result.getResponse().getStatus();
                     if (status != 200 && status != 500 && status != 404)
@@ -212,24 +206,15 @@ class ReingresoIntegracionTest {
     @Test
     @DisplayName("Test 16: Descargar oficio por ID - Valida endpoint")
     void testDescargarOficio() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-reingreso/descargarOficio/3"));
+        mockMvc.perform(get("/api/solicitudes-reingreso/3/oficios/archivo"));
                 // Puede ser 200, 404 dependiendo de si existe el oficio
     }
 
     // ==================== PRUEBAS DE SUBIDA DE ARCHIVOS ====================
 
-    @Test
-    @DisplayName("Test 17: Subir archivo PDF - Valida endpoint")
-    void testSubirArchivo() throws Exception {
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "prueba.pdf",
-                "application/pdf",
-                "contenido".getBytes()
-        );
 
-        mockMvc.perform(multipart("/api/solicitudes-reingreso/3/subir-archivo").file(file));
-                // Puede ser 200, 400, 404 dependiendo de datos en BD
+    /** EST-7, paso 7b: el cambio de estado es PUT /{id}/estado; el id sale del cuerpo, que lo sigue llevando. */
+    private static String rutaEstado(String cuerpo) {
+        return "/api/solicitudes-reingreso/" + cuerpo.replaceAll("(?s).*\"idSolicitud\"\\s*:\\s*(\\d+).*", "$1") + "/estado";
     }
 }
-

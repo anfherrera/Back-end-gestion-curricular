@@ -1,0 +1,612 @@
+{
+  "GET /api/cursos-intersemestrales/solicitudes [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "tipo" : "Preinscripcion",
+      "codigo" : "105",
+      "estado" : "Aprobado",
+      "codigoMateria" : "MAT-1",
+      "grupoCurso" : null,
+      "nombreCompleto" : "Usuario 5",
+      "motivoSolicitud" : "Solicitud 91",
+      "condicion" : "Primera_Vez",
+      "fecha" : "2025-07-01T12:00:00.000+00:00",
+      "idMateria" : 1,
+      "curso" : "Calculo",
+      "idCurso" : 71,
+      "id" : 91
+    }, {
+      "tipo" : "Inscripcion",
+      "codigo" : "105",
+      "estado" : "Pago_Validado",
+      "codigoMateria" : "FIS-1",
+      "grupoCurso" : null,
+      "nombreCompleto" : "Usuario 5",
+      "motivoSolicitud" : "Solicitud 92",
+      "condicion" : "Habilitación",
+      "fecha" : "2025-07-01T12:00:00.000+00:00",
+      "idMateria" : 2,
+      "curso" : "Fisica",
+      "idCurso" : 72,
+      "id" : 92
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarSolicitudesParaReporte" : "null, null, null, null, null"
+    } ]
+  },
+  "GET /api/cursos-verano/reportes/solicitudes [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/solicitudes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/solicitudes?periodoAcademico=2025-2&idMateria=1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "tipo" : "Preinscripcion",
+      "codigo" : "105",
+      "estado" : "Aprobado",
+      "codigoMateria" : "MAT-1",
+      "grupoCurso" : null,
+      "nombreCompleto" : "Usuario 5",
+      "motivoSolicitud" : "Solicitud 91",
+      "condicion" : "Primera_Vez",
+      "fecha" : "2025-07-01T12:00:00.000+00:00",
+      "idMateria" : 1,
+      "curso" : "Calculo",
+      "idCurso" : 71,
+      "id" : 91
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarSolicitudesParaReporte" : "null, null, 2025-2, null, null"
+    } ]
+  },
+  "GET /api/cursos-verano/reportes/solicitudes?periodoAcademico=2025-2&idMateria=1 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/solicitudes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/solicitudes?periodoAcademico=todos&idMateria=0 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "tipo" : "Preinscripcion",
+      "codigo" : "105",
+      "estado" : "Aprobado",
+      "codigoMateria" : "MAT-1",
+      "grupoCurso" : null,
+      "nombreCompleto" : "Usuario 5",
+      "motivoSolicitud" : "Solicitud 91",
+      "condicion" : "Primera_Vez",
+      "fecha" : "2025-07-01T12:00:00.000+00:00",
+      "idMateria" : 1,
+      "curso" : "Calculo",
+      "idCurso" : 71,
+      "id" : 91
+    }, {
+      "tipo" : "Inscripcion",
+      "codigo" : "105",
+      "estado" : "Pago_Validado",
+      "codigoMateria" : "FIS-1",
+      "grupoCurso" : null,
+      "nombreCompleto" : "Usuario 5",
+      "motivoSolicitud" : "Solicitud 92",
+      "condicion" : "Habilitación",
+      "fecha" : "2025-07-01T12:00:00.000+00:00",
+      "idMateria" : 2,
+      "curso" : "Fisica",
+      "idCurso" : 72,
+      "id" : 92
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarSolicitudesParaReporte" : "null, null, null, null, null"
+    } ]
+  },
+  "GET /api/cursos-verano/reportes/solicitudes?periodoAcademico=todos&idMateria=0 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/solicitudes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/solicitudes?idCurso=71&estado=Aprobado&fechaInicio=2025-01-01&fechaFin=2025-12-31 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "tipo" : "Preinscripcion",
+      "codigo" : "105",
+      "estado" : "Aprobado",
+      "codigoMateria" : "MAT-1",
+      "grupoCurso" : null,
+      "nombreCompleto" : "Usuario 5",
+      "motivoSolicitud" : "Solicitud 91",
+      "condicion" : "Primera_Vez",
+      "fecha" : "2025-07-01T12:00:00.000+00:00",
+      "idMateria" : 1,
+      "curso" : "Calculo",
+      "idCurso" : 71,
+      "id" : 91
+    }, {
+      "tipo" : "Inscripcion",
+      "codigo" : "105",
+      "estado" : "Pago_Validado",
+      "codigoMateria" : "FIS-1",
+      "grupoCurso" : null,
+      "nombreCompleto" : "Usuario 5",
+      "motivoSolicitud" : "Solicitud 92",
+      "condicion" : "Habilitación",
+      "fecha" : "2025-07-01T12:00:00.000+00:00",
+      "idMateria" : 2,
+      "curso" : "Fisica",
+      "idCurso" : 72,
+      "id" : 92
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarSolicitudesParaReporte" : "71, Aprobado, null, 2025-01-01 00:00, 2025-12-31 00:00"
+    } ]
+  },
+  "GET /api/cursos-verano/reportes/solicitudes?idCurso=71&estado=Aprobado&fechaInicio=2025-01-01&fechaFin=2025-12-31 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/solicitudes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/solicitudes?fechaInicio=2025-13-01 [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/solicitudes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/reportes/solicitudes?fechaInicio=2025-13-01 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/solicitudes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/solicitudes [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/cursos-intersemestrales/solicitudes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/reportes/solicitudes [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/solicitudes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/solicitudes/export/excel [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/octet-stream",
+    "cuerpo" : "XLSX",
+    "disposicion" : "attachment; filename=\"solicitudes_cursos_intersemestrales_<ahora>.xlsx\"",
+    "llamadas" : [ {
+      "generarExcelSolicitudes" : "null, null, null, null, null"
+    } ]
+  },
+  "GET /api/cursos-verano/reportes/solicitudes?formato=excel [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/solicitudes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/solicitudes/export/excel?idCurso=71&estado=Aprobado&periodoAcademico=2025-2&fechaInicio=2025-01-01 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/octet-stream",
+    "cuerpo" : "XLSX",
+    "disposicion" : "attachment; filename=\"solicitudes_cursos_intersemestrales_<ahora>.xlsx\"",
+    "llamadas" : [ {
+      "generarExcelSolicitudes" : "71, Aprobado, 2025-2, 2025-01-01 00:00, null"
+    } ]
+  },
+  "GET /api/cursos-verano/reportes/solicitudes?formato=excel&idCurso=71&estado=Aprobado&periodoAcademico=2025-2&fechaInicio=2025-01-01 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/solicitudes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/solicitudes/export/excel [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/cursos-intersemestrales/solicitudes/export/excel",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/reportes/solicitudes?formato=excel [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/solicitudes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/dashboard/estadisticas [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "cursosActivos" : 1,
+      "totalCursos" : 3,
+      "totalPreinscripciones" : 1,
+      "cursosGestionados" : 2,
+      "totalInscripciones" : 1,
+      "porcentajeProgreso" : 67
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarSolicitudesParaReporte" : "null, null, null, null, null"
+    } ]
+  },
+  "GET /api/cursos-verano/reportes/dashboard [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/dashboard",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/dashboard/estadisticas [admin]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "cursosActivos" : 1,
+      "totalCursos" : 3,
+      "totalPreinscripciones" : 1,
+      "cursosGestionados" : 2,
+      "totalInscripciones" : 1,
+      "porcentajeProgreso" : 67
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarSolicitudesParaReporte" : "null, null, null, null, null"
+    } ]
+  },
+  "GET /api/cursos-verano/reportes/dashboard [admin]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/dashboard",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/dashboard/estadisticas [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/cursos-intersemestrales/dashboard/estadisticas",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/reportes/dashboard [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/dashboard",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/seguimiento/5 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "preinscripciones" : [ {
+        "accionesDisponibles" : [ "esperando_inscripcion" ],
+        "fecha" : "2025-07-01T12:00:00.000+00:00",
+        "estado" : "Aprobado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 5,
+        "curso" : "Calculo",
+        "estadoCurso" : "Preinscripcion",
+        "id" : 91,
+        "cursoId" : 71
+      }, {
+        "accionesDisponibles" : [ "esperando_aprobacion_curso" ],
+        "fecha" : "2025-07-01T12:00:00.000+00:00",
+        "estado" : "Enviada",
+        "tipo" : "Solicitud de Curso Nuevo",
+        "estudianteId" : 5,
+        "curso" : "Redes",
+        "estadoCurso" : "No disponible",
+        "id" : 98,
+        "cursoId" : null
+      } ],
+      "totalPreinscripciones" : 2,
+      "totalActividades" : 3,
+      "inscripciones" : [ {
+        "accionesDisponibles" : [ "inscripcion_aceptada" ],
+        "fecha" : "2025-07-01T12:00:00.000+00:00",
+        "estado" : "Pago_Validado",
+        "estudianteId" : 5,
+        "tipoSolicitud" : "Inscripcion",
+        "curso" : "Fisica",
+        "nombreSolicitud" : "Solicitud 92",
+        "estadoCurso" : "INSCRITO",
+        "id" : 92,
+        "cursoId" : 72
+      } ],
+      "totalInscripciones" : 1
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/reportes/seguimiento?usuario=5 [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/seguimiento",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/seguimiento/6 [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/cursos-intersemestrales/seguimiento/6",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/reportes/seguimiento?usuario=6 [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/seguimiento",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/seguimiento/5 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "preinscripciones" : [ {
+        "accionesDisponibles" : [ "esperando_inscripcion" ],
+        "fecha" : "2025-07-01T12:00:00.000+00:00",
+        "estado" : "Aprobado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 5,
+        "curso" : "Calculo",
+        "estadoCurso" : "Preinscripcion",
+        "id" : 91,
+        "cursoId" : 71
+      }, {
+        "accionesDisponibles" : [ "esperando_aprobacion_curso" ],
+        "fecha" : "2025-07-01T12:00:00.000+00:00",
+        "estado" : "Enviada",
+        "tipo" : "Solicitud de Curso Nuevo",
+        "estudianteId" : 5,
+        "curso" : "Redes",
+        "estadoCurso" : "No disponible",
+        "id" : 98,
+        "cursoId" : null
+      } ],
+      "totalPreinscripciones" : 2,
+      "totalActividades" : 3,
+      "inscripciones" : [ {
+        "accionesDisponibles" : [ "inscripcion_aceptada" ],
+        "fecha" : "2025-07-01T12:00:00.000+00:00",
+        "estado" : "Pago_Validado",
+        "estudianteId" : 5,
+        "tipoSolicitud" : "Inscripcion",
+        "curso" : "Fisica",
+        "nombreSolicitud" : "Solicitud 92",
+        "estadoCurso" : "INSCRITO",
+        "id" : 92,
+        "cursoId" : 72
+      } ],
+      "totalInscripciones" : 1
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/reportes/seguimiento?usuario=5 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/seguimiento",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/seguimiento/6 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "preinscripciones" : [ ],
+      "totalPreinscripciones" : 0,
+      "totalActividades" : 0,
+      "inscripciones" : [ ],
+      "totalInscripciones" : 0
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/reportes/seguimiento?usuario=6 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/seguimiento",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/seguimiento/abc [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/seguimiento/abc",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/reportes/seguimiento?usuario=abc [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/seguimiento",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/reportes/solicitudes?formato=pdf [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/solicitudes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/reportes/seguimiento [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/reportes/seguimiento",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  }
+}

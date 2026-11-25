@@ -1,12 +1,12 @@
 package co.edu.unicauca.decanatura.gestion_curricular.ecaes;
 
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudEcaesCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudEcaesCUAdapter;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.time.LocalDate;
+import java.util.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,12 +14,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
-import java.util.*;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudEcaesCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudEcaesCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 
 /**
  * ============================================================
@@ -55,9 +59,6 @@ class EcaesUnidadTest {
     private GestionarEstadoSolicitudGatewayIntPort estadoSolicitudGateway;
 
     @Mock
-    private FormateadorResultadosIntPort formateadorResultados;
-
-    @Mock
     private GestionarNotificacionCUIntPort notificacionCU;
 
     @Mock
@@ -72,7 +73,6 @@ class EcaesUnidadTest {
         // Crear el CU Adapter con TODAS las dependencias mockeadas
         solicitudEcaesCU = new GestionarSolicitudEcaesCUAdapter(
                 solicitudGateway,
-                formateadorResultados,
                 documentosGateway,
                 estadoSolicitudGateway,
                 usuarioGateway,
@@ -94,7 +94,9 @@ class EcaesUnidadTest {
 
         // Act & Assert - Debe lanzar una excepción porque la solicitud no tiene usuario
         assertThatThrownBy(() -> solicitudEcaesCU.guardar(solicitudSinUsuario))
-                .hasMessageContaining("usuario"); 
+                // BUG-38: el usuario que falta es un dato no válido (400); la regla está en formatException
+                .isInstanceOfSatisfying(ReglaNegocioExcepcion.class,
+                        e -> assertThat(e.formatException()).contains("usuario"));
     }
 
     // ==================== PRUEBAS DE CONSULTA ====================
@@ -170,7 +172,7 @@ class EcaesUnidadTest {
         // Arrange
         FechaEcaes fechaEcaes = new FechaEcaes();
         fechaEcaes.setPeriodoAcademico("2025-1");
-        fechaEcaes.setInscripcion_est_by_facultad(LocalDate.of(2025, 2, 1));
+        fechaEcaes.setInscripcionEstByFacultad(LocalDate.of(2025, 2, 1));
         fechaEcaes.setAplicacion(LocalDate.of(2025, 3, 10));
         
         when(solicitudGateway.publicarFechasEcaes(fechaEcaes)).thenReturn(fechaEcaes);
@@ -242,20 +244,31 @@ class EcaesUnidadTest {
     // ==================== PRUEBAS DE FILTRADO POR ROL ====================
 
     @Test
-    @DisplayName("Test 10: Listar solicitudes para Funcionario - Delega correctamente")
+    @DisplayName("Test 10: Listar solicitudes para Funcionario - Pide al gateway las de último estado Enviada")
     void testListarSolicitudesParaFuncionarioDelegaCorrectamente() {
         // Arrange
         List<SolicitudEcaes> listaEsperada = Arrays.asList(solicitudEjemplo);
-        when(solicitudGateway.listarSolicitudesToFuncionario())
+        when(solicitudGateway.listarPorUltimoEstado("Enviada", null, null))
                 .thenReturn(listaEsperada);
 
         // Act
-        List<SolicitudEcaes> resultado = solicitudEcaesCU.listarSolicitudesToFuncionario();
+        List<SolicitudEcaes> resultado = solicitudEcaesCU.listar(
+                FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.FUNCIONARIO, null, null));
 
         // Assert
         assertThat(resultado).isNotNull();
         assertThat(resultado).hasSize(1);
-        verify(solicitudGateway, times(1)).listarSolicitudesToFuncionario();
+        verify(solicitudGateway, times(1)).listarPorUltimoEstado("Enviada", null, null);
+    }
+
+    @Test
+    @DisplayName("Test 10b: Listar solicitudes para Coordinador - El flujo ECAES no le asigna estado: lista vacía")
+    void testListarSolicitudesParaCoordinadorEsVacio() {
+        List<SolicitudEcaes> resultado = solicitudEcaesCU.listar(
+                FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.COORDINADOR, 1, "2025-2"));
+
+        assertThat(resultado).isEmpty();
+        verify(solicitudGateway, never()).listarPorUltimoEstado(anyString(), any(), any());
     }
 
     // ==================== PRUEBAS DE CAMBIO DE ESTADO ====================

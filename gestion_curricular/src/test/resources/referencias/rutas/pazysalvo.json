@@ -1,0 +1,2028 @@
+{
+  "POST /api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo {\"idUsuario\":\"6\",\"tituloTrabajoGrado\":\"Tesis\"} [est5]" : {
+    "status" : 201,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_solicitud" : 50,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : [ ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : null,
+        "rol" : null,
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "guardar" : "usuario 5, periodo null, titulo null"
+    } ]
+  },
+  "POST /api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo {\"idUsuario\":\"5\"} [funcionario]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo {} [est5]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "error" : "Los datos de la solicitud son requeridos"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo {\"idUsuario\":\"5\",\"periodoAcademico\":\"2024-9\"} [est5]" : {
+    "status" : 201,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_solicitud" : 50,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : [ ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : null,
+        "rol" : null,
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "guardar" : "usuario 5, periodo null, titulo null"
+    } ]
+  },
+  "POST /api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo {\"idUsuario\":\"6\",\"titulo_trabajo_grado\":\"Tesis\"} [est5]" : {
+    "status" : 201,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_solicitud" : 50,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : [ ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : null,
+        "rol" : null,
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "guardar" : "usuario 5, periodo null, titulo Tesis"
+    } ]
+  },
+  "POST /api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo {\"idUsuario\":\"5\",\"periodo_academico\":\"2024-9\"} [est5]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "error" : "Formato de solicitud inválido: Período académico inválido. Use formato: YYYY-P (ej: 2024-2)"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo {\"idUsuario\":\"6\",\"tituloTrabajoGrado\":\"Tesis\"} [est5]" : {
+    "status" : 405,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0405",
+      "mensaje" : "El método POST no está permitido en esta ruta",
+      "codigoHttp" : 405,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo {\"idUsuario\":\"5\"} [funcionario]" : {
+    "status" : 405,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0405",
+      "mensaje" : "El método POST no está permitido en esta ruta",
+      "codigoHttp" : 405,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo {} [est5]" : {
+    "status" : 405,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0405",
+      "mensaje" : "El método POST no está permitido en esta ruta",
+      "codigoHttp" : 405,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo {\"idUsuario\":\"5\",\"periodoAcademico\":\"2024-9\"} [est5]" : {
+    "status" : 405,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0405",
+      "mensaje" : "El método POST no está permitido en esta ruta",
+      "codigoHttp" : 405,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo {\"idUsuario\":\"6\",\"titulo_trabajo_grado\":\"Tesis\"} [est5]" : {
+    "status" : 405,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0405",
+      "mensaje" : "El método POST no está permitido en esta ruta",
+      "codigoHttp" : 405,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo {\"idUsuario\":\"5\",\"periodo_academico\":\"2024-9\"} [est5]" : {
+    "status" : 405,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0405",
+      "mensaje" : "El método POST no está permitido en esta ruta",
+      "codigoHttp" : 405,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 40,
+      "nombre_solicitud" : "Paz y salvo 40",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 400,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 70,
+        "nombre" : "carta.pdf",
+        "ruta_documento" : "pazysalvo/40/carta.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 71,
+        "nombre" : "oficio.pdf",
+        "ruta_documento" : "pazysalvo/40/oficio.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    }, {
+      "id_solicitud" : 41,
+      "nombre_solicitud" : "Paz y salvo 41",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 410,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 6,
+        "nombre_completo" : "Usuario 6",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Funcionario [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 40,
+      "nombre_solicitud" : "Paz y salvo 40",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 400,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 70,
+        "nombre" : "carta.pdf",
+        "ruta_documento" : "pazysalvo/40/carta.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 71,
+        "nombre" : "oficio.pdf",
+        "ruta_documento" : "pazysalvo/40/oficio.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Funcionario, idPrograma=null, periodo=null, idUsuario=null, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=funcionario&bandeja=pendientes [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "Bandeja no válida: use procesadas",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Funcionario?periodoAcademico=2025-1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 40,
+      "nombre_solicitud" : "Paz y salvo 40",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 400,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 70,
+        "nombre" : "carta.pdf",
+        "ruta_documento" : "pazysalvo/40/carta.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 71,
+        "nombre" : "oficio.pdf",
+        "ruta_documento" : "pazysalvo/40/oficio.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Funcionario, idPrograma=null, periodo=null, idUsuario=null, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=funcionario&bandeja=pendientes&periodoAcademico=2025-1 [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "Bandeja no válida: use procesadas",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Coordinador [coordinador]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 40,
+      "nombre_solicitud" : "Paz y salvo 40",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 400,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 70,
+        "nombre" : "carta.pdf",
+        "ruta_documento" : "pazysalvo/40/carta.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 71,
+        "nombre" : "oficio.pdf",
+        "ruta_documento" : "pazysalvo/40/oficio.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Coordinador, idPrograma=3, periodo=<ACTUAL>, idUsuario=null, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=coordinador&bandeja=pendientes [coordinador]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "Bandeja no válida: use procesadas",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Coordinador?periodoAcademico=2025-1 [coordinador]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 40,
+      "nombre_solicitud" : "Paz y salvo 40",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 400,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 70,
+        "nombre" : "carta.pdf",
+        "ruta_documento" : "pazysalvo/40/carta.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 71,
+        "nombre" : "oficio.pdf",
+        "ruta_documento" : "pazysalvo/40/oficio.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Coordinador, idPrograma=3, periodo=2025-1, idUsuario=null, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=coordinador&bandeja=pendientes&periodoAcademico=2025-1 [coordinador]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "Bandeja no válida: use procesadas",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Coordinador [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 40,
+      "nombre_solicitud" : "Paz y salvo 40",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 400,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 70,
+        "nombre" : "carta.pdf",
+        "ruta_documento" : "pazysalvo/40/carta.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 71,
+        "nombre" : "oficio.pdf",
+        "ruta_documento" : "pazysalvo/40/oficio.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Coordinador, idPrograma=null, periodo=null, idUsuario=null, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=coordinador&bandeja=pendientes [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "Bandeja no válida: use procesadas",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Secretaria [secretaria]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 40,
+      "nombre_solicitud" : "Paz y salvo 40",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 400,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 70,
+        "nombre" : "carta.pdf",
+        "ruta_documento" : "pazysalvo/40/carta.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 71,
+        "nombre" : "oficio.pdf",
+        "ruta_documento" : "pazysalvo/40/oficio.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Secretario, idPrograma=null, periodo=<ACTUAL>, idUsuario=null, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=secretaria&bandeja=pendientes [secretaria]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "Bandeja no válida: use procesadas",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Secretaria?periodoAcademico=2025-1 [secretaria]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 40,
+      "nombre_solicitud" : "Paz y salvo 40",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 400,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 70,
+        "nombre" : "carta.pdf",
+        "ruta_documento" : "pazysalvo/40/carta.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 71,
+        "nombre" : "oficio.pdf",
+        "ruta_documento" : "pazysalvo/40/oficio.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Secretario, idPrograma=null, periodo=2025-1, idUsuario=null, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=secretaria&bandeja=pendientes&periodoAcademico=2025-1 [secretaria]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "Bandeja no válida: use procesadas",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Funcionario [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Funcionario",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=funcionario&bandeja=pendientes [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=funcionario&bandeja=procesadas [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 40,
+      "nombre_solicitud" : "Paz y salvo 40",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 400,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 70,
+        "nombre" : "carta.pdf",
+        "ruta_documento" : "pazysalvo/40/carta.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 71,
+        "nombre" : "oficio.pdf",
+        "ruta_documento" : "pazysalvo/40/oficio.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Funcionario, idPrograma=null, periodo=null, idUsuario=null, procesadas=true]"
+    } ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=coordinador&bandeja=procesadas [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 40,
+      "nombre_solicitud" : "Paz y salvo 40",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 400,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 70,
+        "nombre" : "carta.pdf",
+        "ruta_documento" : "pazysalvo/40/carta.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 71,
+        "nombre" : "oficio.pdf",
+        "ruta_documento" : "pazysalvo/40/oficio.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Coordinador, idPrograma=null, periodo=null, idUsuario=null, procesadas=true]"
+    } ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=otro&bandeja=procesadas [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "Rol no válido: use funcionario, coordinador o secretaria",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=funcionario&bandeja=otra [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "Bandeja no válida: use procesadas",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo?bandeja=procesadas [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=funcionario [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/porRol?rol=FUNCIONARIO [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 40,
+      "nombre_solicitud" : "Paz y salvo 40",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 400,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 70,
+        "nombre" : "carta.pdf",
+        "ruta_documento" : "pazysalvo/40/carta.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 71,
+        "nombre" : "oficio.pdf",
+        "ruta_documento" : "pazysalvo/40/oficio.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarSolicitudesPorRol" : "ESTUDIANTE, 5"
+    } ]
+  },
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/porRol?rol=FUNCIONARIO [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 41,
+      "nombre_solicitud" : "Paz y salvo 41",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 410,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 6,
+        "nombre_completo" : "Usuario 6",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarSolicitudesPorRol" : "FUNCIONARIO, null"
+    } ]
+  },
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/porRol?rol=ESTUDIANTE&idUsuario=6 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 41,
+      "nombre_solicitud" : "Paz y salvo 41",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 410,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 6,
+        "nombre_completo" : "Usuario 6",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarSolicitudesPorRol" : "ESTUDIANTE, 6"
+    } ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=FUNCIONARIO [est5]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=FUNCIONARIO [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=ESTUDIANTE&idUsuario=6 [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/40 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_solicitud" : 40,
+      "nombre_solicitud" : "Paz y salvo 40",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 400,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 70,
+        "nombre" : "carta.pdf",
+        "ruta_documento" : "pazysalvo/40/carta.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 71,
+        "nombre" : "oficio.pdf",
+        "ruta_documento" : "pazysalvo/40/oficio.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/usuarios/5/solicitudes?periodoAcademico=2025-1 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 40,
+      "nombre_solicitud" : "Paz y salvo 40",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 400,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 70,
+        "nombre" : "carta.pdf",
+        "ruta_documento" : "pazysalvo/40/carta.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 71,
+        "nombre" : "oficio.pdf",
+        "ruta_documento" : "pazysalvo/40/oficio.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Estudiante, idPrograma=null, periodo=2025-1, idUsuario=5, procesadas=false]"
+    } ]
+  },
+  "PUT /api/solicitudes-pazysalvo/actualizarEstadoSolicitud {\"idSolicitud\":40,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [funcionario]" : {
+    "status" : 204,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ {
+      "cambiarEstadoSolicitud" : "40 -> APROBADA_FUNCIONARIO, comentario ok, como funcionario true"
+    } ]
+  },
+  "PUT /api/solicitudes-pazysalvo/actualizarEstadoSolicitud {\"idSolicitud\":40,\"nuevoEstado\":\"XYZ\"} [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "estadoActual" : "ENVIADA",
+      "codigo" : "TRANSICION_NO_PERMITIDA",
+      "error" : "Transición no permitida"
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "cambiarEstadoSolicitud" : "40 -> XYZ, comentario null, como funcionario true"
+    } ]
+  },
+  "PUT /api/solicitudes-pazysalvo/actualizarEstadoSolicitud {\"idSolicitud\":40} [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "error" : "El nuevo estado es requerido"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-pazysalvo/actualizarEstadoSolicitud {\"idSolicitud\":40,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/actualizarEstadoSolicitud",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-pazysalvo/40/estado {\"idSolicitud\":40,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/estado",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-pazysalvo/40/estado {\"idSolicitud\":40,\"nuevoEstado\":\"XYZ\"} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/estado",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-pazysalvo/40/estado {\"idSolicitud\":40} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/estado",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-pazysalvo/40/estado {\"idSolicitud\":40,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/estado",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-pazysalvo/actualizarEstadoSolicitud {\"nuevoEstado\":\"APROBADA\"} [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "error" : "El ID de la solicitud es requerido"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/40/pdf [est5]" : {
+    "status" : 200,
+    "tipo" : "application/pdf",
+    "cuerpo" : "DOCUMENTO",
+    "disposicion" : "attachment; filename=\"PazYSalvo_40.pdf\"",
+    "llamadas" : [ {
+      "generarPazYSalvo" : "40, cedula null, titulo null, director null, porDefecto true, pdf true, numero null, fecha null, observaciones null"
+    } ]
+  },
+  "GET /api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/40/pdf [est6]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/40/pdf",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/40/docx [est5]" : {
+    "status" : 200,
+    "tipo" : "application/octet-stream",
+    "cuerpo" : "DOCUMENTO",
+    "disposicion" : "attachment; filename=\"PazYSalvo_40.docx\"",
+    "llamadas" : [ {
+      "generarPazYSalvo" : "40, cedula null, titulo null, director null, porDefecto true, pdf false, numero null, fecha null, observaciones null"
+    } ]
+  },
+  "GET /api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/40/docx [est6]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/40/docx",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo/generar-documento/40?numeroDocumento=PYS-1&fechaDocumento=2025-03-01&observaciones=Sin%20pendientes [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/octet-stream",
+    "cuerpo" : "DOCUMENTO",
+    "disposicion" : "attachment; filename=\"PazYSalvo_40.docx\"",
+    "llamadas" : [ {
+      "generarPazYSalvo" : "40, cedula null, titulo null, director null, porDefecto false, pdf false, numero PYS-1, fecha 2025-03-01, observaciones Sin%20pendientes"
+    } ]
+  },
+  "POST /api/solicitudes-pazysalvo/generar-documento/40?fechaDocumento=2025-03-01 [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/generar-documento/40",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo/generar-documento/40?numeroDocumento=PYS-1&fechaDocumento=2025-03-01&observaciones=Sin%20pendientes [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/generar-documento/40",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo/40/documento-generado?numeroDocumento=PYS-1&fechaDocumento=2025-03-01&observaciones=Sin%20pendientes [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/documento-generado",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo/40/documento-generado?fechaDocumento=2025-03-01 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/documento-generado",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo/40/documento-generado?numeroDocumento=PYS-1&fechaDocumento=2025-03-01&observaciones=Sin%20pendientes [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/documento-generado",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo/subir-documento archivo cedula.pdf [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "success" : true,
+      "message" : "Documento subido exitosamente (sin asociar)",
+      "documento_id" : 80,
+      "nombre" : "cedula.pdf",
+      "fecha" : "2025-02-19T21:20:00.000+00:00"
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "subirDocumento" : "cedula.pdf de 5"
+    } ]
+  },
+  "POST /api/solicitudes-pazysalvo/subir-documento archivo cedula.txt [est5]" : {
+    "status" : 415,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "error" : "Solo se permiten archivos PDF. El archivo no es un PDF válido."
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo/documentos archivo cedula.pdf [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/documentos",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo/documentos archivo cedula.txt [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/documentos",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/descargar-documento?filename=carta.pdf [est5]" : {
+    "status" : 200,
+    "tipo" : "application/pdf",
+    "cuerpo" : "PDF carta",
+    "disposicion" : "attachment; filename=\"carta.pdf\"; filename*=UTF-8''carta.pdf",
+    "llamadas" : [ {
+      "listarSolicitudesPorRol" : "ESTUDIANTE, 5"
+    } ]
+  },
+  "GET /api/solicitudes-pazysalvo/descargar-documento?filename=carta.pdf [est6]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarSolicitudesPorRol" : "ESTUDIANTE, 6"
+    } ]
+  },
+  "GET /api/solicitudes-pazysalvo/descargar-documento?filename=carta.pdf [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/pdf",
+    "cuerpo" : "PDF carta",
+    "disposicion" : "attachment; filename=\"carta.pdf\"; filename*=UTF-8''carta.pdf",
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/descargar-documento?filename=nada.pdf [funcionario]" : {
+    "status" : 404,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/documentos?nombre=carta.pdf [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/documentos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/documentos?nombre=carta.pdf [est6]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/documentos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/documentos?nombre=carta.pdf [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/documentos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/documentos?nombre=nada.pdf [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/documentos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/descargarOficio/40 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/pdf",
+    "cuerpo" : "PDF oficio",
+    "disposicion" : "attachment; filename=\"oficio.pdf\"; filename*=UTF-8''oficio.pdf",
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/40/oficios/archivo [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/oficios/archivo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/descargarOficio/40 [est6]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/descargarOficio/40",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/40/oficios/archivo [est6]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/oficios/archivo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/descargarOficio/41 [funcionario]" : {
+    "status" : 404,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/41/oficios/archivo [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/41/oficios/archivo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/obtenerDocumentos/coordinador/40 [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/coordinador/40",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/40/documentos [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/documentos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/obtenerDocumentos/coordinador/40 [est6]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/coordinador/40",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/40/documentos [est6]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/documentos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/obtenerDocumentos/coordinador/41 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/41/documentos [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/41/documentos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/obtenerComentarios/40 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "comentarioRechazo" : "Falta la firma",
+      "documentosConComentarios" : [ {
+        "id" : 70,
+        "nombre" : "carta.pdf",
+        "comentario" : "Ilegible"
+      } ]
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/40/comentarios [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/comentarios",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/obtenerComentarios/40 [est6]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/obtenerComentarios/40",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/40/comentarios [est6]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/comentarios",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/obtenerComentarios/41 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "mensaje" : "No hay comentarios para esta solicitud"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/41/comentarios [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/41/comentarios",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/obtenerOficios/40 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id" : 40,
+      "nombre" : "oficio.pdf",
+      "nombreArchivo" : "oficio.pdf",
+      "ruta" : "pazysalvo/40/oficio.pdf"
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/40/oficios [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/oficios",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/obtenerOficios/40 [est6]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/obtenerOficios/40",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/40/oficios [est6]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/oficios",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/obtenerOficios/41 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/41/oficios [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/41/oficios",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/validarDocumentosRequeridos/40 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "documentosRequeridos" : {
+        "formato_pm_fo_4_for_27" : true
+      },
+      "todosCompletos" : false,
+      "totalDocumentos" : 2
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo/validarDocumentosRequeridos/40 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "documentosRequeridos" : {
+        "formato_pm_fo_4_for_27" : true
+      },
+      "todosCompletos" : false,
+      "totalDocumentos" : 2
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo/guardarOficio?idSolicitud=40&tipoDocumento=OFICIO&numeroDocumento=PYS-1&fechaDocumento=2025-03-01 archivo oficio.docx [funcionario]" : {
+    "status" : 201,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_documento" : 82,
+      "nombre" : "oficio.docx",
+      "ruta_documento" : "pazysalvo/40/oficio.docx",
+      "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+      "esValido" : true,
+      "comentario" : null
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "guardarYAdjuntarSiExiste" : "oficio.docx, docx en pazysalvo a 40, existe true"
+    } ]
+  },
+  "POST /api/solicitudes-pazysalvo/guardarOficio?idSolicitud=99&tipoDocumento=OFICIO&numeroDocumento=PYS-1&fechaDocumento=2025-03-01 archivo oficio.docx [funcionario]" : {
+    "status" : 404,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ {
+      "guardarYAdjuntarSiExiste" : "oficio.docx, docx en pazysalvo a 99, existe false"
+    } ]
+  },
+  "POST /api/solicitudes-pazysalvo/subir-oficio-pdf/40 archivo resolucion.pdf [secretaria]" : {
+    "status" : 201,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_documento" : 81,
+      "nombre" : "resolucion.pdf",
+      "ruta_documento" : "pazysalvo/40/resolucion.pdf",
+      "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+      "esValido" : true,
+      "comentario" : null
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "adjuntarASolicitud" : "resolucion.pdf a 40 en pazysalvo, comentario null, nombreGuardado false"
+    } ]
+  },
+  "POST /api/solicitudes-pazysalvo/40/oficios archivo resolucion.pdf [secretaria]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/oficios",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo/subir-oficio-pdf/99 archivo resolucion.pdf [secretaria]" : {
+    "status" : 404,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo/99/oficios archivo resolucion.pdf [secretaria]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/99/oficios",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo/subir-oficio-pdf/40 archivo resolucion.pdf [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/subir-oficio-pdf/40",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-pazysalvo/40/oficios archivo resolucion.pdf [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/oficios",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-pazysalvo/40/estado {\"idSolicitud\":41,\"nuevoEstado\":\"APROBADA\"} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/estado",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-pazysalvo/40/estado {\"nuevoEstado\":\"APROBADA\"} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/40/estado",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo?rol=otro&bandeja=pendientes [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "Bandeja no válida: use procesadas",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-pazysalvo?bandeja=pendientes [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  }
+}

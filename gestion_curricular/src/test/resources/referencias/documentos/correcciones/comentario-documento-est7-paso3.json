@@ -1,0 +1,8 @@
+{
+  "/sin-id/http": 201,
+  "/sin-id/json": null,
+  "/sin-id/guardado": "previo\n[<fecha>] hola",
+  "/comentario-blanco/json/url": "http://localhost/api/documentos/9/comentarios",
+  "/inexistente/json/url": "http://localhost/api/documentos/8/comentarios",
+  "/estudiante/json/url": "http://localhost/api/documentos/9/comentarios"
+}

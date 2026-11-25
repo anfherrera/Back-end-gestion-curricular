@@ -1,0 +1,115 @@
+{
+  "/seguimiento 1/body/preinscripciones": [
+    {
+      "accionesDisponibles": [
+        "proceder_inscripcion"
+      ],
+      "fecha": 1710522000000,
+      "estado": "Aprobado",
+      "tipo": "Preinscripcion",
+      "estudianteId": 1,
+      "curso": "Materia 1",
+      "estadoCurso": "Inscripcion",
+      "id": 10,
+      "cursoId": 1
+    },
+    {
+      "accionesDisponibles": [
+        "esperando_inscripcion"
+      ],
+      "fecha": null,
+      "estado": "Aprobado",
+      "tipo": "Preinscripcion",
+      "estudianteId": 1,
+      "curso": "Materia 2",
+      "estadoCurso": "Preinscripcion",
+      "id": 11,
+      "cursoId": 2
+    },
+    {
+      "accionesDisponibles": [
+        "esperando_aprobacion"
+      ],
+      "fecha": 1710522000000,
+      "estado": "Enviada",
+      "tipo": "Preinscripcion",
+      "estudianteId": 1,
+      "curso": "Materia 3",
+      "estadoCurso": "No disponible",
+      "id": 12,
+      "cursoId": 3
+    },
+    {
+      "accionesDisponibles": [
+        "revisar_motivo_rechazo"
+      ],
+      "fecha": null,
+      "estado": "Rechazado",
+      "tipo": "Preinscripcion",
+      "estudianteId": 1,
+      "curso": "Materia 4",
+      "estadoCurso": "Publicado",
+      "id": 13,
+      "cursoId": 4
+    },
+    {
+      "accionesDisponibles": [],
+      "fecha": 1710522000000,
+      "estado": "Enviado",
+      "tipo": "Preinscripcion",
+      "estudianteId": 1,
+      "curso": "Materia 5",
+      "estadoCurso": "Publicado",
+      "id": 14,
+      "cursoId": 5
+    },
+    {
+      "accionesDisponibles": [
+        "esperando_aprobacion_curso"
+      ],
+      "fecha": null,
+      "estado": "Enviada",
+      "tipo": "Solicitud de Curso Nuevo",
+      "estudianteId": 1,
+      "curso": "Cálculo III",
+      "estadoCurso": "No disponible",
+      "id": 15,
+      "cursoId": null
+    },
+    {
+      "accionesDisponibles": [
+        "curso_aprobado_esperando_apertura"
+      ],
+      "fecha": 1710522000000,
+      "estado": "Aprobado",
+      "tipo": "Solicitud de Curso Nuevo",
+      "estudianteId": 1,
+      "curso": "Física II",
+      "estadoCurso": "No disponible",
+      "id": 16,
+      "cursoId": null
+    },
+    {
+      "accionesDisponibles": [],
+      "fecha": null,
+      "estado": "Rechazado",
+      "tipo": "Preinscripcion",
+      "estudianteId": 1,
+      "curso": "sin separador",
+      "estadoCurso": "No disponible",
+      "id": 17,
+      "cursoId": null
+    },
+    {
+      "accionesDisponibles": [],
+      "fecha": 1710522000000,
+      "estado": "Enviado",
+      "tipo": "Preinscripcion",
+      "estudianteId": 1,
+      "curso": "Curso no disponible",
+      "estadoCurso": "No disponible",
+      "id": 18,
+      "cursoId": null
+    }
+  ]
+}

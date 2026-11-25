@@ -1,0 +1,2240 @@
+{
+  "POST /api/solicitudes-homologacion/crearSolicitud-Homologacion {\"nombre_solicitud\":\"Solicitud de homologacion\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"periodo_academico\":\"2025-1\",\"programa_origen\":\"Origen\",\"programa_destino\":\"Destino\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [est5]" : {
+    "status" : 201,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_solicitud" : 50,
+      "nombre_solicitud" : "Solicitud de homologacion",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-01-19T00:00:00.000+00:00",
+      "estadosSolicitud" : [ ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 6",
+        "rol" : null,
+        "codigo" : "102010",
+        "cedula" : null,
+        "correo" : "est6@unicauca.edu.co",
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : "Origen",
+      "programa_destino" : "Destino"
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "guardar" : "usuario 5, periodo 2025-1, nombre Solicitud de homologacion, origen Origen"
+    } ]
+  },
+  "POST /api/solicitudes-homologacion/crearSolicitud-Homologacion {\"nombre_solicitud\":\"Solicitud de homologacion\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"periodo_academico\":\"2025-1\",\"programa_origen\":\"Origen\",\"programa_destino\":\"Destino\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [admin]" : {
+    "status" : 201,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_solicitud" : 50,
+      "nombre_solicitud" : "Solicitud de homologacion",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-01-19T00:00:00.000+00:00",
+      "estadosSolicitud" : [ ],
+      "objUsuario" : {
+        "id_usuario" : 6,
+        "nombre_completo" : "Usuario 6",
+        "rol" : null,
+        "codigo" : "102010",
+        "cedula" : null,
+        "correo" : "est6@unicauca.edu.co",
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : "Origen",
+      "programa_destino" : "Destino"
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "guardar" : "usuario 6, periodo 2025-1, nombre Solicitud de homologacion, origen Origen"
+    } ]
+  },
+  "POST /api/solicitudes-homologacion/crearSolicitud-Homologacion {\"nombre_solicitud\":\"Solicitud de homologacion\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"periodo_academico\":\"2025-1\",\"programa_origen\":\"Origen\",\"programa_destino\":\"Destino\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [funcionario]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-homologacion/crearSolicitud-Homologacion",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-homologacion/crearSolicitud-Homologacion {} [est5]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "fecha_registro_solicitud" : "La fecha de registro no puede estar vacía",
+      "objUsuario" : "Debe asociar un usuario a la solicitud",
+      "nombre_solicitud" : "El nombre de la solicitud no puede estar vacío"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-homologacion {\"nombre_solicitud\":\"Solicitud de homologacion\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"periodo_academico\":\"2025-1\",\"programa_origen\":\"Origen\",\"programa_destino\":\"Destino\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-homologacion {\"nombre_solicitud\":\"Solicitud de homologacion\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"periodo_academico\":\"2025-1\",\"programa_origen\":\"Origen\",\"programa_destino\":\"Destino\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [admin]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-homologacion {\"nombre_solicitud\":\"Solicitud de homologacion\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"periodo_academico\":\"2025-1\",\"programa_origen\":\"Origen\",\"programa_destino\":\"Destino\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-homologacion {} [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    }, {
+      "id_solicitud" : 61,
+      "nombre_solicitud" : "Solicitud 61",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 610,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 6,
+        "nombre_completo" : "Usuario 6",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-homologacion/listarSolicitud-Homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/porRol?rol=FUNCIONARIO [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Estudiante, idPrograma=null, periodo=<ACTUAL>, idUsuario=5, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=FUNCIONARIO [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/porRol?rol=ESTUDIANTE&periodoAcademico=2025-1 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Estudiante, idPrograma=null, periodo=2025-1, idUsuario=5, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=ESTUDIANTE&periodoAcademico=2025-1 [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/porRol?rol=FUNCIONARIO [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 61,
+      "nombre_solicitud" : "Solicitud 61",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 610,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 6,
+        "nombre_completo" : "Usuario 6",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarSolicitudesPorRol" : "FUNCIONARIO, null"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=FUNCIONARIO [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/porRol?rol=ESTUDIANTE&idUsuario=6 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Estudiante, idPrograma=null, periodo=<ACTUAL>, idUsuario=6, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=ESTUDIANTE&idUsuario=6 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/porRol?rol=ESTUDIANTE&idUsuario=6&periodoAcademico=2025-1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Estudiante, idPrograma=null, periodo=2025-1, idUsuario=6, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=ESTUDIANTE&idUsuario=6&periodoAcademico=2025-1 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Funcionario [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Funcionario, idPrograma=null, periodo=<ACTUAL>, idUsuario=null, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=funcionario&bandeja=pendientes [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Funcionario?periodoAcademico=2025-1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Funcionario, idPrograma=null, periodo=2025-1, idUsuario=null, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=funcionario&bandeja=pendientes&periodoAcademico=2025-1 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Coordinador [coordinador]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Coordinador, idPrograma=3, periodo=<ACTUAL>, idUsuario=null, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=coordinador&bandeja=pendientes [coordinador]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Coordinador?periodoAcademico=2025-1 [coordinador]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Coordinador, idPrograma=3, periodo=2025-1, idUsuario=null, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=coordinador&bandeja=pendientes&periodoAcademico=2025-1 [coordinador]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Coordinador [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Coordinador, idPrograma=null, periodo=null, idUsuario=null, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=coordinador&bandeja=pendientes [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Secretaria [secretaria]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Secretario, idPrograma=null, periodo=<ACTUAL>, idUsuario=null, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=secretaria&bandeja=pendientes [secretaria]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Secretaria?periodoAcademico=2025-1 [secretaria]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Secretario, idPrograma=null, periodo=2025-1, idUsuario=null, procesadas=false]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=secretaria&bandeja=pendientes&periodoAcademico=2025-1 [secretaria]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Funcionario [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-homologacion/listarSolicitud-Homologacion/Funcionario",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion?rol=funcionario&bandeja=pendientes [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Funcionario/Aprobadas [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Funcionario, idPrograma=null, periodo=null, idUsuario=null, procesadas=true]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=funcionario&bandeja=procesadas [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Funcionario/Aprobadas?periodoAcademico=2025-1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Funcionario, idPrograma=null, periodo=2025-1, idUsuario=null, procesadas=true]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=funcionario&bandeja=procesadas&periodoAcademico=2025-1 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Funcionario/Aprobadas?periodoAcademico=todos [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Funcionario, idPrograma=null, periodo=null, idUsuario=null, procesadas=true]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=funcionario&bandeja=procesadas&periodoAcademico=todos [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Coordinador/Aprobadas [coordinador]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Coordinador, idPrograma=3, periodo=null, idUsuario=null, procesadas=true]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=coordinador&bandeja=procesadas [coordinador]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Coordinador/Aprobadas?periodoAcademico=2025-1 [coordinador]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Coordinador, idPrograma=3, periodo=2025-1, idUsuario=null, procesadas=true]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=coordinador&bandeja=procesadas&periodoAcademico=2025-1 [coordinador]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Coordinador/Aprobadas [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Coordinador, idPrograma=null, periodo=null, idUsuario=null, procesadas=true]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=coordinador&bandeja=procesadas [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Secretaria/Aprobadas [secretaria]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Secretario, idPrograma=null, periodo=null, idUsuario=null, procesadas=true]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=secretaria&bandeja=procesadas [secretaria]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Secretaria/Aprobadas?periodoAcademico=2025-1 [secretaria]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listar" : "FiltroSolicitudes[rol=Secretario, idPrograma=null, periodo=2025-1, idUsuario=null, procesadas=true]"
+    } ]
+  },
+  "GET /api/solicitudes-homologacion?rol=secretaria&bandeja=procesadas&periodoAcademico=2025-1 [secretaria]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Secretaria/Aprobadas [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-homologacion/listarSolicitud-Homologacion/Secretaria/Aprobadas",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion?rol=secretaria&bandeja=procesadas [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/60 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/60 [est6]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-homologacion/listarSolicitud-Homologacion/60",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/60 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_solicitud" : 60,
+      "nombre_solicitud" : "Solicitud 60",
+      "periodo_academico" : "2025-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud" : [ {
+        "id_estado" : 600,
+        "estado_actual" : "ENVIADA",
+        "fecha_registro_estado" : "2025-02-19T21:20:00.000+00:00",
+        "comentario" : null,
+        "objSolicitud" : null
+      } ],
+      "objUsuario" : {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      },
+      "documentos" : [ {
+        "id_documento" : 80,
+        "nombre" : "solicitud_homologacion.pdf",
+        "ruta_documento" : "homologacion/60/solicitud_homologacion.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : null
+      }, {
+        "id_documento" : 81,
+        "nombre" : "resolucion_60.pdf",
+        "ruta_documento" : "homologacion/60/resolucion_60.pdf",
+        "fecha_documento" : "2025-02-19T21:20:00.000+00:00",
+        "esValido" : true,
+        "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría"
+      } ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "programa_origen" : null,
+      "programa_destino" : null
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-homologacion/actualizarEstadoSolicitud {\"idSolicitud\":60,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [funcionario]" : {
+    "status" : 204,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ {
+      "cambiarEstadoSolicitud" : "60 -> APROBADA_FUNCIONARIO"
+    } ]
+  },
+  "PUT /api/solicitudes-homologacion/actualizarEstadoSolicitud {\"idSolicitud\":60,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [coordinador]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "estadoActual" : "ENVIADA",
+      "codigo" : "ROL_NO_AUTORIZADO",
+      "error" : "Este paso le corresponde al rol Funcionario"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-homologacion/actualizarEstadoSolicitud {\"idSolicitud\":60,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [admin]" : {
+    "status" : 204,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ {
+      "cambiarEstadoSolicitud" : "60 -> APROBADA_FUNCIONARIO"
+    } ]
+  },
+  "PUT /api/solicitudes-homologacion/actualizarEstadoSolicitud {\"idSolicitud\":60,\"nuevoEstado\":\"APROBADA\"} [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "estadoActual" : "ENVIADA",
+      "codigo" : "TRANSICION_NO_PERMITIDA",
+      "error" : "No se puede pasar de ENVIADA a APROBADA. Desde ENVIADA solo se permite: [APROBADA_FUNCIONARIO, RECHAZADA]"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-homologacion/actualizarEstadoSolicitud {\"idSolicitud\":60} [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "estadoActual" : "ENVIADA",
+      "codigo" : "ESTADO_REQUERIDO",
+      "error" : "El nuevo estado es requerido"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-homologacion/actualizarEstadoSolicitud {\"idSolicitud\":60,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-homologacion/actualizarEstadoSolicitud",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-homologacion/60/estado {\"idSolicitud\":60,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/60/estado",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-homologacion/60/estado {\"idSolicitud\":60,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [coordinador]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/60/estado",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-homologacion/60/estado {\"idSolicitud\":60,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [admin]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/60/estado",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-homologacion/60/estado {\"idSolicitud\":60,\"nuevoEstado\":\"APROBADA\"} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/60/estado",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-homologacion/60/estado {\"idSolicitud\":60} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/60/estado",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-homologacion/60/estado {\"idSolicitud\":60,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/60/estado",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/obtenerOficios/60 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "nombreArchivo" : "resolucion_60.pdf",
+      "ruta" : "homologacion/60/resolucion_60.pdf",
+      "id" : 60,
+      "nombre" : "resolucion_60.pdf"
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/60/oficios [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/60/oficios",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/obtenerOficios/60 [est6]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-homologacion/obtenerOficios/60",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/60/oficios [est6]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/60/oficios",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/obtenerOficios/61 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/61/oficios [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/61/oficios",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/descargarOficio/60 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/pdf",
+    "cuerpo" : "PDF de homologacion/60/resolucion_60.pdf",
+    "disposicion" : "attachment; filename=\"resolucion_60.pdf\"",
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/60/oficios/archivo [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/60/oficios/archivo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/descargarOficio/60 [est6]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-homologacion/descargarOficio/60",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/60/oficios/archivo [est6]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/60/oficios/archivo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/descargarOficio/61 [funcionario]" : {
+    "status" : 404,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/61/oficios/archivo [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/61/oficios/archivo",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/validarDocumentosRequeridos/60 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "documentosRequeridos" : {
+        "formulario_homologacion" : false,
+        "certificado_notas" : false,
+        "programa_academico" : false
+      },
+      "totalDocumentos" : 2,
+      "todosCompletos" : false
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/validarDocumentosRequeridos/61 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "documentosRequeridos" : {
+        "formulario_homologacion" : false,
+        "certificado_notas" : false,
+        "programa_academico" : false
+      },
+      "totalDocumentos" : 0,
+      "todosCompletos" : false
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-homologacion/60/estado {\"idSolicitud\":61,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\"} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/60/estado",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-homologacion/60/estado {\"nuevoEstado\":\"APROBADA_FUNCIONARIO\"} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/60/estado",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/solicitudes-homologacion/actualizarEstadoSolicitud {\"nuevoEstado\":\"APROBADA_FUNCIONARIO\"} [funcionario]" : {
+    "status" : 500,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/solicitudes-homologacion/actualizarEstadoSolicitud",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion?rol=otro&bandeja=pendientes [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion?rol=funcionario&bandeja=otra [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion?bandeja=pendientes [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/solicitudes-homologacion/abc/oficios [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/abc/oficios",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-homologacion/60/subir-resolucion archivo resolucion.pdf [secretaria]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "idDocumento" : 90,
+      "success" : true,
+      "idSolicitud" : 60,
+      "message" : "Resolución subida correctamente",
+      "nombre" : "resolucion_guardada.pdf"
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "adjuntarASolicitud" : "resolucion.pdf a 60 en homologacion, comentario [OFICIO_HOMOLOGACION] Archivo subido por secretaría, nombreGuardado true"
+    } ]
+  },
+  "POST /api/solicitudes-homologacion/60/resoluciones archivo resolucion.pdf [secretaria]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/60/resoluciones",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-homologacion/99/subir-resolucion archivo resolucion.pdf [secretaria]" : {
+    "status" : 404,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-homologacion/99/resoluciones archivo resolucion.pdf [secretaria]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/99/resoluciones",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-homologacion/60/subir-resolucion archivo resolucion.txt [secretaria]" : {
+    "status" : 415,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "error" : "Solo se permiten archivos PDF. El archivo no es un PDF válido."
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-homologacion/60/subir-resolucion archivo resolucion.pdf [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-homologacion/60/subir-resolucion",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-homologacion/60/resoluciones archivo resolucion.txt [secretaria]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/60/resoluciones",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/solicitudes-homologacion/60/resoluciones archivo resolucion.pdf [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/solicitudes-homologacion/60/resoluciones",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  }
+}

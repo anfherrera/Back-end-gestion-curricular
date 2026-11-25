@@ -1,0 +1,17 @@
+{
+  "beansDePrueba" : [ {
+    "bean" : "estadisticasConDatosFijos",
+    "origen" : "EstadisticasEndpointsCaracterizacionTest$CasoDeUsoConDatosFijos"
+  }, {
+    "bean" : "estadisticasEndpointsCaracterizacionTest.CasoDeUsoConDatosFijos",
+    "origen" : "EstadisticasEndpointsCaracterizacionTest$CasoDeUsoConDatosFijos"
+  } ],
+  "estadisticasCU" : [ {
+    "bean" : "crearGestionarEstadisticasCUInt",
+    "primario" : false
+  }, {
+    "bean" : "estadisticasConDatosFijos",
+    "primario" : true
+  } ],
+  "estadisticasCUInyectado" : "estadisticasConDatosFijos"
+}

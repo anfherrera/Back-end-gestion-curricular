@@ -1,0 +1,212 @@
+{
+  "/alias idSolicitud que es inscripcion/eventos": [
+    "esStaff",
+    "inscripcion(7)",
+    "guardar(comprobante.pago.pdf,pdf)",
+    "usuarioActual",
+    "registro"
+  ],
+  "/estudiante con id con espacios y tipo/body/ruta": "/uploads/archivos/x/solicitud_5/comprobante.pago.pdf",
+  "/estudiante con id con espacios y tipo/body/solicitudId": "5",
+  "/estudiante con id con espacios y tipo/documentos": [
+    {
+      "comentario": null,
+      "esValido": true,
+      "fecha_documento": "<ahora>",
+      "idUsuarioSubio": 31,
+      "id_documento": 11,
+      "nombre": "comprobante.pago.pdf",
+      "objSolicitud": {
+        "documentos": [],
+        "estadosSolicitud": [],
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": null,
+        "id_solicitud": 5,
+        "nombre_solicitud": null,
+        "objCursoOfertadoVerano": null,
+        "objUsuario": null,
+        "periodo_academico": null
+      },
+      "ruta_documento": "x/solicitud_5/comprobante.pago.pdf"
+    }
+  ],
+  "/estudiante con id con espacios y tipo/eventos": [
+    "esStaff",
+    "esDueno(5)",
+    "inscripcion(5)",
+    "solicitud(5)",
+    "guardar(comprobante.pago.pdf,pdf,x,5)",
+    "usuarioActual",
+    "registro"
+  ],
+  "/estudiante con id invalido/eventos": [],
+  "/guardado falla/eventos": [
+    "esStaff",
+    "inscripcion(7)",
+    "guardar(comprobante.pago_Jos__P_rez___7.pdf,pdf,curso-verano,70)",
+    "guardar(comprobante.pago_Jos__P_rez___7.pdf,pdf)"
+  ],
+  "/inscripcion con error/eventos": [
+    "esStaff",
+    "inscripcion(11)",
+    "solicitud(11)",
+    "guardar(comprobante.pago_11.pdf,pdf)",
+    "usuarioActual",
+    "registro"
+  ],
+  "/inscripcion con espacios/body/inscripcionId": "7",
+  "/inscripcion con espacios/body/ruta": "/uploads/archivos/curso-verano/solicitud_70/comprobante.pago_Jos__P_rez___7.pdf",
+  "/inscripcion con espacios/body/solicitudId": "7",
+  "/inscripcion con espacios/documentos": [
+    {
+      "comentario": null,
+      "esValido": true,
+      "fecha_documento": "<ahora>",
+      "idUsuarioSubio": 31,
+      "id_documento": 11,
+      "nombre": "comprobante.pago_Jos__P_rez___7.pdf",
+      "objSolicitud": {
+        "codicion_solicitud": null,
+        "documentos": [],
+        "estadosSolicitud": [],
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": null,
+        "id_solicitud": 70,
+        "nombre_estudiante": null,
+        "nombre_solicitud": null,
+        "objCursoOfertadoVerano": null,
+        "objUsuario": {
+          "cedula": null,
+          "codigo": null,
+          "correo": null,
+          "cursosOfertadosInscritos": [],
+          "estado_usuario": false,
+          "id_usuario": 40,
+          "nombre_completo": "José Pérez-Ñ",
+          "objPrograma": null,
+          "objRol": null,
+          "password": null,
+          "solicitudes": []
+        },
+        "observacion": null,
+        "periodo_academico": null
+      },
+      "ruta_documento": "curso-verano/solicitud_70/comprobante.pago_Jos__P_rez___7.pdf"
+    }
+  ],
+  "/inscripcion con espacios/eventos": [
+    "esStaff",
+    "inscripcion(7)",
+    "guardar(comprobante.pago_Jos__P_rez___7.pdf,pdf,curso-verano,70)",
+    "usuarioActual",
+    "registro"
+  ],
+  "/inscripcion con nombre en blanco/eventos": [
+    "esStaff",
+    "inscripcion(8)",
+    "guardar(comprobante.pago_8.pdf,pdf,curso-verano,80)",
+    "usuarioActual",
+    "registro"
+  ],
+  "/inscripcion con nombre/eventos": [
+    "esStaff",
+    "inscripcion(7)",
+    "guardar(comprobante.pago_Jos__P_rez___7.pdf,pdf,curso-verano,70)",
+    "usuarioActual",
+    "registro"
+  ],
+  "/inscripcion con tipo/eventos": [
+    "esStaff",
+    "inscripcion(7)",
+    "guardar(comprobante.pago_Jos__P_rez___7.pdf,pdf,homologacion,7)",
+    "usuarioActual",
+    "registro"
+  ],
+  "/inscripcion inexistente/body": {
+    "error": "Solicitud no encontrada"
+  },
+  "/inscripcion inexistente/documentos": [],
+  "/inscripcion inexistente/eventos": [
+    "esStaff",
+    "inscripcion(10)",
+    "solicitud(10)"
+  ],
+  "/inscripcion inexistente/status": 404,
+  "/inscripcion no numerica/body": {
+    "error": "ID de solicitud inválido"
+  },
+  "/inscripcion no numerica/documentos": [],
+  "/inscripcion no numerica/eventos": [],
+  "/inscripcion no numerica/status": 400,
+  "/inscripcion sin usuario/eventos": [
+    "esStaff",
+    "inscripcion(9)",
+    "guardar(comprobante.pago_9.pdf,pdf,curso-verano,90)",
+    "usuarioActual",
+    "registro"
+  ],
+  "/inscripcion tiene prioridad sobre solicitud/eventos": [
+    "esStaff",
+    "esDueno(7)",
+    "inscripcion(7)",
+    "guardar(comprobante.pago_Jos__P_rez___7.pdf,pdf,curso-verano,70)",
+    "usuarioActual",
+    "registro"
+  ],
+  "/registro devuelve null/eventos": [
+    "esStaff",
+    "inscripcion(5)",
+    "solicitud(5)",
+    "guardar(comprobante.pago.pdf,pdf)",
+    "usuarioActual",
+    "registro"
+  ],
+  "/registro lanza error/eventos": [
+    "esStaff",
+    "inscripcion(5)",
+    "solicitud(5)",
+    "guardar(comprobante.pago.pdf,pdf)",
+    "usuarioActual",
+    "registro"
+  ],
+  "/solicitud con error al buscar inscripcion/eventos": [
+    "esStaff",
+    "inscripcion(11)",
+    "solicitud(11)",
+    "guardar(comprobante.pago.pdf,pdf)",
+    "usuarioActual",
+    "registro"
+  ],
+  "/solicitud con tipo/eventos": [
+    "esStaff",
+    "inscripcion(5)",
+    "solicitud(5)",
+    "guardar(comprobante.pago.pdf,pdf,reingreso,5)",
+    "usuarioActual",
+    "registro"
+  ],
+  "/solicitud en blanco usa alias/eventos": [
+    "esStaff",
+    "inscripcion(12)",
+    "solicitud(12)",
+    "guardar(comprobante.pago.pdf,pdf)",
+    "usuarioActual",
+    "registro"
+  ],
+  "/solicitud inexistente como inscripcion/body": {
+    "error": "Solicitud no encontrada"
+  },
+  "/solicitud inexistente como inscripcion/documentos": [],
+  "/solicitud inexistente como inscripcion/eventos": [
+    "esStaff",
+    "inscripcion(10)",
+    "solicitud(10)"
+  ],
+  "/solicitud inexistente como inscripcion/status": 404,
+  "/solicitud no numerica con tipo/body": {
+    "error": "ID de solicitud inválido"
+  },
+  "/solicitud no numerica con tipo/documentos": [],
+  "/solicitud no numerica con tipo/eventos": [],
+  "/solicitud no numerica con tipo/status": 400
+}

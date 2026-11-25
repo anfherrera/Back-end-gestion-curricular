@@ -1,0 +1,284 @@
+{
+  "sin solicitudes" : {
+    "analisisPorPrograma" : [ ],
+    "descripcion" : "Estadisticas detalladas de cursos de verano - Analisis de demanda y recomendaciones",
+    "estadosSolicitudes" : {
+      "APROBADA" : 0,
+      "ENVIADA" : 0,
+      "EN_PROCESO" : 0,
+      "RECHAZADA" : 0
+    },
+    "estadosSolicitudesEstructurados" : {
+      "APROBADA" : {
+        "cantidad" : 0,
+        "estado" : "APROBADA",
+        "porcentaje" : 0.0
+      },
+      "ENVIADA" : {
+        "cantidad" : 0,
+        "estado" : "ENVIADA",
+        "porcentaje" : 0.0
+      },
+      "EN_PROCESO" : {
+        "cantidad" : 0,
+        "estado" : "EN_PROCESO",
+        "porcentaje" : 0.0
+      },
+      "RECHAZADA" : {
+        "cantidad" : 0,
+        "estado" : "RECHAZADA",
+        "porcentaje" : 0.0
+      }
+    },
+    "predicciones" : {
+      "alertasCriticas" : [ ],
+      "confiabilidad" : "MEDIA",
+      "demandaEstimadaProximoPeriodo" : 0,
+      "estadisticasRecomendaciones" : {
+        "alertasCriticas" : 0,
+        "prioridadAlta" : 0,
+        "prioridadBaja" : 0,
+        "prioridadMedia" : 0,
+        "totalRecomendaciones" : 0
+      },
+      "materiasConTendenciaCreciente" : [ ],
+      "materiasConTendenciaDecreciente" : [ ],
+      "materiasEstables" : [ ],
+      "prediccionesTemporales" : {
+        "demandaActualMesPico" : 0,
+        "demandaEstimadaMesPico" : 0,
+        "mesPico" : "Junio",
+        "mesesRecomendados" : [ "Julio", "Agosto", "Septiembre" ]
+      },
+      "programasConTendenciaCreciente" : [ ],
+      "programasConTendenciaDecreciente" : [ ],
+      "programasEstables" : [ ],
+      "recomendaciones" : [ ],
+      "todasLasPrediccionesPorPrograma" : [ ]
+    },
+    "recomendaciones" : [ ],
+    "resumen" : {
+      "materiasUnicas" : 0,
+      "programasParticipantes" : 0,
+      "tasaAprobacion" : 0.0,
+      "totalSolicitudes" : 0
+    },
+    "tendenciasTemporales" : [ {
+      "mes" : "Enero",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Febrero",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Marzo",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Abril",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Mayo",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Junio",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Julio",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Agosto",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Septiembre",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Octubre",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Noviembre",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Diciembre",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    } ],
+    "todosLosMeses" : [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ],
+    "topMaterias" : [ ]
+  },
+  "tendencias sin solicitudes" : {
+    "descripcion" : "Tendencias temporales optimizadas para cursos de verano",
+    "tendenciasTemporales" : [ {
+      "mes" : "Enero",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Febrero",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Marzo",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Abril",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Mayo",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Junio",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Julio",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Agosto",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Septiembre",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Octubre",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Noviembre",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Diciembre",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    } ],
+    "todosLosMeses" : [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ],
+    "totalSolicitudes" : 0
+  },
+  "materia sin nombre" : {
+    "analisisPorPrograma" : [ {
+      "nombre" : "Ingeniería de Sistemas",
+      "porcentaje" : 100.0,
+      "solicitudes" : 2
+    } ],
+    "descripcion" : "Estadisticas detalladas de cursos de verano - Analisis de demanda y recomendaciones",
+    "estadosSolicitudes" : {
+      "APROBADA" : 1,
+      "ENVIADA" : 1,
+      "EN_PROCESO" : 0,
+      "RECHAZADA" : 0
+    },
+    "estadosSolicitudesEstructurados" : {
+      "APROBADA" : {
+        "cantidad" : 1,
+        "estado" : "APROBADA",
+        "porcentaje" : 50.0
+      },
+      "ENVIADA" : {
+        "cantidad" : 1,
+        "estado" : "ENVIADA",
+        "porcentaje" : 50.0
+      },
+      "EN_PROCESO" : {
+        "cantidad" : 0,
+        "estado" : "EN_PROCESO",
+        "porcentaje" : 0.0
+      },
+      "RECHAZADA" : {
+        "cantidad" : 0,
+        "estado" : "RECHAZADA",
+        "porcentaje" : 0.0
+      }
+    },
+    "predicciones" : {
+      "confiabilidad" : "BAJA",
+      "demandaEstimadaProximoPeriodo" : 2,
+      "materiasConTendenciaCreciente" : [ ],
+      "materiasConTendenciaDecreciente" : [ ],
+      "materiasEstables" : [ ],
+      "prediccionesTemporales" : { },
+      "programasConTendenciaCreciente" : [ ],
+      "programasConTendenciaDecreciente" : [ ]
+    },
+    "recomendaciones" : [ ],
+    "resumen" : {
+      "materiasUnicas" : 2,
+      "programasParticipantes" : 1,
+      "tasaAprobacion" : 50.0,
+      "totalSolicitudes" : 2
+    },
+    "tendenciasTemporales" : [ {
+      "mes" : "Enero",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Febrero",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Marzo",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Abril",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Mayo",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Junio",
+      "porcentaje" : 100.0,
+      "solicitudes" : 2
+    }, {
+      "mes" : "Julio",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Agosto",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Septiembre",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Octubre",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Noviembre",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    }, {
+      "mes" : "Diciembre",
+      "porcentaje" : 0.0,
+      "solicitudes" : 0
+    } ],
+    "todosLosMeses" : [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ],
+    "topMaterias" : [ {
+      "nombre" : null,
+      "porcentaje" : 50.0,
+      "solicitudes" : 1
+    }, {
+      "nombre" : "Cálculo I",
+      "porcentaje" : 50.0,
+      "solicitudes" : 1
+    } ]
+  }
+}

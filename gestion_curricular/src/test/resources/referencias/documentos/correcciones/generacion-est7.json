@@ -1,0 +1,12 @@
+{
+  "paz-docx" : {
+    "http" : 404,
+    "tipo" : "application/json",
+    "codigoError" : "GC-0404"
+  },
+  "paz-pdf" : {
+    "http" : 404,
+    "tipo" : "application/json",
+    "codigoError" : "GC-0404"
+  }
+}

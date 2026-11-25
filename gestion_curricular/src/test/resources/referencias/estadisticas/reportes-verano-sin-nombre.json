@@ -1,0 +1,12 @@
+{
+  "pdf cursos verano" : [ " ", " ", " ", " ", " ", " ", "  • Cálculo I: 3 solicitudes (60.0%)", "  • Materias Únicas: 2", "  • Programas Participantes: 1", "  • Tasa de Aprobación: 40.0%", "  • Total Solicitudes: 5", "  • null: 2 solicitudes (40.0%)", "  • null: 5 solicitudes (100.0%)", "2. ESTADÍSTICAS DE CURSOS DE VERANO", "Análisis por Programa:", "DASHBOARD CURSOS DE VERANO - ANÁLISIS DE", "DEMANDA", "Fecha de generación: <ahora>", "Filtros aplicados: Período Académico: 2025-2 | Programa ID: 1", "Resumen General:", "Top Materias por Demanda:" ],
+  "pdf completo" : [ " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "  • APROBADA: 6", "  • Cálculo I: 3 solicitudes (60.0%)", "  • ENVIADA: 2", "  • Ingeniería de Sistemas: 10", "  • Materias Únicas: 2", "  • Paz y Salvo: 4", "  • Porcentaje de Aprobación: 60.0%", "  • Programas Participantes: 1", "  • RECHAZADA: 2", "  • Reingreso: 6", "  • Tasa de Aprobación: 40.0%", "  • Total Aprobadas: 6", "  • Total Rechazadas: 2", "  • Total Solicitudes: 5", "  • Total en Proceso: 2", "  • null: 2 solicitudes (40.0%)", "  • null: 5 solicitudes (100.0%)", "1. ESTADÍSTICAS GENERALES", "2. ESTADÍSTICAS DE CURSOS DE VERANO", "Análisis por Programa:", "Estadísticas por Estado:", "Estadísticas por Programa:", "Estadísticas por Tipo de Proceso:", "Fecha de generación: <ahora>", "Período académico filtrado: 2025 - Segundo Semestre", "Programa filtrado: Ingeniería de Sistemas", "REPORTE GENERAL DE ESTADÍSTICAS", "Resumen General:", "Resumen de Estados:", "Top Materias por Demanda:", "Total de Solicitudes: 10" ],
+  "excel cursos verano" : {
+    "excepcion" : "java.lang.IllegalStateException",
+    "causa" : "java.lang.NullPointerException"
+  },
+  "excel completo" : {
+    "excepcion" : "java.lang.IllegalStateException",
+    "causa" : "java.lang.NullPointerException"
+  }
+}

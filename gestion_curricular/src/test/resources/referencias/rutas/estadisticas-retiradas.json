@@ -1,0 +1,161 @@
+{
+  "POST /api/estadisticas/crear [admin]" : {
+    "status" : 201,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "crearEstadistica(Estadistica(idEstadistica=null, nombre=null, totalSolicitudes=null, totalAprobadas=null, totalRechazadas=null, periodosAcademico=[], nombresProcesos=[], nombresProgramas=[]))" ]
+  },
+  "PUT /api/estadisticas/actualizar [admin]" : {
+    "status" : 202,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "actualizarEstadistica(Estadistica(idEstadistica=null, nombre=null, totalSolicitudes=null, totalAprobadas=null, totalRechazadas=null, periodosAcademico=[], nombresProcesos=[], nombresProgramas=[]))" ]
+  },
+  "DELETE /api/estadisticas/eliminar/1 [admin]" : {
+    "status" : 404,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "eliminarEstadistica(1)" ]
+  },
+  "POST /api/estadisticas/crear [funcionario]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/estadisticas/actualizar [funcionario]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "DELETE /api/estadisticas/eliminar/1 [funcionario]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/estadisticas/crear [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/estadisticas/actualizar [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "DELETE /api/estadisticas/eliminar/1 [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/buscarPorId/1 [funcionario]" : {
+    "status" : 404,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticaPorId(1)" ]
+  },
+  "GET /api/estadisticas/porSolicitudPeriodoEstadoPrograma?idEstadistica=1&proceso=Reingreso&fechaInicio=2025-01-01&fechaFin=2025-06-30&estado=APROBADA&idPrograma=1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(1, Reingreso, 2025-01-01 00:00, 2025-06-30 00:00, APROBADA, 1)" ]
+  },
+  "GET /api/estadisticas/porPeriodoEstadoPrograma?fechaInicio=2025-01-01&fechaFin=2025-06-30&idPrograma=1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : [ ],
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasPeriodoEstadoYPrograma(2025-01-01 00:00, 2025-06-30 00:00, 1)" ]
+  },
+  "GET /api/estadisticas/filtradas [funcionario]" : {
+    "status" : 500,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/estadisticas/filtradas",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasGlobales()" ]
+  },
+  "GET /api/estadisticas/filtradas?nombreProceso=Reingreso [funcionario]" : {
+    "status" : 500,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/estadisticas/filtradas",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasPorProceso(Reingreso)" ]
+  },
+  "GET /api/estadisticas/programa/1/periodo?fechaInicio=2025-01-01&fechaFin=2025-06-30 [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasPorProgramaYPeriodo(1, 2025-01-01 00:00, 2025-06-30 00:00)" ]
+  },
+  "GET /api/estadisticas/proceso/Reingreso/estado/APROBADA [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasPorProcesoYEstado(Reingreso, APROBADA)" ]
+  },
+  "GET /api/estadisticas/tendencias [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasGlobales()" ]
+  },
+  "GET /api/estadisticas/tendencias?fechaInicio1=2024-07-01&fechaFin1=2024-12-31&fechaInicio2=2025-01-01&fechaFin2=2025-06-30 [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerTendenciasPorPeriodo(2024-07-01 00:00, 2024-12-31 00:00, 2025-01-01 00:00, 2025-06-30 00:00)" ]
+  },
+  "GET /api/estadisticas/export/pdf/general [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/pdf;charset=UTF-8",
+    "cuerpo" : "pdfGeneral",
+    "disposicion" : "attachment; filename=\"estadisticas_generales_dashboard.pdf\"",
+    "llamadas" : [ "pdfGeneral()" ]
+  },
+  "GET /api/estadisticas/export/excel/general [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    "cuerpo" : "excelGeneral",
+    "disposicion" : "attachment; filename=\"estadisticas_generales_dashboard.xlsx\"",
+    "llamadas" : [ "excelGeneral()" ]
+  },
+  "GET /api/estadisticas/export/pdf/general [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  }
+}

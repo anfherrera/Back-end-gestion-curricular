@@ -1,0 +1,4 @@
+{
+  "/reingreso crear nula/cuerpo/mensaje" : "GC-0004 - Violación a regla de negocio: Solicitud de reingreso no puede ser nula",
+  "/curso crear grupo en uso/cuerpo/mensaje" : "ERROR ENTIDAD YA EXISTE, El grupo asignado ya está en uso: B"
+}

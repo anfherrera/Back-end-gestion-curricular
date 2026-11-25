@@ -1,0 +1,39 @@
+{
+  "/~1api~1solicitudes-reingreso~1obtenerOficios~11" : {
+    "status" : 200,
+    "body" : [ {
+      "nombreArchivo" : "oficio_reingreso.pdf",
+      "ruta" : "r/oficio",
+      "id" : 1,
+      "nombre" : "oficio_reingreso.pdf"
+    } ]
+  },
+  "/~1api~1solicitudes-reingreso~1obtenerOficios~12" : {
+    "status" : 200,
+    "body" : [ ]
+  },
+  "/~1api~1solicitudes-reingreso~1obtenerOficios~14" : {
+    "status" : 200,
+    "body" : [ {
+      "nombreArchivo" : "aprobacion.pdf",
+      "ruta" : "r/aprobacion",
+      "id" : 4,
+      "nombre" : "aprobacion.pdf"
+    } ]
+  },
+  "/~1api~1solicitudes-reingreso~1descargarOficio~11" : {
+    "status" : 200,
+    "contentDisposition" : "attachment; filename=\"oficio_reingreso.pdf\"",
+    "body" : "r/oficio"
+  },
+  "/~1api~1solicitudes-reingreso~1descargarOficio~12" : {
+    "status" : 404,
+    "contentDisposition" : null,
+    "body" : ""
+  },
+  "/~1api~1solicitudes-reingreso~1descargarOficio~14" : {
+    "status" : 200,
+    "contentDisposition" : "attachment; filename=\"aprobacion.pdf\"",
+    "body" : "r/aprobacion"
+  }
+}

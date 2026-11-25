@@ -1,0 +1,281 @@
+{
+  "GET /api/periodos-academicos": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "data": [
+        "2020-1",
+        "2020-2",
+        "2021-1",
+        "2021-2",
+        "2022-1",
+        "2022-2",
+        "2023-1",
+        "2023-2",
+        "2024-1",
+        "2024-2",
+        "2025-1",
+        "2025-2",
+        "2026-1",
+        "2026-2",
+        "2027-1",
+        "2027-2",
+        "2028-1",
+        "2028-2",
+        "2029-1",
+        "2029-2",
+        "2030-1",
+        "2030-2"
+      ],
+      "success": true,
+      "message": "Períodos académicos obtenidos exitosamente"
+    }
+  },
+  "GET /api/periodos-academicos/2019-1": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "success": false,
+      "message": "Período académico no válido: 2019-1"
+    }
+  },
+  "GET /api/periodos-academicos/2020-1": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "data": {
+        "descripcion": "Primer Período 2020",
+        "numeroPeriodo": 1,
+        "valor": "2020-1",
+        "año": 2020
+      },
+      "success": true,
+      "message": "Información del período obtenida exitosamente"
+    }
+  },
+  "GET /api/periodos-academicos/2025-2": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "data": {
+        "descripcion": "Segundo Período 2025",
+        "numeroPeriodo": 2,
+        "valor": "2025-2",
+        "año": 2025
+      },
+      "success": true,
+      "message": "Información del período obtenida exitosamente"
+    }
+  },
+  "GET /api/periodos-academicos/2025-3": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "success": false,
+      "message": "Período académico no válido: 2025-3"
+    }
+  },
+  "GET /api/periodos-academicos/<periodo actual>": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "data": "<detalle del periodo actual>",
+      "success": true,
+      "message": "Información del período obtenida exitosamente"
+    }
+  },
+  "GET /api/periodos-academicos/futuros": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/futuros",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/periodos-academicos/info/2019-1": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/info/2019-1",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/periodos-academicos/info/2020-1": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/info/2020-1",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/periodos-academicos/info/2025-2": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/info/2025-2",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/periodos-academicos/info/2025-3": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/info/2025-3",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/periodos-academicos/info/<periodo actual>": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/info/<periodo actual>",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/periodos-academicos/info/abc": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/info/abc",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/periodos-academicos/recientes": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/recientes",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/periodos-academicos/todos": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/todos",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/periodos-academicos/ultimo": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/ultimo",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/periodos-academicos/validar/2019-1": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/validar/2019-1",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/periodos-academicos/validar/2020-1": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/validar/2020-1",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/periodos-academicos/validar/2025-2": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/validar/2025-2",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/periodos-academicos/validar/2025-3": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/validar/2025-3",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/periodos-academicos/validar/abc": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/validar/abc",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/periodos-academicos?desde=<año actual>": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "data": "<periodos futuros>",
+      "success": true,
+      "message": "Períodos académicos obtenidos exitosamente"
+    }
+  },
+  "GET /api/periodos-academicos?desde=<año recientes>": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "data": "<periodos recientes>",
+      "success": true,
+      "message": "Períodos académicos obtenidos exitosamente"
+    }
+  },
+  "GET /api/periodos-academicos?desde=abc": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/periodos-academicos",
+      "metodo": "GET"
+    }
+  }
+}

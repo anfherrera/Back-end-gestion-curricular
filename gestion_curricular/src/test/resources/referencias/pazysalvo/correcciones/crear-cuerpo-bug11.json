@@ -1,0 +1,451 @@
+{
+  "/estudiante {\"idUsuario\":5}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 99,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/estudiante {\"idUsuario\":null}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 99,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/estudiante {\"objUsuario\":{\"id_usuario\":5},\"nombre_solicitud\":\"X\",\"fecha_registro_solicitud\":\"2025-03-01\"}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 99,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/estudiante {\"x\":1}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 99,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"idUsuario\":\" 12 \"}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 12,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"idUsuario\":\"12\"}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 12,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"idUsuario\":-3}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": -3,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":\" 2025-01-15 \"}/body": {
+    "categoria": null,
+    "documentos": null,
+    "estadosSolicitud": null,
+    "fecha_ceremonia": null,
+    "fecha_registro_solicitud": null,
+    "id_solicitud": null,
+    "nombre_solicitud": null,
+    "objUsuario": null,
+    "periodo_academico": null,
+    "tipo_solicitud": null
+  },
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":\" 2025-01-15 \"}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 1,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":\" 2025-01-15 \"}/status": 201,
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":\"2025-01-15\"}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 1,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":\"2025-02-30\"}/body": {
+    "categoria": null,
+    "documentos": null,
+    "estadosSolicitud": null,
+    "fecha_ceremonia": null,
+    "fecha_registro_solicitud": null,
+    "id_solicitud": null,
+    "nombre_solicitud": null,
+    "objUsuario": null,
+    "periodo_academico": null,
+    "tipo_solicitud": null
+  },
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":\"2025-02-30\"}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 1,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":\"2025-02-30\"}/status": 201,
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":20250115}/body": {
+    "categoria": null,
+    "documentos": null,
+    "estadosSolicitud": null,
+    "fecha_ceremonia": null,
+    "fecha_registro_solicitud": null,
+    "id_solicitud": null,
+    "nombre_solicitud": null,
+    "objUsuario": null,
+    "periodo_academico": null,
+    "tipo_solicitud": null
+  },
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":20250115}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 1,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":20250115}/status": 201,
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":null}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 1,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":true}/body": {
+    "categoria": null,
+    "documentos": null,
+    "estadosSolicitud": null,
+    "fecha_ceremonia": null,
+    "fecha_registro_solicitud": null,
+    "id_solicitud": null,
+    "nombre_solicitud": null,
+    "objUsuario": null,
+    "periodo_academico": null,
+    "tipo_solicitud": null
+  },
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":true}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 1,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":true}/status": 201,
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":{\"x\":1}}/body": {
+    "categoria": null,
+    "documentos": null,
+    "estadosSolicitud": null,
+    "fecha_ceremonia": null,
+    "fecha_registro_solicitud": null,
+    "id_solicitud": null,
+    "nombre_solicitud": null,
+    "objUsuario": null,
+    "periodo_academico": null,
+    "tipo_solicitud": null
+  },
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":{\"x\":1}}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 1,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"idUsuario\":1,\"fecha_solicitud\":{\"x\":1}}/status": 201,
+  "/staff {\"idUsuario\":1,\"objUsuario\":{\"id_usuario\":2},\"nombre_solicitud\":\"X\",\"otra\":[1]}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 1,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"idUsuario\":1,\"periodo_academico\":\"  \"}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 1,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"idUsuario\":1,\"periodo_academico\":\"2024-1\"}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 1,
+      "guardar.nombre": null,
+      "guardar.periodo": "2024-1",
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"idUsuario\":1,\"periodo_academico\":null}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 1,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"idUsuario\":1,\"titulo_trabajo_grado\":\"  \",\"director_trabajo_grado\":null}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 1,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"idUsuario\":1,\"titulo_trabajo_grado\":123,\"director_trabajo_grado\":45.0}/capturas": [
+    {
+      "guardar.director": "45.0",
+      "guardar.fecha": null,
+      "guardar.idUsuario": 1,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": "123"
+    }
+  ],
+  "/staff {\"idUsuario\":1,\"titulo_trabajo_grado\":[\"a\",\"b\"],\"director_trabajo_grado\":\"  Dr. X \"}/capturas": [
+    {
+      "guardar.director": "Dr. X",
+      "guardar.fecha": null,
+      "guardar.idUsuario": 1,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": "[a, b]"
+    }
+  ],
+  "/staff {\"idUsuario\":1,\"titulo_trabajo_grado\":true,\"director_trabajo_grado\":{\"a\":1}}/capturas": [
+    {
+      "guardar.director": "{a=1}",
+      "guardar.fecha": null,
+      "guardar.idUsuario": 1,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": "true"
+    }
+  ],
+  "/staff {\"idUsuario\":12}/capturas": [
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": 12,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"objUsuario\":{\"id_usuario\":\"12\"},\"nombre_solicitud\":5,\"fecha_registro_solicitud\":\"2025-03-01\"}/capturas": [
+    {
+      "dto": {
+        "documentos": null,
+        "estado_actual": null,
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": null,
+        "id_solicitud": null,
+        "nombre_solicitud": null,
+        "objUsuario": {
+          "cedula": null,
+          "codigo": null,
+          "correo": null,
+          "estado_usuario": false,
+          "id_programa": null,
+          "id_rol": null,
+          "id_usuario": 12,
+          "nombre_completo": null,
+          "password": null
+        },
+        "periodo_academico": null
+      }
+    },
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": null,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"objUsuario\":{\"id_usuario\":12},\"nombre_solicitud\":\" \",\"fecha_registro_solicitud\":\"2025-03-01\"}/body": {
+    "categoria": null,
+    "documentos": null,
+    "estadosSolicitud": null,
+    "fecha_ceremonia": null,
+    "fecha_registro_solicitud": null,
+    "id_solicitud": null,
+    "nombre_solicitud": null,
+    "objUsuario": null,
+    "periodo_academico": null,
+    "tipo_solicitud": null
+  },
+  "/staff {\"objUsuario\":{\"id_usuario\":12},\"nombre_solicitud\":\" \",\"fecha_registro_solicitud\":\"2025-03-01\"}/capturas": [
+    {
+      "dto": {
+        "documentos": null,
+        "estado_actual": null,
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": null,
+        "id_solicitud": null,
+        "nombre_solicitud": null,
+        "objUsuario": {
+          "cedula": null,
+          "codigo": null,
+          "correo": null,
+          "estado_usuario": false,
+          "id_programa": null,
+          "id_rol": null,
+          "id_usuario": 12,
+          "nombre_completo": null,
+          "password": null
+        },
+        "periodo_academico": null
+      }
+    },
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": null,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"objUsuario\":{\"id_usuario\":12},\"nombre_solicitud\":\" \",\"fecha_registro_solicitud\":\"2025-03-01\"}/status": 201,
+  "/staff {\"objUsuario\":{\"id_usuario\":12},\"nombre_solicitud\":\"X\",\"fecha_registro_solicitud\":\"01~103~12025\"}/body": {
+    "categoria": null,
+    "documentos": null,
+    "estadosSolicitud": null,
+    "fecha_ceremonia": null,
+    "fecha_registro_solicitud": null,
+    "id_solicitud": null,
+    "nombre_solicitud": null,
+    "objUsuario": null,
+    "periodo_academico": null,
+    "tipo_solicitud": null
+  },
+  "/staff {\"objUsuario\":{\"id_usuario\":12},\"nombre_solicitud\":\"X\",\"fecha_registro_solicitud\":\"01~103~12025\"}/capturas": [
+    {
+      "dto": {
+        "documentos": null,
+        "estado_actual": null,
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": null,
+        "id_solicitud": null,
+        "nombre_solicitud": null,
+        "objUsuario": {
+          "cedula": null,
+          "codigo": null,
+          "correo": null,
+          "estado_usuario": false,
+          "id_programa": null,
+          "id_rol": null,
+          "id_usuario": 12,
+          "nombre_completo": null,
+          "password": null
+        },
+        "periodo_academico": null
+      }
+    },
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": null,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ],
+  "/staff {\"objUsuario\":{\"id_usuario\":12},\"nombre_solicitud\":\"X\",\"fecha_registro_solicitud\":\"01~103~12025\"}/status": 201,
+  "/staff {\"objUsuario\":{\"id_usuario\":12},\"nombre_solicitud\":\"X\",\"fecha_registro_solicitud\":1700000000000,\"periodo_academico\":\" 2024-2 \",\"id_solicitud\":7,\"otra\":1}/capturas": [
+    {
+      "dto": {
+        "documentos": null,
+        "estado_actual": null,
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": null,
+        "id_solicitud": 7,
+        "nombre_solicitud": null,
+        "objUsuario": {
+          "cedula": null,
+          "codigo": null,
+          "correo": null,
+          "estado_usuario": false,
+          "id_programa": null,
+          "id_rol": null,
+          "id_usuario": 12,
+          "nombre_completo": null,
+          "password": null
+        },
+        "periodo_academico": " 2024-2 "
+      }
+    },
+    {
+      "guardar.director": null,
+      "guardar.fecha": null,
+      "guardar.idUsuario": null,
+      "guardar.nombre": null,
+      "guardar.periodo": null,
+      "guardar.titulo": null
+    }
+  ]
+}

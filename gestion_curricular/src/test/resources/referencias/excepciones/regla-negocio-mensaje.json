@@ -1,0 +1,114 @@
+{
+  "directa con texto" : {
+    "excepcion" : "ReglaNegocioExcepcion",
+    "getMessage" : null,
+    "toString" : "co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion",
+    "formatException" : "GC-0004 - Violación a regla de negocio: regla rota",
+    "codigoError" : "GC-0004"
+  },
+  "directa sin texto" : {
+    "excepcion" : "ReglaNegocioExcepcion",
+    "getMessage" : null,
+    "toString" : "co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion",
+    "formatException" : "GC-0004 - Violación a regla de negocio: null",
+    "codigoError" : "GC-0004"
+  },
+  "archivos saveFile gateway regla" : {
+    "excepcion" : "ReglaNegocioExcepcion",
+    "getMessage" : null,
+    "toString" : "co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion",
+    "formatException" : "GC-0004 - Violación a regla de negocio: null",
+    "codigoError" : "GC-0004"
+  },
+  "archivos saveFile gateway io" : {
+    "excepcion" : "ReglaNegocioExcepcion",
+    "getMessage" : null,
+    "toString" : "co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion",
+    "formatException" : "GC-0004 - Violación a regla de negocio: disco lleno",
+    "codigoError" : "GC-0004"
+  },
+  "archivos saveFile organizado gateway regla" : {
+    "excepcion" : "ReglaNegocioExcepcion",
+    "getMessage" : null,
+    "toString" : "co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion",
+    "formatException" : "GC-0004 - Violación a regla de negocio: null",
+    "codigoError" : "GC-0004"
+  },
+  "archivos saveFile organizado gateway io" : {
+    "excepcion" : "ReglaNegocioExcepcion",
+    "getMessage" : null,
+    "toString" : "co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion",
+    "formatException" : "GC-0004 - Violación a regla de negocio: disco lleno",
+    "codigoError" : "GC-0004"
+  },
+  "archivos getFile gateway regla" : {
+    "excepcion" : "ReglaNegocioExcepcion",
+    "getMessage" : null,
+    "toString" : "co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion",
+    "formatException" : "GC-0004 - Violación a regla de negocio: null",
+    "codigoError" : "GC-0004"
+  },
+  "archivos getFile gateway io" : {
+    "excepcion" : "ReglaNegocioExcepcion",
+    "getMessage" : null,
+    "toString" : "co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion",
+    "formatException" : "GC-0004 - Violación a regla de negocio: disco lleno",
+    "codigoError" : "GC-0004"
+  },
+  "archivos getFileByPath gateway regla" : {
+    "excepcion" : "ReglaNegocioExcepcion",
+    "getMessage" : null,
+    "toString" : "co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion",
+    "formatException" : "GC-0004 - Violación a regla de negocio: null",
+    "codigoError" : "GC-0004"
+  },
+  "archivos getFileByPath gateway io" : {
+    "excepcion" : "ReglaNegocioExcepcion",
+    "getMessage" : null,
+    "toString" : "co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion",
+    "formatException" : "GC-0004 - Violación a regla de negocio: disco lleno",
+    "codigoError" : "GC-0004"
+  },
+  "archivos moverArchivoAOrganizado gateway regla" : {
+    "excepcion" : "ReglaNegocioExcepcion",
+    "getMessage" : null,
+    "toString" : "co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion",
+    "formatException" : "GC-0004 - Violación a regla de negocio: null",
+    "codigoError" : "GC-0004"
+  },
+  "archivos moverArchivoAOrganizado gateway io" : {
+    "excepcion" : "ReglaNegocioExcepcion",
+    "getMessage" : null,
+    "toString" : "co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion",
+    "formatException" : "GC-0004 - Violación a regla de negocio: disco lleno",
+    "codigoError" : "GC-0004"
+  },
+  "archivos getFileAsPath gateway regla" : {
+    "excepcion" : "ReglaNegocioExcepcion",
+    "getMessage" : null,
+    "toString" : "co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion",
+    "formatException" : "GC-0004 - Violación a regla de negocio: null",
+    "codigoError" : "GC-0004"
+  },
+  "archivos getFileAsPath gateway io" : {
+    "excepcion" : "ReglaNegocioExcepcion",
+    "getMessage" : null,
+    "toString" : "co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion",
+    "formatException" : "GC-0004 - Violación a regla de negocio: disco lleno",
+    "codigoError" : "GC-0004"
+  },
+  "archivos getFileByPathAsPath gateway regla" : {
+    "excepcion" : "ReglaNegocioExcepcion",
+    "getMessage" : null,
+    "toString" : "co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion",
+    "formatException" : "GC-0004 - Violación a regla de negocio: null",
+    "codigoError" : "GC-0004"
+  },
+  "archivos getFileByPathAsPath gateway io" : {
+    "excepcion" : "ReglaNegocioExcepcion",
+    "getMessage" : null,
+    "toString" : "co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion",
+    "formatException" : "GC-0004 - Violación a regla de negocio: disco lleno",
+    "codigoError" : "GC-0004"
+  }
+}

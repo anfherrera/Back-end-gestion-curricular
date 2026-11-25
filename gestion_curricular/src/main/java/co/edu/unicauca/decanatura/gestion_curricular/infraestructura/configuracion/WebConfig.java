@@ -1,5 +1,8 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.configuracion;
 
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,9 +12,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 /**
  * Configuración de CORS y codificación UTF-8 para permitir peticiones desde el frontend

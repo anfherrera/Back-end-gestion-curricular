@@ -1,0 +1,76 @@
+{
+  "/GET ~1obtenerDocumentos~1{completa-con-guion}/estado": 404,
+  "/GET ~1obtenerDocumentos~1{completa-con-guion}/cuerpo": {
+    "codigoError": "GC-0404",
+    "codigoHttp": 404,
+    "mensaje": "El recurso solicitado no existe",
+    "metodo": "GET",
+    "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/{completa-con-guion}"
+  },
+  "/GET ~1obtenerDocumentos~1{variantes-de-nombre}/estado": 404,
+  "/GET ~1obtenerDocumentos~1{variantes-de-nombre}/cuerpo": {
+    "codigoError": "GC-0404",
+    "codigoHttp": 404,
+    "mensaje": "El recurso solicitado no existe",
+    "metodo": "GET",
+    "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/{variantes-de-nombre}"
+  },
+  "/GET ~1obtenerDocumentos~1{formato-con-guion-bajo}/estado": 404,
+  "/GET ~1obtenerDocumentos~1{formato-con-guion-bajo}/cuerpo": {
+    "codigoError": "GC-0404",
+    "codigoHttp": 404,
+    "mensaje": "El recurso solicitado no existe",
+    "metodo": "GET",
+    "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/{formato-con-guion-bajo}"
+  },
+  "/GET ~1obtenerDocumentos~1{sin-documentos}/estado": 404,
+  "/GET ~1obtenerDocumentos~1{sin-documentos}/cuerpo": {
+    "codigoError": "GC-0404",
+    "codigoHttp": 404,
+    "mensaje": "El recurso solicitado no existe",
+    "metodo": "GET",
+    "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/{sin-documentos}"
+  },
+  "/GET ~1obtenerDocumentos~1{nombre-nulo}/estado": 404,
+  "/GET ~1obtenerDocumentos~1{nombre-nulo}/cuerpo": {
+    "codigoError": "GC-0404",
+    "codigoHttp": 404,
+    "mensaje": "El recurso solicitado no existe",
+    "metodo": "GET",
+    "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/{nombre-nulo}"
+  },
+  "/GET ~1obtenerDocumentos~1{rechazos-ultimo-sin-comentario}/estado": 404,
+  "/GET ~1obtenerDocumentos~1{rechazos-ultimo-sin-comentario}/cuerpo": {
+    "codigoError": "GC-0404",
+    "codigoHttp": 404,
+    "mensaje": "El recurso solicitado no existe",
+    "metodo": "GET",
+    "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/{rechazos-ultimo-sin-comentario}"
+  },
+  "/GET ~1obtenerDocumentos~1{rechazos-con-comentario}/estado": 404,
+  "/GET ~1obtenerDocumentos~1{rechazos-con-comentario}/cuerpo": {
+    "codigoError": "GC-0404",
+    "codigoHttp": 404,
+    "mensaje": "El recurso solicitado no existe",
+    "metodo": "GET",
+    "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/{rechazos-con-comentario}"
+  },
+  "/GET ~1obtenerDocumentos~1{sin-comentarios}/estado": 404,
+  "/GET ~1obtenerDocumentos~1{sin-comentarios}/cuerpo": {
+    "codigoError": "GC-0404",
+    "codigoHttp": 404,
+    "mensaje": "El recurso solicitado no existe",
+    "metodo": "GET",
+    "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/{sin-comentarios}"
+  },
+  "/GET ~1obtenerDocumentos~1{inexistente}/cuerpo/codigoError": "GC-0404",
+  "/GET ~1obtenerDocumentos~1{inexistente}/cuerpo/mensaje": "El recurso solicitado no existe",
+  "/GET ~1obtenerDocumentos~1{completa-con-guion} [dueno]/estado": 404,
+  "/GET ~1obtenerDocumentos~1{completa-con-guion} [dueno]/cuerpo": {
+    "codigoError": "GC-0404",
+    "codigoHttp": 404,
+    "mensaje": "El recurso solicitado no existe",
+    "metodo": "GET",
+    "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/{completa-con-guion}"
+  }
+}

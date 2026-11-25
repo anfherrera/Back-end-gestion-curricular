@@ -1,13 +1,14 @@
 package co.edu.unicauca.decanatura.gestion_curricular.pazysalvo;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.io.ByteArrayInputStream;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,8 +21,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 /**
  * ============================================================
@@ -193,7 +198,7 @@ class PazYSalvoAceptacionTest {
             }
             """;
 
-        mockMvc.perform(post("/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo")
+        mockMvc.perform(post("/api/solicitudes-pazysalvo")
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonSolicitud))
@@ -220,39 +225,17 @@ class PazYSalvoAceptacionTest {
         
         // La solicitud llega al coordinador después de que el funcionario la aprueba
         int id = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA_FUNCIONARIO"));
 
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenCoordinador, id, "APROBADA_COORDINADOR"));
     }
 
     // ==================== CA-GEPA4-03: SISTEMA GENERA DOCUMENTO OFICIAL ====================
 
-    @Test
-    @DisplayName("CA-GEPA4-03: Como secretaria quiero generar documento PDF para entregarlo al estudiante")
-    void testSistemaGeneraDocumentoPDF() throws Exception {
-        /*
-         * GIVEN: Una solicitud de Paz y Salvo aprobada
-         *        AND todos los funcionarios han validado la solicitud
-         *        AND el estudiante cumple con todos los requisitos
-         * 
-         * WHEN: La secretaria solicita generar el documento en formato PDF
-         * 
-         * THEN: El sistema debe generar un documento PDF válido
-         *       AND debe incluir todos los datos del estudiante
-         *       AND debe incluir firma digital o espacio para firma
-         *       AND debe tener formato oficial de la universidad
-         *       AND debe retornar el archivo con Content-Type application/pdf
-         *       AND debe sugerir nombre de archivo descriptivo
-         */
-        
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/pdf")
-                        .header("Authorization", tokenSecretaria))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF))
-                .andExpect(header().string("Content-Disposition", "attachment; filename=\"PazYSalvo_37.pdf\""));
-    }
+    // El documento por defecto en PDF y DOCX (/generarDocumentoPazYSalvo/{id}/pdf|docx) se retiró en EST-7, paso 7a:
+    // el frontend no lo usaba. La secretaría genera el documento Word con número y fecha.
 
     @Test
     @DisplayName("CA-GEPA4-03.1: Como secretaria quiero generar documento DOCX para editarlo si es necesario")
@@ -260,19 +243,39 @@ class PazYSalvoAceptacionTest {
         /*
          * GIVEN: Una solicitud de Paz y Salvo que requiere ajustes manuales
          *        AND la secretaria tiene permiso para editar documentos
-         * 
+         *
          * WHEN: La secretaria solicita generar el documento en formato DOCX
-         * 
+         *
          * THEN: El sistema debe generar un documento Word editable
          *       AND debe retornar el archivo con Content-Type correcto
          *       AND debe permitir edición posterior en Microsoft Word
          */
-        
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/docx")
+
+        byte[] docx = mockMvc.perform(post("/api/solicitudes-pazysalvo/37/documento-generado")
+                        .param("numeroDocumento", "PYS-37")
+                        .param("fechaDocumento", "2025-03-01")
                         .header("Authorization", tokenSecretaria))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_OCTET_STREAM))
-                .andExpect(header().string("Content-Disposition", "attachment; filename=\"PazYSalvo_37.docx\""));
+                .andReturn().getResponse().getContentAsByteArray();
+        try (var documento = new XWPFDocument(new ByteArrayInputStream(docx))) {
+            assertThat(documento.getParagraphs()).anySatisfy(parrafo ->
+                    assertThat(parrafo.getText()).contains("Juan Pérez"));
+        }
+    }
+
+    @Test
+    void generarDocumentoEsDelPersonalYDevuelve404SiNoExiste() throws Exception {
+        mockMvc.perform(post("/api/solicitudes-pazysalvo/37/documento-generado")
+                        .param("numeroDocumento", "PYS-37")
+                        .param("fechaDocumento", "2025-03-01")
+                        .header("Authorization", tokenEstudiante))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(post("/api/solicitudes-pazysalvo/999999/documento-generado")
+                        .param("numeroDocumento", "PYS-1")
+                        .param("fechaDocumento", "2025-03-01")
+                        .header("Authorization", tokenSecretaria))
+                .andExpect(status().isNotFound());
     }
 
     // ==================== CA-GEPA4-04: ESTUDIANTE SOLO VE SUS PROPIAS SOLICITUDES ====================
@@ -294,14 +297,14 @@ class PazYSalvoAceptacionTest {
         
         // El estudiante autenticado ve sus propias solicitudes
         int idEstudiante = SoportePazYSalvo.idUsuario(usuarioRepository, ESTUDIANTE_EMAIL);
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/" + idEstudiante)
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/usuarios/" + idEstudiante + "/solicitudes")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // AND no puede ver las de otro usuario
         int idCoordinador = SoportePazYSalvo.idUsuario(usuarioRepository, COORDINADOR_EMAIL);
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/" + idCoordinador)
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/usuarios/" + idCoordinador + "/solicitudes")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isForbidden());
     }
@@ -332,7 +335,7 @@ class PazYSalvoAceptacionTest {
             }
             """;
 
-        mockMvc.perform(post("/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo")
+        mockMvc.perform(post("/api/solicitudes-pazysalvo")
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonInvalido))
@@ -356,7 +359,7 @@ class PazYSalvoAceptacionTest {
          *       AND debe retornar código HTTP 200 (OK)
          */
         
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Coordinador")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=coordinador&bandeja=pendientes")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -375,7 +378,7 @@ class PazYSalvoAceptacionTest {
          *       AND debe excluir solicitudes que no corresponden a su rol
          */
         
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Funcionario")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=funcionario&bandeja=pendientes")
                         .header("Authorization", tokenFuncionario))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -403,7 +406,7 @@ class PazYSalvoAceptacionTest {
             }
             """;
 
-        mockMvc.perform(put("/api/solicitudes-pazysalvo/cambiarEstadoSolicitud/999")
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/999/estado")
                         .header("Authorization", tokenCoordinador)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCambioEstado))
@@ -419,14 +422,14 @@ class PazYSalvoAceptacionTest {
          * GIVEN: Una solicitud de Paz y Salvo que ha pasado por múltiples estados
          *        AND múltiples funcionarios han interactuado con la solicitud
          * 
-         * WHEN: Un auditor consulta el listado completo de solicitudes
-         * 
+         * WHEN: Un auditor consulta el historial de las solicitudes que procesó un rol
+         *
          * THEN: El sistema debe retornar toda la información de trazabilidad
          *       AND debe incluir fechas de cada cambio de estado
          *       AND debe mantener registro de todos los estados anteriores
          */
-        
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo")
+
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=funcionario&bandeja=procesadas")
                         .header("Authorization", tokenFuncionario))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));

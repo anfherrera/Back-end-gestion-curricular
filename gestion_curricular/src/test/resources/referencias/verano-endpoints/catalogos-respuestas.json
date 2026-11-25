@@ -1,0 +1,261 @@
+{
+  "/materias-disponibles con datos" : {
+    "status" : 200,
+    "body" : [ {
+      "descripcion" : "Cálculo (MAT1) - 4 creditos",
+      "codigo" : "MAT1",
+      "id_materia" : 1,
+      "creditos" : 4,
+      "nombre" : "Cálculo"
+    }, {
+      "descripcion" : "Física (FIS2) - 3 creditos",
+      "codigo" : "FIS2",
+      "id_materia" : 2,
+      "creditos" : 3,
+      "nombre" : "Física"
+    }, {
+      "descripcion" : "null (null) - null creditos",
+      "codigo" : null,
+      "id_materia" : 3,
+      "creditos" : null,
+      "nombre" : null
+    } ],
+    "claves" : [ "[0].descripcion:STRING", "[0].codigo:STRING", "[0].id_materia:NUMBER", "[0].creditos:NUMBER", "[0].nombre:STRING", "[1].descripcion:STRING", "[1].codigo:STRING", "[1].id_materia:NUMBER", "[1].creditos:NUMBER", "[1].nombre:STRING", "[2].descripcion:STRING", "[2].codigo:NULL", "[2].id_materia:NUMBER", "[2].creditos:NULL", "[2].nombre:NULL" ]
+  },
+  "/materias con datos" : {
+    "status" : 200,
+    "body" : [ {
+      "nombre_materia" : "Cálculo",
+      "codigo_materia" : "MAT1",
+      "id_materia" : 1,
+      "creditos" : 4
+    }, {
+      "nombre_materia" : "Física",
+      "codigo_materia" : "FIS2",
+      "id_materia" : 2,
+      "creditos" : 3
+    }, {
+      "nombre_materia" : null,
+      "codigo_materia" : null,
+      "id_materia" : 3,
+      "creditos" : null
+    } ],
+    "claves" : [ "[0].nombre_materia:STRING", "[0].codigo_materia:STRING", "[0].id_materia:NUMBER", "[0].creditos:NUMBER", "[1].nombre_materia:STRING", "[1].codigo_materia:STRING", "[1].id_materia:NUMBER", "[1].creditos:NUMBER", "[2].nombre_materia:NULL", "[2].codigo_materia:NULL", "[2].id_materia:NUMBER", "[2].creditos:NULL" ]
+  },
+  "/materias-filtro con datos" : {
+    "status" : 200,
+    "body" : [ {
+      "codigo" : "TODAS",
+      "id" : 0,
+      "nombre" : "Todas las materias"
+    }, {
+      "codigo" : "MAT1",
+      "id" : 1,
+      "nombre" : "Cálculo"
+    }, {
+      "codigo" : "FIS2",
+      "id" : 2,
+      "nombre" : "Física"
+    }, {
+      "codigo" : null,
+      "id" : 3,
+      "nombre" : null
+    } ],
+    "claves" : [ "[0].codigo:STRING", "[0].id:NUMBER", "[0].nombre:STRING", "[1].codigo:STRING", "[1].id:NUMBER", "[1].nombre:STRING", "[2].codigo:STRING", "[2].id:NUMBER", "[2].nombre:STRING", "[3].codigo:NULL", "[3].id:NUMBER", "[3].nombre:NULL" ]
+  },
+  "/salones con datos" : {
+    "status" : 200,
+    "body" : [ {
+      "id_salon" : 4,
+      "descripcion" : "null - Ing",
+      "numero_salon" : null,
+      "edificio" : "Ing",
+      "activo" : true
+    }, {
+      "id_salon" : 3,
+      "descripcion" : "221",
+      "numero_salon" : "221",
+      "edificio" : "  ",
+      "activo" : false
+    }, {
+      "id_salon" : 1,
+      "descripcion" : "305 - FIET",
+      "numero_salon" : "305",
+      "edificio" : "FIET",
+      "activo" : true
+    }, {
+      "id_salon" : 5,
+      "descripcion" : "Aula A - Salud",
+      "numero_salon" : "Aula A",
+      "edificio" : "Salud",
+      "activo" : true
+    }, {
+      "id_salon" : 2,
+      "descripcion" : "aula b",
+      "numero_salon" : "aula b",
+      "edificio" : "Sin especificar",
+      "activo" : true
+    } ],
+    "claves" : [ "[0].id_salon:NUMBER", "[0].descripcion:STRING", "[0].numero_salon:NULL", "[0].edificio:STRING", "[0].activo:BOOLEAN", "[1].id_salon:NUMBER", "[1].descripcion:STRING", "[1].numero_salon:STRING", "[1].edificio:STRING", "[1].activo:BOOLEAN", "[2].id_salon:NUMBER", "[2].descripcion:STRING", "[2].numero_salon:STRING", "[2].edificio:STRING", "[2].activo:BOOLEAN", "[3].id_salon:NUMBER", "[3].descripcion:STRING", "[3].numero_salon:STRING", "[3].edificio:STRING", "[3].activo:BOOLEAN", "[4].id_salon:NUMBER", "[4].descripcion:STRING", "[4].numero_salon:STRING", "[4].edificio:STRING", "[4].activo:BOOLEAN" ]
+  },
+  "/docentes con datos" : {
+    "status" : 200,
+    "body" : [ {
+      "id_usuario" : 1,
+      "codigo_docente" : "D01",
+      "nombre_docente" : "Ana",
+      "id_docente" : 1,
+      "codigo_usuario" : "D01",
+      "nombre_usuario" : "Ana"
+    }, {
+      "id_usuario" : 9,
+      "codigo_docente" : null,
+      "nombre_docente" : null,
+      "id_docente" : 9,
+      "codigo_usuario" : null,
+      "nombre_usuario" : null
+    } ],
+    "claves" : [ "[0].id_usuario:NUMBER", "[0].codigo_docente:STRING", "[0].nombre_docente:STRING", "[0].id_docente:NUMBER", "[0].codigo_usuario:STRING", "[0].nombre_usuario:STRING", "[1].id_usuario:NUMBER", "[1].codigo_docente:NULL", "[1].nombre_docente:NULL", "[1].id_docente:NUMBER", "[1].codigo_usuario:NULL", "[1].nombre_usuario:NULL" ]
+  },
+  "/materias-disponibles vacio" : {
+    "status" : 200,
+    "body" : [ ],
+    "claves" : [ ]
+  },
+  "/materias vacio" : {
+    "status" : 200,
+    "body" : [ ],
+    "claves" : [ ]
+  },
+  "/materias-filtro vacio" : {
+    "status" : 200,
+    "body" : [ {
+      "codigo" : "TODAS",
+      "id" : 0,
+      "nombre" : "Todas las materias"
+    } ],
+    "claves" : [ "[0].codigo:STRING", "[0].id:NUMBER", "[0].nombre:STRING" ]
+  },
+  "/salones vacio" : {
+    "status" : 200,
+    "body" : [ ],
+    "claves" : [ ]
+  },
+  "/docentes vacio" : {
+    "status" : 200,
+    "body" : [ ],
+    "claves" : [ ]
+  },
+  "/docentes nulo" : {
+    "status" : 200,
+    "body" : [ ],
+    "claves" : [ ]
+  },
+  "/materias-disponibles falla" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-intersemestrales/materias-disponibles",
+      "metodo" : "GET"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "/materias falla" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-intersemestrales/materias",
+      "metodo" : "GET"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "/materias-filtro falla" : {
+    "status" : 200,
+    "body" : [ {
+      "codigo" : "TODAS",
+      "id" : 0,
+      "nombre" : "Todas las materias"
+    } ],
+    "claves" : [ "[0].codigo:STRING", "[0].id:NUMBER", "[0].nombre:STRING" ]
+  },
+  "/salones falla" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-intersemestrales/salones",
+      "metodo" : "GET"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "/docentes falla" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-intersemestrales/docentes",
+      "metodo" : "GET"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "permisos Borrador FUNCIONARIO" : {
+    "status" : 200,
+    "body" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol FUNCIONARIO no puede realizar la operacion 'consultar_permisos' en el estado Borrador"
+    },
+    "claves" : [ ".permitido:BOOLEAN", ".error:STRING", ".message:STRING" ]
+  },
+  "permisos Borrador ESTUDIANTE" : {
+    "status" : 200,
+    "body" : {
+      "permitido" : false,
+      "error" : "Sin permisos",
+      "message" : "Este rol no tiene permisos para realizar operaciones en el estado: Borrador"
+    },
+    "claves" : [ ".permitido:BOOLEAN", ".error:STRING", ".message:STRING" ]
+  },
+  "permisos Cerrado ESTUDIANTE" : {
+    "status" : 200,
+    "body" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol ESTUDIANTE no puede realizar la operacion 'consultar_permisos' en el estado Cerrado"
+    },
+    "claves" : [ ".permitido:BOOLEAN", ".error:STRING", ".message:STRING" ]
+  },
+  "permisos Publicado ADMIN" : {
+    "status" : 200,
+    "body" : {
+      "permitido" : false,
+      "error" : "Rol no valido",
+      "message" : "No se encontraron permisos para el rol: ADMIN"
+    },
+    "claves" : [ ".permitido:BOOLEAN", ".error:STRING", ".message:STRING" ]
+  },
+  "permisos Desconocido FUNCIONARIO" : {
+    "status" : 200,
+    "body" : {
+      "permitido" : false,
+      "error" : "Estado desconocido",
+      "message" : "No se pueden determinar permisos para el estado: Desconocido"
+    },
+    "claves" : [ ".permitido:BOOLEAN", ".error:STRING", ".message:STRING" ]
+  },
+  "permisos Inscripcion COORDINADOR" : {
+    "status" : 200,
+    "body" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol COORDINADOR no puede realizar la operacion 'consultar_permisos' en el estado Inscripcion"
+    },
+    "claves" : [ ".permitido:BOOLEAN", ".error:STRING", ".message:STRING" ]
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "/~1api~1solicitudes-homologacion~1validarDocumentosRequeridos~1404": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-homologacion/validarDocumentosRequeridos/404",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "/~1api~1solicitudes-homologacion~1validarDocumentosRequeridos~11": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-homologacion/validarDocumentosRequeridos/1",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "/~1api~1solicitudes-homologacion~1validarDocumentosRequeridos~12": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-homologacion/validarDocumentosRequeridos/2",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "/~1api~1solicitudes-homologacion~1validarDocumentosRequeridos~13": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-homologacion/validarDocumentosRequeridos/3",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "/~1api~1solicitudes-homologacion~1validarDocumentosRequeridos~14": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-homologacion/validarDocumentosRequeridos/4",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "/~1api~1solicitudes-reingreso~1validarDocumentosRequeridos~1404": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/validarDocumentosRequeridos/404",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "/~1api~1solicitudes-reingreso~1validarDocumentosRequeridos~11": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/validarDocumentosRequeridos/1",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "/~1api~1solicitudes-reingreso~1validarDocumentosRequeridos~12": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/validarDocumentosRequeridos/2",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "/~1api~1solicitudes-reingreso~1validarDocumentosRequeridos~13": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/validarDocumentosRequeridos/3",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "/~1api~1solicitudes-reingreso~1validarDocumentosRequeridos~14": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/validarDocumentosRequeridos/4",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  }
+}

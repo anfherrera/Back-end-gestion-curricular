@@ -1,13 +1,10 @@
 package co.edu.unicauca.decanatura.gestion_curricular.cursosverano;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,8 +17,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 /**
  * ============================================================
@@ -127,6 +128,17 @@ class CursosVeranoAceptacionTest {
         });
     }
 
+    /** Estudiante propio de una prueba: un estudiante solo puede preinscribirse a sí mismo y una vez por curso. */
+    private record EstudiantePrueba(int id, String token) {}
+
+    private EstudiantePrueba estudiantePropio(String sufijo) throws Exception {
+        String correo = "estudiante." + sufijo + "@unicauca.edu.co";
+        ProgramaEntity programa = programaRepository.buscarPorCodigo(TEST_PROGRAMA_CODIGO).orElseThrow();
+        RolEntity rol = rolRepository.buscarPorNombre("Estudiante").orElseThrow();
+        crearUsuarioSiNoExiste(correo, "EP" + Math.abs(sufijo.hashCode() % 1_000_000), "Estudiante " + sufijo, rol, programa);
+        int id = usuarioRepository.buscarPorCorreo(correo).orElseThrow().getId_usuario();
+        return new EstudiantePrueba(id, "Bearer " + obtenerToken(correo));
+    }
     private String obtenerToken(String correo) throws Exception {
         String loginRequest = """
             {
@@ -163,7 +175,7 @@ class CursosVeranoAceptacionTest {
          *       AND cada curso debe incluir información relevante (materia, horario, docente, cupos)
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+        mockMvc.perform(get("/api/cursos-verano/cursos?disponibles=true")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -183,7 +195,7 @@ class CursosVeranoAceptacionTest {
          *       AND debe mostrar cupos disponibles y totales
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/1")
+        mockMvc.perform(get("/api/cursos-verano/cursos/1")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -209,16 +221,17 @@ class CursosVeranoAceptacionTest {
          *       AND debe decrementar el contador de cupos disponibles
          */
         
+        EstudiantePrueba estudiante = estudiantePropio("preinscripcion");
         String jsonPreinscripcion = """
             {
-                "idUsuario": 5,
+                "idUsuario": %d,
                 "idCurso": 1,
                 "fecha_solicitud": "2025-01-15"
             }
-            """;
+            """.formatted(estudiante.id());
 
-        mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
-                        .header("Authorization", tokenEstudiante)
+        mockMvc.perform(post("/api/cursos-verano/preinscripciones")
+                        .header("Authorization", estudiante.token())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPreinscripcion))
                 .andExpect(status().isCreated());
@@ -240,26 +253,7 @@ class CursosVeranoAceptacionTest {
          *       AND debe excluir cursos de otros periodos
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/periodo/2025-1")
-                        .header("Authorization", tokenCoordinador))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-    }
-
-    @Test
-    @DisplayName("CA-GCV5-03.1: Como coordinador quiero filtrar cursos por materia para analizar demanda")
-    void testCoordinadorPuedeFiltrarPorMateria() throws Exception {
-        /*
-         * GIVEN: Un coordinador evaluando demanda histórica
-         *        AND existen múltiples cursos de diferentes materias
-         * 
-         * WHEN: El coordinador filtra cursos por una materia específica
-         * 
-         * THEN: El sistema debe retornar todos los cursos de esa materia
-         *       AND debe incluir cursos de diferentes periodos si aplica
-         */
-        
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/materia/1")
+        mockMvc.perform(get("/api/cursos-verano/cursos?periodoAcademico=2025-1")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -290,7 +284,7 @@ class CursosVeranoAceptacionTest {
             }
             """;
 
-        mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
+        mockMvc.perform(post("/api/cursos-verano/preinscripciones")
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonInvalido))
@@ -315,7 +309,7 @@ class CursosVeranoAceptacionTest {
          *       AND debe mostrar estado actual de cada preinscripción
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/" + usuarioRepository.buscarPorCorreo(ESTUDIANTE_EMAIL).orElseThrow().getId_usuario())
+        mockMvc.perform(get("/api/cursos-verano/preinscripciones?usuario=" + usuarioRepository.buscarPorCorreo(ESTUDIANTE_EMAIL).orElseThrow().getId_usuario())
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -337,7 +331,7 @@ class CursosVeranoAceptacionTest {
          *       AND NO debe retornar error genérico del servidor
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/999")
+        mockMvc.perform(get("/api/cursos-verano/cursos/999")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isNotFound());
     }
@@ -358,7 +352,7 @@ class CursosVeranoAceptacionTest {
          *       AND la respuesta debe ser legible y bien estructurada
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+        mockMvc.perform(get("/api/cursos-verano/cursos?disponibles=true")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -384,33 +378,34 @@ class CursosVeranoAceptacionTest {
          */
         
         // Paso 1: Consultar cursos disponibles
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+        mockMvc.perform(get("/api/cursos-verano/cursos?disponibles=true")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
 
         // Paso 2: Ver detalles de curso específico
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/1")
+        mockMvc.perform(get("/api/cursos-verano/cursos/1")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.idCurso").value(1));
 
         // Paso 3: Preinscribirse
+        EstudiantePrueba estudiante = estudiantePropio("flujo-completo");
         String jsonPreinscripcion = """
             {
-                "idUsuario": 1,
+                "idUsuario": %d,
                 "idCurso": 1,
                 "fecha_solicitud": "2025-01-15"
             }
-            """;
+            """.formatted(estudiante.id());
 
-        mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
-                        .header("Authorization", tokenEstudiante)
+        mockMvc.perform(post("/api/cursos-verano/preinscripciones")
+                        .header("Authorization", estudiante.token())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPreinscripcion))
                 .andExpect(status().isCreated());
 
         // Paso 4: Consultar confirmación
-        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/" + usuarioRepository.buscarPorCorreo(ESTUDIANTE_EMAIL).orElseThrow().getId_usuario())
+        mockMvc.perform(get("/api/cursos-verano/preinscripciones?usuario=" + usuarioRepository.buscarPorCorreo(ESTUDIANTE_EMAIL).orElseThrow().getId_usuario())
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
     }

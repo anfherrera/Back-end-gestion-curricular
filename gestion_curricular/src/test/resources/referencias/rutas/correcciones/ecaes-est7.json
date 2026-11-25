@@ -1,0 +1,1384 @@
+{
+  "GET /api/solicitudes-ecaes [est5]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/solicitudes-ecaes",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 20,
+        "nombre_solicitud": "Solicitud ECAES 20",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 200,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null,
+        "tipoDocumento": "CC",
+        "numero_documento": "1020101220",
+        "fecha_expedicion": "2020-01-26T00:53:20.000+00:00",
+        "fecha_nacimiento": "2000-02-08T08:53:20.000+00:00"
+      },
+      {
+        "id_solicitud": 21,
+        "nombre_solicitud": "Solicitud ECAES 21",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 210,
+            "estado_actual": "PRE_REGISTRADO",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 6,
+          "nombre_completo": "Usuario 6",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null,
+        "tipoDocumento": "CC",
+        "numero_documento": "1020101221",
+        "fecha_expedicion": "2020-01-26T00:53:20.000+00:00",
+        "fecha_nacimiento": "2000-02-08T08:53:20.000+00:00"
+      }
+    ],
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/20 [est5]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_solicitud": 20,
+      "nombre_solicitud": "Solicitud ECAES 20",
+      "periodo_academico": "2025-1",
+      "fecha_ceremonia": null,
+      "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud": [
+        {
+          "id_estado": 200,
+          "estado_actual": "ENVIADA",
+          "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+          "comentario": null,
+          "objSolicitud": null
+        }
+      ],
+      "objUsuario": {
+        "id_usuario": 5,
+        "nombre_completo": "Usuario 5",
+        "rol": {
+          "id_rol": null,
+          "nombre": "Estudiante"
+        },
+        "codigo": null,
+        "cedula": null,
+        "correo": null,
+        "estado_usuario": false,
+        "objPrograma": null
+      },
+      "documentos": [],
+      "categoria": null,
+      "tipo_solicitud": null,
+      "tipoDocumento": "CC",
+      "numero_documento": "1020101220",
+      "fecha_expedicion": "2020-01-26T00:53:20.000+00:00",
+      "fecha_nacimiento": "2000-02-08T08:53:20.000+00:00"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/21 [est5]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/solicitudes-ecaes/21",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/21 [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_solicitud": 21,
+      "nombre_solicitud": "Solicitud ECAES 21",
+      "periodo_academico": "2025-1",
+      "fecha_ceremonia": null,
+      "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+      "estadosSolicitud": [
+        {
+          "id_estado": 210,
+          "estado_actual": "PRE_REGISTRADO",
+          "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+          "comentario": null,
+          "objSolicitud": null
+        }
+      ],
+      "objUsuario": {
+        "id_usuario": 6,
+        "nombre_completo": "Usuario 6",
+        "rol": {
+          "id_rol": null,
+          "nombre": "Estudiante"
+        },
+        "codigo": null,
+        "cedula": null,
+        "correo": null,
+        "estado_usuario": false,
+        "objPrograma": null
+      },
+      "documentos": [],
+      "categoria": null,
+      "tipo_solicitud": null,
+      "tipoDocumento": "CC",
+      "numero_documento": "1020101221",
+      "fecha_expedicion": "2020-01-26T00:53:20.000+00:00",
+      "fecha_nacimiento": "2000-02-08T08:53:20.000+00:00"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/99 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0003",
+      "mensaje": "Entidad no encontrada, Solicitud no encontrada con ID: 99",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/99",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/buscarFechasPorPeriodo/2025-1 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/buscarFechasPorPeriodo/2025-1",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/buscarFechasPorPeriodo/2030-1 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/buscarFechasPorPeriodo/2030-1",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/buscarSolicitud-Ecaes/20 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/buscarSolicitud-Ecaes/20",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/buscarSolicitud-Ecaes/21 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/buscarSolicitud-Ecaes/21",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/buscarSolicitud-Ecaes/21 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/buscarSolicitud-Ecaes/21",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/buscarSolicitud-Ecaes/99 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/buscarSolicitud-Ecaes/99",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/buscarSolicitud-Ecaes/abc [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/buscarSolicitud-Ecaes/abc",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/fechas [est5]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "idFechaEcaes": 2,
+        "periodoAcademico": "2025-1",
+        "inscripcion_est_by_facultad": "2025-02-01",
+        "registro_recaudo_ordinario": "2025-02-10",
+        "registro_recaudo_extraordinario": "2025-02-20",
+        "citacion": "2025-03-01",
+        "aplicacion": "2025-03-15",
+        "resultados_individuales": "2025-04-30"
+      }
+    ],
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/fechas/2025-1 [est5]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "idFechaEcaes": 2,
+      "periodoAcademico": "2025-1",
+      "inscripcion_est_by_facultad": "2025-02-01",
+      "registro_recaudo_ordinario": "2025-02-10",
+      "registro_recaudo_extraordinario": "2025-02-20",
+      "citacion": "2025-03-01",
+      "aplicacion": "2025-03-15",
+      "resultados_individuales": "2025-04-30"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/fechas/2030-1 [est5]": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/listarFechasEcaes [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/listarFechasEcaes",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=COORDINADOR [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=ESTUDIANTE [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=ESTUDIANTE&idUsuario=6 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=ESTUDIANTE&periodoAcademico=2025-1 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=FUNCIONARIO [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=FUNCIONARIO [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=FUNCIONARIO&periodoAcademico=2025-1 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=OTRO [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/listarSolicitudes-Ecaes [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/listarSolicitudes-Ecaes",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/listarSolicitudes-Ecaes [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/listarSolicitudes-Ecaes",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario?periodoAcademico=2025-1 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes?bandeja=pendientes [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "Filtro no válido: use rol, o rol=funcionario&bandeja=pendientes",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/solicitudes-ecaes",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes?rol=COORDINADOR [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 20,
+        "nombre_solicitud": "Solicitud ECAES 20",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 200,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null,
+        "tipoDocumento": "CC",
+        "numero_documento": "1020101220",
+        "fecha_expedicion": "2020-01-26T00:53:20.000+00:00",
+        "fecha_nacimiento": "2000-02-08T08:53:20.000+00:00"
+      }
+    ],
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Coordinador, idPrograma=null, periodo=<ACTUAL>, idUsuario=null, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-ecaes?rol=ESTUDIANTE [est5]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 20,
+        "nombre_solicitud": "Solicitud ECAES 20",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 200,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null,
+        "tipoDocumento": "CC",
+        "numero_documento": "1020101220",
+        "fecha_expedicion": "2020-01-26T00:53:20.000+00:00",
+        "fecha_nacimiento": "2000-02-08T08:53:20.000+00:00"
+      }
+    ],
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Estudiante, idPrograma=null, periodo=<ACTUAL>, idUsuario=5, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-ecaes?rol=ESTUDIANTE&idUsuario=6 [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 20,
+        "nombre_solicitud": "Solicitud ECAES 20",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 200,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null,
+        "tipoDocumento": "CC",
+        "numero_documento": "1020101220",
+        "fecha_expedicion": "2020-01-26T00:53:20.000+00:00",
+        "fecha_nacimiento": "2000-02-08T08:53:20.000+00:00"
+      }
+    ],
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Estudiante, idPrograma=null, periodo=<ACTUAL>, idUsuario=6, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-ecaes?rol=ESTUDIANTE&periodoAcademico=2025-1 [est5]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 20,
+        "nombre_solicitud": "Solicitud ECAES 20",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 200,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null,
+        "tipoDocumento": "CC",
+        "numero_documento": "1020101220",
+        "fecha_expedicion": "2020-01-26T00:53:20.000+00:00",
+        "fecha_nacimiento": "2000-02-08T08:53:20.000+00:00"
+      }
+    ],
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Estudiante, idPrograma=null, periodo=2025-1, idUsuario=5, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-ecaes?rol=FUNCIONARIO [est5]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 20,
+        "nombre_solicitud": "Solicitud ECAES 20",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 200,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null,
+        "tipoDocumento": "CC",
+        "numero_documento": "1020101220",
+        "fecha_expedicion": "2020-01-26T00:53:20.000+00:00",
+        "fecha_nacimiento": "2000-02-08T08:53:20.000+00:00"
+      }
+    ],
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Estudiante, idPrograma=null, periodo=<ACTUAL>, idUsuario=5, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-ecaes?rol=FUNCIONARIO [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 21,
+        "nombre_solicitud": "Solicitud ECAES 21",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 210,
+            "estado_actual": "PRE_REGISTRADO",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 6,
+          "nombre_completo": "Usuario 6",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null,
+        "tipoDocumento": "CC",
+        "numero_documento": "1020101221",
+        "fecha_expedicion": "2020-01-26T00:53:20.000+00:00",
+        "fecha_nacimiento": "2000-02-08T08:53:20.000+00:00"
+      }
+    ],
+    "llamadas": [
+      {
+        "listarSolicitudesPorRol": "FUNCIONARIO, null"
+      }
+    ]
+  },
+  "GET /api/solicitudes-ecaes?rol=FUNCIONARIO&periodoAcademico=2025-1 [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 21,
+        "nombre_solicitud": "Solicitud ECAES 21",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 210,
+            "estado_actual": "PRE_REGISTRADO",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 6,
+          "nombre_completo": "Usuario 6",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null,
+        "tipoDocumento": "CC",
+        "numero_documento": "1020101221",
+        "fecha_expedicion": "2020-01-26T00:53:20.000+00:00",
+        "fecha_nacimiento": "2000-02-08T08:53:20.000+00:00"
+      }
+    ],
+    "llamadas": [
+      {
+        "listarSolicitudesPorRol": "FUNCIONARIO, null"
+      }
+    ]
+  },
+  "GET /api/solicitudes-ecaes?rol=OTRO [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 21,
+        "nombre_solicitud": "Solicitud ECAES 21",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 210,
+            "estado_actual": "PRE_REGISTRADO",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 6,
+          "nombre_completo": "Usuario 6",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null,
+        "tipoDocumento": "CC",
+        "numero_documento": "1020101221",
+        "fecha_expedicion": "2020-01-26T00:53:20.000+00:00",
+        "fecha_nacimiento": "2000-02-08T08:53:20.000+00:00"
+      }
+    ],
+    "llamadas": [
+      {
+        "listarSolicitudesPorRol": "OTRO, null"
+      }
+    ]
+  },
+  "GET /api/solicitudes-ecaes?rol=coordinador&bandeja=pendientes [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "Rol no válido para la bandeja de pendientes: use funcionario",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/solicitudes-ecaes",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes?rol=funcionario&bandeja=pendientes [est5]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/solicitudes-ecaes",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes-ecaes?rol=funcionario&bandeja=pendientes [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 20,
+        "nombre_solicitud": "Solicitud ECAES 20",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 200,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null,
+        "tipoDocumento": "CC",
+        "numero_documento": "1020101220",
+        "fecha_expedicion": "2020-01-26T00:53:20.000+00:00",
+        "fecha_nacimiento": "2000-02-08T08:53:20.000+00:00"
+      }
+    ],
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Funcionario, idPrograma=null, periodo=<ACTUAL>, idUsuario=null, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-ecaes?rol=funcionario&bandeja=pendientes&periodoAcademico=2025-1 [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 20,
+        "nombre_solicitud": "Solicitud ECAES 20",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 200,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null,
+        "tipoDocumento": "CC",
+        "numero_documento": "1020101220",
+        "fecha_expedicion": "2020-01-26T00:53:20.000+00:00",
+        "fecha_nacimiento": "2000-02-08T08:53:20.000+00:00"
+      }
+    ],
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Funcionario, idPrograma=null, periodo=2025-1, idUsuario=null, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-ecaes?rol=funcionario&bandeja=procesadas [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "Bandeja no válida: use pendientes",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/solicitudes-ecaes",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "POST /api/solicitudes-ecaes {\"nombre_solicitud\":\"Solicitud de ECAES\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"tipoDocumento\":\"CC\",\"numero_documento\":\"1020101234\",\"fecha_expedicion\":\"2020-01-15T00:00:00.000Z\",\"fecha_nacimiento\":\"2000-05-20T00:00:00.000Z\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [admin]": {
+    "status": 201,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_solicitud": 30,
+      "nombre_solicitud": "Solicitud de ECAES",
+      "periodo_academico": null,
+      "fecha_ceremonia": null,
+      "fecha_registro_solicitud": "2025-01-19T00:00:00.000+00:00",
+      "estadosSolicitud": [],
+      "objUsuario": {
+        "id_usuario": 6,
+        "nombre_completo": "Usuario 6",
+        "rol": null,
+        "codigo": "102010",
+        "cedula": null,
+        "correo": "est6@unicauca.edu.co",
+        "estado_usuario": false,
+        "objPrograma": null
+      },
+      "documentos": [],
+      "categoria": null,
+      "tipo_solicitud": null,
+      "tipoDocumento": "CC",
+      "numero_documento": "1020101234",
+      "fecha_expedicion": "2020-01-15T00:00:00.000+00:00",
+      "fecha_nacimiento": "2000-05-20T00:00:00.000+00:00"
+    },
+    "llamadas": [
+      {
+        "guardar": "usuario 6, documento 1020101234, tipo CC"
+      }
+    ]
+  },
+  "POST /api/solicitudes-ecaes {\"nombre_solicitud\":\"Solicitud de ECAES\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"tipoDocumento\":\"CC\",\"numero_documento\":\"1020101234\",\"fecha_expedicion\":\"2020-01-15T00:00:00.000Z\",\"fecha_nacimiento\":\"2000-05-20T00:00:00.000Z\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [est5]": {
+    "status": 201,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_solicitud": 30,
+      "nombre_solicitud": "Solicitud de ECAES",
+      "periodo_academico": null,
+      "fecha_ceremonia": null,
+      "fecha_registro_solicitud": "2025-01-19T00:00:00.000+00:00",
+      "estadosSolicitud": [],
+      "objUsuario": {
+        "id_usuario": 5,
+        "nombre_completo": "Usuario 6",
+        "rol": null,
+        "codigo": "102010",
+        "cedula": null,
+        "correo": "est6@unicauca.edu.co",
+        "estado_usuario": false,
+        "objPrograma": null
+      },
+      "documentos": [],
+      "categoria": null,
+      "tipo_solicitud": null,
+      "tipoDocumento": "CC",
+      "numero_documento": "1020101234",
+      "fecha_expedicion": "2020-01-15T00:00:00.000+00:00",
+      "fecha_nacimiento": "2000-05-20T00:00:00.000+00:00"
+    },
+    "llamadas": [
+      {
+        "guardar": "usuario 5, documento 1020101234, tipo CC"
+      }
+    ]
+  },
+  "POST /api/solicitudes-ecaes {\"nombre_solicitud\":\"Solicitud de ECAES\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"tipoDocumento\":\"CC\",\"numero_documento\":\"1020101234\",\"fecha_expedicion\":\"2020-01-15T00:00:00.000Z\",\"fecha_nacimiento\":\"2000-05-20T00:00:00.000Z\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [funcionario]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/solicitudes-ecaes",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/solicitudes-ecaes {\"nombre_solicitud\":\"Solicitud de ECAES\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"tipoDocumento\":\"CC\",\"numero_documento\":\"123\",\"fecha_expedicion\":\"2020-01-15T00:00:00.000Z\",\"fecha_nacimiento\":\"2000-05-20T00:00:00.000Z\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [est5]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "numero_documento": "El número de documento debe tener entre 5 y 20 caracteres"
+    },
+    "llamadas": []
+  },
+  "POST /api/solicitudes-ecaes/crearSolicitud-Ecaes {\"nombre_solicitud\":\"Solicitud de ECAES\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"tipoDocumento\":\"CC\",\"numero_documento\":\"1020101234\",\"fecha_expedicion\":\"2020-01-15T00:00:00.000Z\",\"fecha_nacimiento\":\"2000-05-20T00:00:00.000Z\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [admin]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/crearSolicitud-Ecaes",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/solicitudes-ecaes/crearSolicitud-Ecaes {\"nombre_solicitud\":\"Solicitud de ECAES\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"tipoDocumento\":\"CC\",\"numero_documento\":\"1020101234\",\"fecha_expedicion\":\"2020-01-15T00:00:00.000Z\",\"fecha_nacimiento\":\"2000-05-20T00:00:00.000Z\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/crearSolicitud-Ecaes",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/solicitudes-ecaes/crearSolicitud-Ecaes {\"nombre_solicitud\":\"Solicitud de ECAES\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"tipoDocumento\":\"CC\",\"numero_documento\":\"1020101234\",\"fecha_expedicion\":\"2020-01-15T00:00:00.000Z\",\"fecha_nacimiento\":\"2000-05-20T00:00:00.000Z\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/crearSolicitud-Ecaes",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/solicitudes-ecaes/crearSolicitud-Ecaes {\"nombre_solicitud\":\"Solicitud de ECAES\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"tipoDocumento\":\"CC\",\"numero_documento\":\"123\",\"fecha_expedicion\":\"2020-01-15T00:00:00.000Z\",\"fecha_nacimiento\":\"2000-05-20T00:00:00.000Z\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/crearSolicitud-Ecaes",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/solicitudes-ecaes/fechas {\"periodoAcademico\":\"2025-1\",\"inscripcion_est_by_facultad\":\"2025-02-01\",\"registro_recaudo_ordinario\":\"2025-02-10\",\"registro_recaudo_extraordinario\":\"2025-02-20\",\"citacion\":\"2025-03-01\",\"aplicacion\":\"2025-03-15\",\"resultados_individuales\":\"2025-04-30\"} [est5]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/solicitudes-ecaes/fechas",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/solicitudes-ecaes/fechas {\"periodoAcademico\":\"2025-1\",\"inscripcion_est_by_facultad\":\"2025-02-01\",\"registro_recaudo_ordinario\":\"2025-02-10\",\"registro_recaudo_extraordinario\":\"2025-02-20\",\"citacion\":\"2025-03-01\",\"aplicacion\":\"2025-03-15\",\"resultados_individuales\":\"2025-04-30\"} [funcionario]": {
+    "status": 201,
+    "tipo": "application/json",
+    "cuerpo": {
+      "idFechaEcaes": 3,
+      "periodoAcademico": "2025-1",
+      "inscripcion_est_by_facultad": "2025-02-01",
+      "registro_recaudo_ordinario": "2025-02-10",
+      "registro_recaudo_extraordinario": "2025-02-20",
+      "citacion": "2025-03-01",
+      "aplicacion": "2025-03-15",
+      "resultados_individuales": "2025-04-30"
+    },
+    "llamadas": [
+      {
+        "publicarFechasEcaes": "2025-1, citacion 2025-03-01"
+      }
+    ]
+  },
+  "POST /api/solicitudes-ecaes/publicarFechasEcaes {\"periodoAcademico\":\"2025-1\",\"inscripcion_est_by_facultad\":\"2025-02-01\",\"registro_recaudo_ordinario\":\"2025-02-10\",\"registro_recaudo_extraordinario\":\"2025-02-20\",\"citacion\":\"2025-03-01\",\"aplicacion\":\"2025-03-15\",\"resultados_individuales\":\"2025-04-30\"} [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/publicarFechasEcaes",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/solicitudes-ecaes/publicarFechasEcaes {\"periodoAcademico\":\"2025-1\",\"inscripcion_est_by_facultad\":\"2025-02-01\",\"registro_recaudo_ordinario\":\"2025-02-10\",\"registro_recaudo_extraordinario\":\"2025-02-20\",\"citacion\":\"2025-03-01\",\"aplicacion\":\"2025-03-15\",\"resultados_individuales\":\"2025-04-30\"} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/publicarFechasEcaes",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-ecaes/20/estado {\"idSolicitud\":20,\"nuevoEstado\":\"APROBADA\"} [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "estadoActual": "ENVIADA",
+      "codigo": "TRANSICION_NO_PERMITIDA",
+      "error": "Estado no válido: 'APROBADA'. Estados permitidos: [ENVIADA, PRE_REGISTRADO, RECHAZADA]"
+    },
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-ecaes/20/estado {\"idSolicitud\":20,\"nuevoEstado\":\"PRE_REGISTRADO\"} [est5]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/solicitudes-ecaes/20/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-ecaes/20/estado {\"idSolicitud\":20,\"nuevoEstado\":\"PRE_REGISTRADO\"} [funcionario]": {
+    "status": 204,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": [
+      {
+        "cambiarEstadoSolicitud": "20 -> PRE_REGISTRADO"
+      }
+    ]
+  },
+  "PUT /api/solicitudes-ecaes/20/estado {\"idSolicitud\":21,\"nuevoEstado\":\"PRE_REGISTRADO\"} [funcionario]": {
+    "status": 204,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": [
+      {
+        "cambiarEstadoSolicitud": "20 -> PRE_REGISTRADO"
+      }
+    ]
+  },
+  "PUT /api/solicitudes-ecaes/20/estado {\"nuevoEstado\":\"PRE_REGISTRADO\"} [funcionario]": {
+    "status": 204,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": [
+      {
+        "cambiarEstadoSolicitud": "20 -> PRE_REGISTRADO"
+      }
+    ]
+  },
+  "PUT /api/solicitudes-ecaes/99/estado {\"nuevoEstado\":\"PRE_REGISTRADO\"} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0003",
+      "mensaje": "Entidad no encontrada, Solicitud no encontrada con ID: 99",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/99/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-ecaes/actualizarEstadoSolicitud {\"idSolicitud\":20,\"nuevoEstado\":\"APROBADA\"} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/actualizarEstadoSolicitud",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-ecaes/actualizarEstadoSolicitud {\"idSolicitud\":20,\"nuevoEstado\":\"PRE_REGISTRADO\"} [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/actualizarEstadoSolicitud",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-ecaes/actualizarEstadoSolicitud {\"idSolicitud\":20,\"nuevoEstado\":\"PRE_REGISTRADO\"} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/actualizarEstadoSolicitud",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-ecaes/actualizarFechasEcaes {\"periodoAcademico\":\"2025-1\",\"inscripcion_est_by_facultad\":\"2025-02-01\",\"registro_recaudo_ordinario\":\"2025-02-10\",\"registro_recaudo_extraordinario\":\"2025-02-20\",\"citacion\":\"2025-03-01\",\"aplicacion\":\"2025-03-15\",\"resultados_individuales\":\"2025-04-30\"} [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/actualizarFechasEcaes",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-ecaes/actualizarFechasEcaes {\"periodoAcademico\":\"2025-1\",\"inscripcion_est_by_facultad\":\"2025-02-01\",\"registro_recaudo_ordinario\":\"2025-02-10\",\"registro_recaudo_extraordinario\":\"2025-02-20\",\"citacion\":\"2025-03-01\",\"aplicacion\":\"2025-03-15\",\"resultados_individuales\":\"2025-04-30\"} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-ecaes/actualizarFechasEcaes",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-ecaes/fechas/2025-1 {\"periodoAcademico\":\"2025-1\",\"inscripcion_est_by_facultad\":\"2025-02-01\",\"registro_recaudo_ordinario\":\"2025-02-10\",\"registro_recaudo_extraordinario\":\"2025-02-20\",\"citacion\":\"2025-03-01\",\"aplicacion\":\"2025-03-15\",\"resultados_individuales\":\"2025-04-30\"} [est5]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/solicitudes-ecaes/fechas/2025-1",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-ecaes/fechas/2025-1 {\"periodoAcademico\":\"2025-1\",\"inscripcion_est_by_facultad\":\"2025-02-01\",\"registro_recaudo_ordinario\":\"2025-02-10\",\"registro_recaudo_extraordinario\":\"2025-02-20\",\"citacion\":\"2025-03-01\",\"aplicacion\":\"2025-03-15\",\"resultados_individuales\":\"2025-04-30\"} [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "idFechaEcaes": 2,
+      "periodoAcademico": "2025-1",
+      "inscripcion_est_by_facultad": "2025-02-01",
+      "registro_recaudo_ordinario": "2025-02-10",
+      "registro_recaudo_extraordinario": "2025-02-20",
+      "citacion": "2025-03-01",
+      "aplicacion": "2025-03-15",
+      "resultados_individuales": "2025-04-30"
+    },
+    "llamadas": [
+      {
+        "actualizarFechasEcaes": "2025-1, citacion 2025-03-01"
+      }
+    ]
+  },
+  "PUT /api/solicitudes-ecaes/fechas/2025-2 {\"periodoAcademico\":\"2025-1\",\"inscripcion_est_by_facultad\":\"2025-02-01\",\"registro_recaudo_ordinario\":\"2025-02-10\",\"registro_recaudo_extraordinario\":\"2025-02-20\",\"citacion\":\"2025-03-01\",\"aplicacion\":\"2025-03-15\",\"resultados_individuales\":\"2025-04-30\"} [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "idFechaEcaes": 2,
+      "periodoAcademico": "2025-2",
+      "inscripcion_est_by_facultad": "2025-02-01",
+      "registro_recaudo_ordinario": "2025-02-10",
+      "registro_recaudo_extraordinario": "2025-02-20",
+      "citacion": "2025-03-01",
+      "aplicacion": "2025-03-15",
+      "resultados_individuales": "2025-04-30"
+    },
+    "llamadas": [
+      {
+        "actualizarFechasEcaes": "2025-2, citacion 2025-03-01"
+      }
+    ]
+  }
+}

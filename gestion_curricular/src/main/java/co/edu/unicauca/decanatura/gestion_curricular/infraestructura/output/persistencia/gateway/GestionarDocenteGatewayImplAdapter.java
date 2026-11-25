@@ -3,15 +3,15 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import java.util.List;
 import java.util.Optional;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocenteGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocenteEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.DocenteRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.CatalogosMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.DocenteRepositoryInt;
 
 @Service
 @Transactional
@@ -19,43 +19,31 @@ public class GestionarDocenteGatewayImplAdapter implements GestionarDocenteGatew
 
     private final DocenteRepositoryInt docenteRepository;
     private final CursoOfertadoVeranoRepositoryInt cursoOfertadoRepository;
-    private final ModelMapper docenteMapper;
 
     public GestionarDocenteGatewayImplAdapter(DocenteRepositoryInt docenteRepository,
-                                               CursoOfertadoVeranoRepositoryInt cursoOfertadoRepository,
-                                               ModelMapper docenteMapper) {
+                                               CursoOfertadoVeranoRepositoryInt cursoOfertadoRepository) {
         this.docenteRepository = docenteRepository;
         this.cursoOfertadoRepository = cursoOfertadoRepository;
-        this.docenteMapper = docenteMapper;
     }
 
-    // Método original (compatibilidad)
-    @Override
-    @Transactional(readOnly = true)
-    public Docente buscarDocentePorId(Integer idDocente) {
-        return docenteRepository.findById(idDocente)
-                .map(entity -> docenteMapper.map(entity, Docente.class))
-                .orElse(null);
-    }
-    
     // Nuevos métodos CRUD
     @Override
     @Transactional
     public Docente guardarDocente(Docente docente) {
-        DocenteEntity docenteEntity = docenteMapper.map(docente, DocenteEntity.class);
+        DocenteEntity docenteEntity = CatalogosMapperPersistencia.aEntidad(docente);
         DocenteEntity savedEntity = docenteRepository.save(docenteEntity);
-        return docenteMapper.map(savedEntity, Docente.class);
+        return CatalogosMapperPersistencia.aDominio(savedEntity);
     }
     
     @Override
     @Transactional
     public Docente actualizarDocente(Docente docente) {
-        docenteRepository.findById(docente.getId_docente())
-            .orElseThrow(() -> new RuntimeException("Docente no encontrado con ID: " + docente.getId_docente()));
+        docenteRepository.findById(docente.getIdDocente())
+            .orElseThrow(() -> new RuntimeException("Docente no encontrado con ID: " + docente.getIdDocente()));
 
-        DocenteEntity docenteEntity = docenteMapper.map(docente, DocenteEntity.class);
+        DocenteEntity docenteEntity = CatalogosMapperPersistencia.aEntidad(docente);
         DocenteEntity savedEntity = docenteRepository.save(docenteEntity);
-        return docenteMapper.map(savedEntity, Docente.class);
+        return CatalogosMapperPersistencia.aDominio(savedEntity);
     }
 
     @Override
@@ -75,7 +63,7 @@ public class GestionarDocenteGatewayImplAdapter implements GestionarDocenteGatew
     public Docente obtenerDocentePorId(Integer idDocente) {
         Optional<DocenteEntity> docenteEntity = docenteRepository.findById(idDocente);
         if (docenteEntity.isPresent()) {
-            return docenteMapper.map(docenteEntity.get(), Docente.class);
+            return CatalogosMapperPersistencia.aDominio(docenteEntity.get());
         }
         return null;
     }
@@ -86,20 +74,9 @@ public class GestionarDocenteGatewayImplAdapter implements GestionarDocenteGatew
         Docente docenteRetornar = null;
         Optional<DocenteEntity> docenteEntity = docenteRepository.buscarPorCodigo(codigo);
         if (docenteEntity.isPresent()) {
-            docenteRetornar = docenteMapper.map(docenteEntity.get(), Docente.class);
+            docenteRetornar = CatalogosMapperPersistencia.aDominio(docenteEntity.get());
         }
         return docenteRetornar;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existeDocentePorCodigo(String codigo) {
-        boolean existe = false;
-        Optional<DocenteEntity> docenteEntity = docenteRepository.buscarPorCodigo(codigo);
-        if (docenteEntity.isPresent()) {
-            existe = true;
-        }
-        return existe;
     }
 
     @Override
@@ -109,7 +86,7 @@ public class GestionarDocenteGatewayImplAdapter implements GestionarDocenteGatew
         List<DocenteEntity> docentesEntity = docenteRepository.buscarPorNombreParcial(nombreParcial);
         if (docentesEntity != null) {
             docentesRetornar = docentesEntity.stream().map(docenteEntity -> {
-                return this.docenteMapper.map(docenteEntity, Docente.class);
+                return CatalogosMapperPersistencia.aDominio(docenteEntity);
             }).toList();
         }
         return docentesRetornar;
@@ -122,7 +99,7 @@ public class GestionarDocenteGatewayImplAdapter implements GestionarDocenteGatew
         List<DocenteEntity> docentesEntity = docenteRepository.findAll();
         if (docentesEntity != null) {
             docentesRetornar = docentesEntity.stream().map(docenteEntity -> {
-                return this.docenteMapper.map(docenteEntity, Docente.class);
+                return CatalogosMapperPersistencia.aDominio(docenteEntity);
             }).toList();
         }
         return docentesRetornar;
@@ -132,5 +109,11 @@ public class GestionarDocenteGatewayImplAdapter implements GestionarDocenteGatew
     @Transactional(readOnly = true)
     public boolean tieneCursosAsignados(Integer idDocente) {
         return !cursoOfertadoRepository.buscarPorDocente(idDocente).isEmpty();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existeDocentePorCodigo(String codigo) {
+        return docenteRepository.buscarPorCodigo(codigo).isPresent();
     }
 }

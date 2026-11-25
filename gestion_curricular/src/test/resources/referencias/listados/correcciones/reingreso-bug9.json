@@ -1,0 +1,8 @@
+{
+  "/GET ~1api~1solicitudes-reingreso~1listarSolicitud-Reingreso~1porUser?rol=SECRETARIA [staff.sin.programa]": [
+    "A/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "B/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "B/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR"
+  ]
+}

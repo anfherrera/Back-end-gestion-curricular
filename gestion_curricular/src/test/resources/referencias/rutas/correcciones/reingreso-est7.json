@@ -1,0 +1,2138 @@
+{
+  "GET /api/solicitudes-reingreso [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/solicitudes-reingreso",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/40/oficios [est5]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "nombreArchivo": "oficio_reingreso.pdf",
+        "ruta": "reingreso/40/oficio_reingreso.pdf",
+        "id": 40,
+        "nombre": "oficio_reingreso.pdf"
+      }
+    ],
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/40/oficios [est6]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/solicitudes-reingreso/40/oficios",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/40/oficios/archivo [est5]": {
+    "status": 200,
+    "tipo": "application/pdf",
+    "cuerpo": "PDF de reingreso/40/oficio_reingreso.pdf",
+    "disposicion": "attachment; filename=\"oficio_reingreso.pdf\"",
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/40/oficios/archivo [est6]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/solicitudes-reingreso/40/oficios/archivo",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/41/oficios [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [],
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/41/oficios/archivo [funcionario]": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null,
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/descargarOficio/40 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/descargarOficio/40",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/descargarOficio/40 [est6]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/descargarOficio/40",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/descargarOficio/41 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/descargarOficio/41",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreo/40 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreo/40",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreo/40 [est6]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreo/40",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreo/40 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreo/40",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador [coordinador]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador/Aprobadas [coordinador]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador/Aprobadas",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador/Aprobadas [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador/Aprobadas",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador/Aprobadas?periodoAcademico=2025-1 [coordinador]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador/Aprobadas",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador?periodoAcademico=2025-1 [coordinador]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario/Aprobadas [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario/Aprobadas",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario/Aprobadas?periodoAcademico=2025-1 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario/Aprobadas",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario/Aprobadas?periodoAcademico=todos [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario/Aprobadas",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario?periodoAcademico=2025-1 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Secretaria [secretaria]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Secretaria",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Secretaria/Aprobadas [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Secretaria/Aprobadas",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Secretaria/Aprobadas [secretaria]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Secretaria/Aprobadas",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Secretaria/Aprobadas?periodoAcademico=2025-1 [secretaria]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Secretaria/Aprobadas",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Secretaria?periodoAcademico=2025-1 [secretaria]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/Secretaria",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/porUser?rol=ESTUDIANTE&idUsuario=6 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/porUser",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/porUser?rol=ESTUDIANTE&idUsuario=6&periodoAcademico=2025-1 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/porUser",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/porUser?rol=ESTUDIANTE&periodoAcademico=2025-1 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/porUser",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/porUser?rol=FUNCIONARIO [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/porUser",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/porUser?rol=FUNCIONARIO [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitud-Reingreso/porUser",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitudes-Reingreso [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitudes-Reingreso",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/listarSolicitudes-Reingreso [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/listarSolicitudes-Reingreso",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/obtenerOficios/40 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/obtenerOficios/40",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/obtenerOficios/40 [est6]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/obtenerOficios/40",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/obtenerOficios/41 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/obtenerOficios/41",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/validarDocumentosRequeridos/40 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/validarDocumentosRequeridos/40",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso/validarDocumentosRequeridos/41 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/validarDocumentosRequeridos/41",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso?bandeja=pendientes [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/solicitudes-reingreso",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso?rol=ESTUDIANTE&idUsuario=6 [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Estudiante, idPrograma=null, periodo=<ACTUAL>, idUsuario=6, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=ESTUDIANTE&idUsuario=6&periodoAcademico=2025-1 [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Estudiante, idPrograma=null, periodo=2025-1, idUsuario=6, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=ESTUDIANTE&periodoAcademico=2025-1 [est5]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Estudiante, idPrograma=null, periodo=2025-1, idUsuario=5, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=FUNCIONARIO [est5]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Estudiante, idPrograma=null, periodo=<ACTUAL>, idUsuario=5, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=FUNCIONARIO [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 41,
+        "nombre_solicitud": "Solicitud 41",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 410,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 6,
+          "nombre_completo": "Usuario 6",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listarSolicitudesReingresoPorRol": "FUNCIONARIO, null"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=coordinador&bandeja=pendientes [coordinador]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Coordinador, idPrograma=3, periodo=<ACTUAL>, idUsuario=null, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=coordinador&bandeja=pendientes [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Coordinador, idPrograma=null, periodo=null, idUsuario=null, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=coordinador&bandeja=pendientes&periodoAcademico=2025-1 [coordinador]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Coordinador, idPrograma=3, periodo=2025-1, idUsuario=null, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=coordinador&bandeja=procesadas [coordinador]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Coordinador, idPrograma=3, periodo=null, idUsuario=null, procesadas=true]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=coordinador&bandeja=procesadas [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Coordinador, idPrograma=null, periodo=null, idUsuario=null, procesadas=true]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=coordinador&bandeja=procesadas&periodoAcademico=2025-1 [coordinador]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Coordinador, idPrograma=3, periodo=2025-1, idUsuario=null, procesadas=true]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=funcionario&bandeja=otra [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "Bandeja no válida: use pendientes o procesadas",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/solicitudes-reingreso",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso?rol=funcionario&bandeja=pendientes [est5]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/solicitudes-reingreso",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso?rol=funcionario&bandeja=pendientes [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Funcionario, idPrograma=null, periodo=<ACTUAL>, idUsuario=null, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=funcionario&bandeja=pendientes&periodoAcademico=2025-1 [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Funcionario, idPrograma=null, periodo=2025-1, idUsuario=null, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=funcionario&bandeja=procesadas [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Funcionario, idPrograma=null, periodo=null, idUsuario=null, procesadas=true]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=funcionario&bandeja=procesadas&periodoAcademico=2025-1 [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Funcionario, idPrograma=null, periodo=2025-1, idUsuario=null, procesadas=true]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=funcionario&bandeja=procesadas&periodoAcademico=todos [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Funcionario, idPrograma=null, periodo=null, idUsuario=null, procesadas=true]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=otro&bandeja=pendientes [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "Rol no válido: use funcionario, coordinador o secretaria",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/solicitudes-reingreso",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso?rol=secretaria&bandeja=pendientes [secretaria]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Secretario, idPrograma=null, periodo=<ACTUAL>, idUsuario=null, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=secretaria&bandeja=pendientes&periodoAcademico=2025-1 [secretaria]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Secretario, idPrograma=null, periodo=2025-1, idUsuario=null, procesadas=false]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=secretaria&bandeja=procesadas [est5]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/solicitudes-reingreso",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes-reingreso?rol=secretaria&bandeja=procesadas [secretaria]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Secretario, idPrograma=null, periodo=null, idUsuario=null, procesadas=true]"
+      }
+    ]
+  },
+  "GET /api/solicitudes-reingreso?rol=secretaria&bandeja=procesadas&periodoAcademico=2025-1 [secretaria]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 40,
+        "nombre_solicitud": "Solicitud 40",
+        "periodo_academico": "2025-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": "2025-02-19T21:20:00.000+00:00",
+        "estadosSolicitud": [
+          {
+            "id_estado": 400,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": "2025-02-19T21:20:00.000+00:00",
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 5,
+          "nombre_completo": "Usuario 5",
+          "rol": {
+            "id_rol": null,
+            "nombre": "Estudiante"
+          },
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [
+          {
+            "id_documento": 70,
+            "nombre": "carta_solicitud_reingreso.pdf",
+            "ruta_documento": "reingreso/40/carta_solicitud_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          },
+          {
+            "id_documento": 71,
+            "nombre": "oficio_reingreso.pdf",
+            "ruta_documento": "reingreso/40/oficio_reingreso.pdf",
+            "fecha_documento": "2025-02-19T21:20:00.000+00:00",
+            "esValido": true,
+            "comentario": null
+          }
+        ],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "disposicion": null,
+    "llamadas": [
+      {
+        "listar": "FiltroSolicitudes[rol=Secretario, idPrograma=null, periodo=2025-1, idUsuario=null, procesadas=true]"
+      }
+    ]
+  },
+  "POST /api/solicitudes-reingreso {\"nombre_solicitud\":\"Solicitud de reingreso\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"periodo_academico\":\"2025-1\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [admin]": {
+    "status": 201,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_solicitud": 50,
+      "nombre_solicitud": "Solicitud de reingreso",
+      "periodo_academico": "2025-1",
+      "fecha_ceremonia": null,
+      "fecha_registro_solicitud": "2025-01-19T00:00:00.000+00:00",
+      "estadosSolicitud": [],
+      "objUsuario": {
+        "id_usuario": 6,
+        "nombre_completo": "Usuario 6",
+        "rol": null,
+        "codigo": "102010",
+        "cedula": null,
+        "correo": "est6@unicauca.edu.co",
+        "estado_usuario": false,
+        "objPrograma": null
+      },
+      "documentos": [],
+      "categoria": null,
+      "tipo_solicitud": null
+    },
+    "disposicion": null,
+    "llamadas": [
+      {
+        "crearSolicitudReingreso": "usuario 6, periodo 2025-1, nombre Solicitud de reingreso"
+      }
+    ]
+  },
+  "POST /api/solicitudes-reingreso {\"nombre_solicitud\":\"Solicitud de reingreso\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"periodo_academico\":\"2025-1\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [est5]": {
+    "status": 201,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_solicitud": 50,
+      "nombre_solicitud": "Solicitud de reingreso",
+      "periodo_academico": "2025-1",
+      "fecha_ceremonia": null,
+      "fecha_registro_solicitud": "2025-01-19T00:00:00.000+00:00",
+      "estadosSolicitud": [],
+      "objUsuario": {
+        "id_usuario": 5,
+        "nombre_completo": "Usuario 6",
+        "rol": null,
+        "codigo": "102010",
+        "cedula": null,
+        "correo": "est6@unicauca.edu.co",
+        "estado_usuario": false,
+        "objPrograma": null
+      },
+      "documentos": [],
+      "categoria": null,
+      "tipo_solicitud": null
+    },
+    "disposicion": null,
+    "llamadas": [
+      {
+        "crearSolicitudReingreso": "usuario 5, periodo 2025-1, nombre Solicitud de reingreso"
+      }
+    ]
+  },
+  "POST /api/solicitudes-reingreso {\"nombre_solicitud\":\"Solicitud de reingreso\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"periodo_academico\":\"2025-1\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [funcionario]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/solicitudes-reingreso",
+      "metodo": "POST"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "POST /api/solicitudes-reingreso {} [est5]": {
+    "status": 201,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_solicitud": 50,
+      "nombre_solicitud": null,
+      "periodo_academico": null,
+      "fecha_ceremonia": null,
+      "fecha_registro_solicitud": null,
+      "estadosSolicitud": [],
+      "objUsuario": {
+        "id_usuario": 5,
+        "nombre_completo": null,
+        "rol": null,
+        "codigo": null,
+        "cedula": null,
+        "correo": null,
+        "estado_usuario": false,
+        "objPrograma": null
+      },
+      "documentos": [],
+      "categoria": null,
+      "tipo_solicitud": null
+    },
+    "disposicion": null,
+    "llamadas": [
+      {
+        "crearSolicitudReingreso": "usuario 5, periodo null, nombre null"
+      }
+    ]
+  },
+  "POST /api/solicitudes-reingreso/crearSolicitud-Reingreso {\"nombre_solicitud\":\"Solicitud de reingreso\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"periodo_academico\":\"2025-1\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [admin]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/crearSolicitud-Reingreso",
+      "metodo": "POST"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "POST /api/solicitudes-reingreso/crearSolicitud-Reingreso {\"nombre_solicitud\":\"Solicitud de reingreso\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"periodo_academico\":\"2025-1\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/crearSolicitud-Reingreso",
+      "metodo": "POST"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "POST /api/solicitudes-reingreso/crearSolicitud-Reingreso {\"nombre_solicitud\":\"Solicitud de reingreso\",\"fecha_registro_solicitud\":\"2025-01-19T00:00:00.000Z\",\"periodo_academico\":\"2025-1\",\"objUsuario\":{\"id_usuario\":6,\"nombre_completo\":\"Usuario 6\",\"codigo\":\"102010\",\"correo\":\"est6@unicauca.edu.co\",\"id_rol\":1,\"id_programa\":1}} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/crearSolicitud-Reingreso",
+      "metodo": "POST"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "POST /api/solicitudes-reingreso/crearSolicitud-Reingreso {} [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/crearSolicitud-Reingreso",
+      "metodo": "POST"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-reingreso/40/estado {\"idSolicitud\":40,\"nuevoEstado\":\"APROBADA\"} [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "estadoActual": "ENVIADA",
+      "codigo": "TRANSICION_NO_PERMITIDA",
+      "error": "No se puede pasar de ENVIADA a APROBADA. Desde ENVIADA solo se permite: [APROBADA_FUNCIONARIO, RECHAZADA]"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-reingreso/40/estado {\"idSolicitud\":40,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [admin]": {
+    "status": 204,
+    "tipo": null,
+    "cuerpo": null,
+    "disposicion": null,
+    "llamadas": [
+      {
+        "cambiarEstadoSolicitudReingreso": "40 -> APROBADA_FUNCIONARIO"
+      }
+    ]
+  },
+  "PUT /api/solicitudes-reingreso/40/estado {\"idSolicitud\":40,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [coordinador]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "estadoActual": "ENVIADA",
+      "codigo": "ROL_NO_AUTORIZADO",
+      "error": "Este paso le corresponde al rol Funcionario"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-reingreso/40/estado {\"idSolicitud\":40,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [est5]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/solicitudes-reingreso/40/estado",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-reingreso/40/estado {\"idSolicitud\":40,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [funcionario]": {
+    "status": 204,
+    "tipo": null,
+    "cuerpo": null,
+    "disposicion": null,
+    "llamadas": [
+      {
+        "cambiarEstadoSolicitudReingreso": "40 -> APROBADA_FUNCIONARIO"
+      }
+    ]
+  },
+  "PUT /api/solicitudes-reingreso/40/estado {\"idSolicitud\":40} [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "estadoActual": "ENVIADA",
+      "codigo": "ESTADO_REQUERIDO",
+      "error": "El nuevo estado es requerido"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-reingreso/40/estado {\"idSolicitud\":41,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\"} [funcionario]": {
+    "status": 204,
+    "tipo": null,
+    "cuerpo": null,
+    "disposicion": null,
+    "llamadas": [
+      {
+        "cambiarEstadoSolicitudReingreso": "40 -> APROBADA_FUNCIONARIO"
+      }
+    ]
+  },
+  "PUT /api/solicitudes-reingreso/40/estado {\"nuevoEstado\":\"APROBADA_FUNCIONARIO\"} [funcionario]": {
+    "status": 204,
+    "tipo": null,
+    "cuerpo": null,
+    "disposicion": null,
+    "llamadas": [
+      {
+        "cambiarEstadoSolicitudReingreso": "40 -> APROBADA_FUNCIONARIO"
+      }
+    ]
+  },
+  "PUT /api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso {\"idSolicitud\":40,\"nuevoEstado\":\"APROBADA\"} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso {\"idSolicitud\":40,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [admin]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso {\"idSolicitud\":40,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [coordinador]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso {\"idSolicitud\":40,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso {\"idSolicitud\":40,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\",\"comentario\":\"ok\"} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso {\"idSolicitud\":40} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso {\"nuevoEstado\":\"APROBADA_FUNCIONARIO\"} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "/crearUsuario crear argumento/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario crear cupo/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario crear noExiste/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario crear npe/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario crear regla/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario crear runtime/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario crear yaExiste/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario devuelve null/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario mapper argumento/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario mapper cupo/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario mapper noExiste/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario mapper npe/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario mapper null/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario mapper regla/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario mapper runtime/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario mapper source null/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario mapper yaExiste/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario sin programa/body/url": "http://localhost/api/usuarios",
+  "/crearUsuario sin rol/body/url": "http://localhost/api/usuarios"
+}

@@ -5,12 +5,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 /**
  * Utilidades para las pruebas de Paz y Salvo. Todo se hace a través de la API para respetar
@@ -25,7 +26,7 @@ final class SoportePazYSalvo {
 
     /** Crea una solicitud como estudiante y devuelve su id. */
     static int crearSolicitud(MockMvc mockMvc, ObjectMapper objectMapper, String tokenEstudiante) throws Exception {
-        MvcResult resultado = mockMvc.perform(post(BASE + "/crearSolicitud-PazYSalvo")
+        MvcResult resultado = mockMvc.perform(post(BASE)
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"fecha_solicitud\": \"2025-01-15\"}"))
@@ -37,7 +38,7 @@ final class SoportePazYSalvo {
 
     /** Cambia el estado con el token indicado y devuelve el código HTTP. */
     static int cambiarEstado(MockMvc mockMvc, String token, int idSolicitud, String nuevoEstado) throws Exception {
-        return mockMvc.perform(put(BASE + "/cambiarEstadoSolicitud/" + idSolicitud)
+        return mockMvc.perform(put(BASE + "/" + idSolicitud + "/estado")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nuevoEstado\": \"" + nuevoEstado + "\"}"))
@@ -51,7 +52,7 @@ final class SoportePazYSalvo {
      */
     static void cerrarSolicitudesEnTramite(MockMvc mockMvc, ObjectMapper objectMapper, String tokenEstudiante,
                                            String... tokensStaff) throws Exception {
-        MvcResult resultado = mockMvc.perform(get(BASE + "/listarSolicitud-PazYSalvo/porRol")
+        MvcResult resultado = mockMvc.perform(get(BASE)
                         .param("rol", "ESTUDIANTE")
                         .header("Authorization", tokenEstudiante))
                 .andReturn();
@@ -69,7 +70,7 @@ final class SoportePazYSalvo {
     }
 
     /** Id del usuario autenticado según el correo. */
-    static int idUsuario(co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt repo,
+    static int idUsuario(UsuarioRepositoryInt repo,
                          String correo) {
         return repo.buscarPorCorreo(correo).orElseThrow().getId_usuario();
     }

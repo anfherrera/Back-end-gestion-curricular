@@ -1,0 +1,5 @@
+{
+  "$quitar": [ "buscarSolicitudPorNombreCursoIns", "buscarSolicitudPorNombreCursoPre", "actualizarSolicitud 1",
+    "actualizarSolicitud 2", "actualizarSolicitud 3", "actualizarSolicitud 4", "actualizarSolicitud 5",
+    "actualizarSolicitud 6", "actualizarSolicitud sin estado", "actualizarSolicitud base" ]
+}

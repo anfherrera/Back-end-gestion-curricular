@@ -1,10 +1,11 @@
 package co.edu.unicauca.decanatura.gestion_curricular.estadisticas;
 
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarEstadisticasCUAdapter;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,11 +13,25 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarEstadisticasCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaTendencias;
 
 /**
  * ============================================================
@@ -31,7 +46,7 @@ import static org.mockito.Mockito.*;
  * - Usan mocks (Mockito) para dependencias (Gateway)
  * - No requieren Spring Context
  * - Son muy rápidas (~50ms)
- * - Validan delegación correcta al gateway
+ * - Validan las reglas de cálculo con datos de prueba (el gateway es un mock)
  * 
  * @author Andrés Felipe Herrera Artunduaga
  */
@@ -42,279 +57,171 @@ class EstadisticasUnidadTest {
     @Mock
     private GestionarEstadisticasGatewayIntPort estadisticasGateway;
 
-    @Mock
-    private FormateadorResultadosIntPort formateadorResultados;
-
     private GestionarEstadisticasCUIntPort estadisticasCU;
-
-    private Estadistica estadisticaEjemplo;
 
     @BeforeEach
     void setUp() {
         // Crear el CU Adapter con las dependencias mockeadas
-        estadisticasCU = new GestionarEstadisticasCUAdapter(
-                estadisticasGateway,
-                formateadorResultados
-        );
-
-        // Crear estadística de ejemplo
-        estadisticaEjemplo = new Estadistica();
+        estadisticasCU = new GestionarEstadisticasCUAdapter(estadisticasGateway);
     }
 
-    // ==================== PRUEBAS DE CREACIÓN ====================
+    // ==================== REGLAS DE LAS ESTADÍSTICAS (dominio) ====================
 
     @Test
-    @DisplayName("Test 1: Crear estadística - Delega correctamente al gateway")
-    void testCrearEstadisticaDelegaCorrectamente() {
-        // Arrange
-        when(estadisticasGateway.crearEstadistica(any(Estadistica.class)))
-                .thenReturn(estadisticaEjemplo);
+    @DisplayName("Test 5: Globales sin filtros - PRE_REGISTRADO cuenta como enviada")
+    void testGlobalesSumanPreRegistradasAEnviadas() {
+        when(estadisticasGateway.contarSolicitudesPorEstado("APROBADA")).thenReturn(3);
+        when(estadisticasGateway.contarSolicitudesPorEstado("RECHAZADA")).thenReturn(1);
+        when(estadisticasGateway.contarSolicitudesPorEstado("APROBADA_FUNCIONARIO")).thenReturn(0);
+        when(estadisticasGateway.contarSolicitudesPorEstado("APROBADA_COORDINADOR")).thenReturn(0);
+        when(estadisticasGateway.contarSolicitudesPorEstado("ENVIADA")).thenReturn(4);
+        when(estadisticasGateway.contarSolicitudesPorEstado("PRE_REGISTRADO")).thenReturn(2);
 
-        // Act
-        Estadistica resultado = estadisticasCU.crearEstadistica(estadisticaEjemplo);
+        GlobalesContadas resultado = estadisticasCU.obtenerEstadisticasGlobales(null, null, null, null);
 
-        // Assert
-        assertThat(resultado).isNotNull();
-        verify(estadisticasGateway, times(1)).crearEstadistica(estadisticaEjemplo);
-    }
-
-    // ==================== PRUEBAS DE CONSULTA ====================
-
-    @Test
-    @DisplayName("Test 2: Obtener estadística por ID - Delega correctamente")
-    void testObtenerEstadisticaPorIdDelegaCorrectamente() {
-        // Arrange
-        int idBuscado = 1;
-        when(estadisticasGateway.obtenerEstadisticaPorId(idBuscado))
-                .thenReturn(estadisticaEjemplo);
-
-        // Act
-        Estadistica resultado = estadisticasCU.obtenerEstadisticaPorId(idBuscado);
-
-        // Assert
-        assertThat(resultado).isNotNull();
-        verify(estadisticasGateway, times(1)).obtenerEstadisticaPorId(idBuscado);
+        assertThat(resultado.totalSolicitudes()).isEqualTo(10);
+        assertThat(resultado.totalEnviadas()).isEqualTo(6);
+        assertThat(resultado.porcentajeAprobacion()).isEqualTo(30.0);
+        verify(estadisticasGateway, never()).contarTotalSolicitudes();
     }
 
     @Test
-    @DisplayName("Test 3: Actualizar estadística - Delega correctamente")
-    void testActualizarEstadisticaDelegaCorrectamente() {
-        // Arrange
-        when(estadisticasGateway.actualizarEstadistica(any(Estadistica.class)))
-                .thenReturn(estadisticaEjemplo);
+    @DisplayName("Test 6: Globales sin estados conocidos - usa el total de solicitudes")
+    void testGlobalesSinEstadosUsanElTotal() {
+        when(estadisticasGateway.contarTotalSolicitudes()).thenReturn(7);
 
-        // Act
-        Estadistica resultado = estadisticasCU.actualizarEstadistica(estadisticaEjemplo);
+        GlobalesContadas resultado = estadisticasCU.obtenerEstadisticasGlobales(null, null, null, null);
 
-        // Assert
-        assertThat(resultado).isNotNull();
-        verify(estadisticasGateway, times(1)).actualizarEstadistica(estadisticaEjemplo);
+        assertThat(resultado.totalSolicitudes()).isEqualTo(7);
+        assertThat(resultado.porcentajeAprobacion()).isEqualTo(0.0);
+    }
+
+
+    @Test
+    @DisplayName("Test 8: Por estado - unifica las formas de escribir el estado")
+    void testPorEstadoNormalizaElEstado() {
+        when(estadisticasGateway.listarSolicitudesConEstadosYUsuario()).thenReturn(List.of(
+                solicitud(new SolicitudPazYSalvo(), 1, estado("Aprobado", 1)),
+                solicitud(new SolicitudCursoVeranoInscripcion(), 1, estado("Inscripcion_Completada", 1)),
+                solicitud(new SolicitudEcaes(), 1, estado("Enviada", 1))));
+
+        EstadisticasPorEstado resultado = estadisticasCU.obtenerEstadisticasPorEstado("aprobada");
+
+        assertThat(resultado.totalSolicitudes()).isEqualTo(2);
+        assertThat(resultado.porcentajeAprobacion()).isEqualTo(100.0);
     }
 
     @Test
-    @DisplayName("Test 4: Eliminar estadística - Delega correctamente")
-    void testEliminarEstadisticaDelegaCorrectamente() {
-        // Arrange
-        int id = 1;
-        when(estadisticasGateway.eliminarEstadistica(id)).thenReturn(true);
+    @DisplayName("Test 9: Por programa - cuenta solo las solicitudes de ese programa")
+    void testPorProgramaFiltraPorPrograma() {
+        when(estadisticasGateway.listarSolicitudesConEstadosYUsuario()).thenReturn(List.of(
+                solicitud(new SolicitudHomologacion(), 1, estado("APROBADA", 1)),
+                solicitud(new SolicitudHomologacion(), 2, estado("APROBADA", 1)),
+                solicitud(new SolicitudReingreso(), 2, estado("Enviada", 1))));
 
-        // Act
-        Boolean resultado = estadisticasCU.eliminarEstadistica(id);
+        EstadisticasPorPrograma resultado = estadisticasCU.obtenerEstadisticasPorPrograma(2);
 
-        // Assert
-        assertThat(resultado).isTrue();
-        verify(estadisticasGateway, times(1)).eliminarEstadistica(id);
+        assertThat(resultado.totalSolicitudes()).isEqualTo(2);
+        assertThat(resultado.totalEnviadas()).isEqualTo(1);
     }
 
-    // ==================== PRUEBAS DE ESTADÍSTICAS GLOBALES ====================
-
     @Test
-    @DisplayName("Test 5: Obtener estadísticas globales - Delega correctamente")
-    void testObtenerEstadisticasGlobalesDelegaCorrectamente() {
-        // Arrange
-        Map<String, Object> estadisticasEsperadas = new HashMap<>();
-        estadisticasEsperadas.put("totalSolicitudes", 100);
-        estadisticasEsperadas.put("aprobadas", 80);
-        when(estadisticasGateway.obtenerEstadisticasGlobales()).thenReturn(estadisticasEsperadas);
-
-        // Act
-        Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasGlobales();
-
-        // Assert
-        assertThat(resultado).isNotNull();
-        assertThat(resultado).containsKey("totalSolicitudes");
-        assertThat(resultado.get("totalSolicitudes")).isEqualTo(100);
-        verify(estadisticasGateway, times(1)).obtenerEstadisticasGlobales();
-    }
-
-    // ==================== PRUEBAS DE ESTADÍSTICAS POR PROCESO ====================
-
-    @Test
-    @DisplayName("Test 6: Obtener estadísticas por proceso - Delega correctamente")
-    void testObtenerEstadisticasPorProcesoDelegaCorrectamente() {
-        // Arrange
-        String tipoProceso = "PAZ_Y_SALVO";
-        Map<String, Object> estadisticasEsperadas = new HashMap<>();
-        estadisticasEsperadas.put("total", 50);
-        when(estadisticasGateway.obtenerEstadisticasPorProceso(tipoProceso))
-                .thenReturn(estadisticasEsperadas);
-
-        // Act
-        Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasPorProceso(tipoProceso);
-
-        // Assert
-        assertThat(resultado).isNotNull();
-        assertThat(resultado.get("total")).isEqualTo(50);
-        verify(estadisticasGateway, times(1)).obtenerEstadisticasPorProceso(tipoProceso);
-    }
-
-    // ==================== PRUEBAS DE ESTADÍSTICAS POR ESTADO ====================
-
-    @Test
-    @DisplayName("Test 7: Obtener estadísticas por estado - Delega correctamente")
-    void testObtenerEstadisticasPorEstadoDelegaCorrectamente() {
-        // Arrange
-        String estado = "APROBADO";
-        Map<String, Object> estadisticasEsperadas = new HashMap<>();
-        estadisticasEsperadas.put("cantidad", 30);
-        when(estadisticasGateway.obtenerEstadisticasPorEstado(estado))
-                .thenReturn(estadisticasEsperadas);
-
-        // Act
-        Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasPorEstado(estado);
-
-        // Assert
-        assertThat(resultado).isNotNull();
-        verify(estadisticasGateway, times(1)).obtenerEstadisticasPorEstado(estado);
-    }
-
-    // ==================== PRUEBAS DE ESTADÍSTICAS POR PROGRAMA ====================
-
-    @Test
-    @DisplayName("Test 8: Obtener estadísticas por programa - Delega correctamente")
-    void testObtenerEstadisticasPorProgramaDelegaCorrectamente() {
-        // Arrange
-        int idPrograma = 1;
-        Map<String, Object> estadisticasEsperadas = new HashMap<>();
-        estadisticasEsperadas.put("solicitudes", 25);
-        when(estadisticasGateway.obtenerEstadisticasPorPrograma(idPrograma))
-                .thenReturn(estadisticasEsperadas);
-
-        // Act
-        Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasPorPrograma(idPrograma);
-
-        // Assert
-        assertThat(resultado).isNotNull();
-        verify(estadisticasGateway, times(1)).obtenerEstadisticasPorPrograma(idPrograma);
-    }
-
-    // ==================== PRUEBAS DE MANEJO DE EXCEPCIONES ====================
-
-    @Test
-    @DisplayName("Test 9: Gateway lanza excepción - La propaga correctamente")
-    void testGatewayLanzaExcepcionLaPropagaCorrectamente() {
-        // Arrange
-        when(estadisticasGateway.obtenerEstadisticasGlobales())
+    @DisplayName("Test 10: Si falla la lectura de datos, el error se propaga (no se devuelven ceros)")
+    void testFalloDelGatewaySePropaga() {
+        when(estadisticasGateway.listarSolicitudesConEstadosYUsuario())
                 .thenThrow(new RuntimeException("Error de base de datos"));
 
-        // Act & Assert
-        assertThatThrownBy(() -> estadisticasCU.obtenerEstadisticasGlobales())
+        assertThatThrownBy(() -> estadisticasCU.obtenerEstadisticasPorEstado("aprobada"))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Error de base de datos");
-    }
-
-    // ==================== PRUEBAS DE VERIFICACIÓN DE COMPORTAMIENTO ====================
-
-    @Test
-    @DisplayName("Test 10: Llamadas múltiples al mismo método")
-    void testLlamadasMultiplesAlMismoMetodo() {
-        // Arrange
-        when(estadisticasGateway.obtenerEstadisticasGlobales())
-                .thenReturn(new HashMap<>());
-
-        // Act
-        for (int i = 0; i < 3; i++) {
-            estadisticasCU.obtenerEstadisticasGlobales();
-        }
-
-        // Assert
-        verify(estadisticasGateway, times(3)).obtenerEstadisticasGlobales();
+                .hasMessage("Error de base de datos");
     }
 
     @Test
     @DisplayName("Test 11: Verificar que el adaptador implementa la interfaz correcta")
     void testAdaptadorImplementaInterfazCorrecta() {
-        // Assert
         assertThat(estadisticasCU).isInstanceOf(GestionarEstadisticasCUIntPort.class);
     }
 
     @Test
-    @DisplayName("Test 12: Estadísticas globales retorna la misma referencia del gateway")
-    void testEstadisticasGlobalesRetornaLaMismaReferencia() {
-        // Arrange
-        Map<String, Object> mapOriginal = new HashMap<>();
-        mapOriginal.put("total", 100);
-        when(estadisticasGateway.obtenerEstadisticasGlobales()).thenReturn(mapOriginal);
+    @DisplayName("Test 12: Dashboard por estado - EN_PROCESO junta funcionario y coordinador")
+    void testDashboardPorEstadoJuntaEnProceso() {
+        when(estadisticasGateway.listarSolicitudesConEstadosYUsuario()).thenReturn(List.of(
+                solicitud(new SolicitudHomologacion(), 1, estado("APROBADA_FUNCIONARIO", 1)),
+                solicitud(new SolicitudReingreso(), 1, estado("APROBADA_COORDINADOR", 1)),
+                solicitud(new SolicitudEcaes(), 1, estado("RECHAZADA", 1)),
+                solicitud(new SolicitudEcaes(), 1, estado("APROBADA", 1))));
 
-        // Act
-        Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasGlobales();
+        VistaPorEstado resultado = estadisticasCU.obtenerEstadisticasPorEstado(null, null);
 
-        // Assert - Verificar que es la misma instancia
-        assertThat(resultado).isSameAs(mapOriginal);
-    }
-
-    // ==================== PRUEBAS DE ESTADÍSTICAS ADICIONALES ====================
-
-    @Test
-    @DisplayName("Test 13: Obtener tendencias y comparativas - Delega correctamente")
-    void testObtenerTendenciasYComparativasDelegaCorrectamente() {
-        // Arrange
-        Map<String, Object> tendenciasEsperadas = new HashMap<>();
-        tendenciasEsperadas.put("tendencia", "ascendente");
-        when(estadisticasGateway.obtenerTendenciasYComparativas(null, null))
-                .thenReturn(tendenciasEsperadas);
-
-        // Act
-        Map<String, Object> resultado = estadisticasCU.obtenerTendenciasYComparativas(null, null);
-
-        // Assert
-        assertThat(resultado).isNotNull();
-        verify(estadisticasGateway, times(1)).obtenerTendenciasYComparativas(null, null);
+        VistaPorEstado.Detalle enProceso = resultado.estados().get("EN_PROCESO");
+        assertThat(enProceso.cantidad()).isEqualTo(2);
+        assertThat(enProceso.porcentaje()).isEqualTo(50.0);
+        assertThat(resultado.analisis().tasaResolucion()).isEqualTo(50.0);
     }
 
     @Test
-    @DisplayName("Test 14: Obtener tiempo promedio procesamiento - Delega correctamente")
-    void testObtenerTiempoPromedioProcesamientoDelegaCorrectamente() {
-        // Arrange
-        Map<String, Object> tiempoEsperado = new HashMap<>();
-        tiempoEsperado.put("promedioHoras", 48);
-        when(estadisticasGateway.obtenerTiempoPromedioProcesamiento())
-                .thenReturn(tiempoEsperado);
+    @DisplayName("Test 13: Tendencias - con un solo mes de datos la tendencia es Nueva")
+    void testTendenciasConUnSoloMes() {
+        when(estadisticasGateway.listarSolicitudesConEstadosYUsuario()).thenReturn(List.of(
+                solicitud(new SolicitudHomologacion(), 1, estado("Enviada", 3))));
 
-        // Act
-        Map<String, Object> resultado = estadisticasCU.obtenerTiempoPromedioProcesamiento();
+        VistaTendencias resultado = estadisticasCU.obtenerTendenciasYComparativas(null, null);
 
-        // Assert
-        assertThat(resultado).isNotNull();
-        assertThat(resultado.get("promedioHoras")).isEqualTo(48);
-        verify(estadisticasGateway, times(1)).obtenerTiempoPromedioProcesamiento();
+        VistaTendencias.CrecimientoTemporal crecimiento = resultado.crecimientoTemporal();
+        assertThat(crecimiento.tendenciaSolicitudes()).isEqualTo("Nueva");
+        assertThat(crecimiento.crecimientoSolicitudes()).isEqualTo(0.0);
     }
 
     @Test
-    @DisplayName("Test 15: Obtener estadísticas cursos verano - Delega correctamente")
-    void testObtenerEstadisticasCursosVeranoDelegaCorrectamente() {
-        // Arrange
-        Map<String, Object> estadisticasCursos = new HashMap<>();
-        estadisticasCursos.put("totalCursos", 15);
-        when(estadisticasGateway.obtenerEstadisticasCursosVerano(null, null))
-                .thenReturn(estadisticasCursos);
+    @DisplayName("Test 14: Cursos de verano - pago validado está en proceso y no cuenta como aprobada")
+    void testCursosVeranoPagoValidadoEnProceso() {
+        when(estadisticasGateway.listarSolicitudesConEstadosYUsuario()).thenReturn(List.of(
+                solicitud(new SolicitudCursoVeranoInscripcion(), 1, estado("Pago_Validado", 7)),
+                solicitud(new SolicitudCursoVeranoInscripcion(), 1, estado("Inscripcion_Completada", 7)),
+                solicitud(new SolicitudHomologacion(), 1, estado("APROBADA", 7))));
 
-        // Act
-        Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasCursosVerano(null, null);
+        AnalisisCursosVerano resultado = estadisticasCU.obtenerEstadisticasCursosVerano(null, null);
 
-        // Assert
-        assertThat(resultado).isNotNull();
-        verify(estadisticasGateway, times(1)).obtenerEstadisticasCursosVerano(null, null);
+        Map<String, Integer> estados = resultado.estadosSolicitudes();
+        assertThat(estados.get("EN_PROCESO")).isEqualTo(1);
+        assertThat(estados.get("APROBADA")).isEqualTo(1);
+        assertThat(resultado.resumen().totalSolicitudes()).isEqualTo(2);
+        assertThat(resultado.resumen().tasaAprobacion()).isEqualTo(50.0);
+    }
+
+    @Test
+    @DisplayName("Test 15: Resumen por periodo - sin periodo guardado, se deduce de la fecha de registro")
+    void testResumenDeducePeriodoDeLaFecha() {
+        when(estadisticasGateway.listarSolicitudesConEstadosYUsuario()).thenReturn(List.of(
+                solicitud(new SolicitudHomologacion(), 1, estado("Enviada", 3)),   // marzo: 2025-1
+                solicitud(new SolicitudHomologacion(), 1, estado("Enviada", 9)))); // septiembre: 2025-2
+
+        ResumenCompleto resultado = estadisticasCU.obtenerResumenCompleto("2025-1", null);
+
+        assertThat(resultado.estadisticasGlobales().totalSolicitudes()).isEqualTo(1);
+    }
+
+    // ==================== DATOS ====================
+
+    /** Solicitud de un estudiante del programa indicado; su fecha de registro es la del primer estado. */
+    private static Solicitud solicitud(Solicitud solicitud, int idPrograma, EstadoSolicitud... estados) {
+        Usuario usuario = new Usuario();
+        usuario.setIdUsuario(idPrograma * 100);
+        usuario.setObjPrograma(new Programa(idPrograma, "P" + idPrograma, "Programa " + idPrograma));
+        solicitud.setObjUsuario(usuario);
+        solicitud.setEstadosSolicitud(new ArrayList<>(Arrays.asList(estados)));
+        solicitud.setFechaRegistroSolicitud(estados[0].getFechaRegistroEstado());
+        return solicitud;
+    }
+
+    /** Estado registrado el día 10 del mes indicado de 2025. */
+    private static EstadoSolicitud estado(String nombre, int mes) {
+        EstadoSolicitud estado = new EstadoSolicitud();
+        estado.setEstadoActual(nombre);
+        Calendar c = Calendar.getInstance();
+        c.clear();
+        c.set(2025, mes - 1, 10, 10, 0);
+        estado.setFechaRegistroEstado(c.getTime());
+        return estado;
     }
 }
-

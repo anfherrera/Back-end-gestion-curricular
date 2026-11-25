@@ -1,0 +1,270 @@
+{
+  "caso-0" : {
+    "http" : 200,
+    "json" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : null,
+      "nombre_curso" : null,
+      "descripcion" : "Curso de verano",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Abierto",
+      "periodo" : "2025-2",
+      "objMateria" : null,
+      "objDocente" : null,
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ ],
+      "estudiantesInscritos" : [ ]
+    } ]
+  },
+  "caso-1" : {
+    "http" : 200,
+    "json" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : null,
+      "nombre_curso" : null,
+      "descripcion" : "Curso de verano",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Abierto",
+      "periodo" : "2025-2",
+      "objMateria" : null,
+      "objDocente" : null,
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ ],
+      "estudiantesInscritos" : [ ]
+    } ]
+  },
+  "caso-2" : {
+    "http" : 200,
+    "json" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : null,
+      "nombre_curso" : null,
+      "descripcion" : "Curso de verano",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Abierto",
+      "periodo" : "2025-2",
+      "objMateria" : null,
+      "objDocente" : null,
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ ],
+      "estudiantesInscritos" : [ ]
+    } ]
+  },
+  "caso-3" : {
+    "http" : 200,
+    "json" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : null,
+      "nombre_curso" : null,
+      "descripcion" : "Curso de verano",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Abierto",
+      "periodo" : "2025-2",
+      "objMateria" : null,
+      "objDocente" : null,
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ ],
+      "estudiantesInscritos" : [ ]
+    } ]
+  },
+  "caso-4" : {
+    "http" : 200,
+    "json" : [ ]
+  },
+  "caso-5" : {
+    "http" : 200,
+    "json" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : null,
+      "nombre_curso" : null,
+      "descripcion" : "Curso de verano",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Abierto",
+      "periodo" : "2025-2",
+      "objMateria" : null,
+      "objDocente" : null,
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ ],
+      "estudiantesInscritos" : [ ]
+    } ]
+  },
+  "caso-6" : {
+    "http" : 200,
+    "json" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : null,
+      "nombre_curso" : null,
+      "descripcion" : "Curso de verano",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Abierto",
+      "periodo" : "2025-2",
+      "objMateria" : null,
+      "objDocente" : null,
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ ],
+      "estudiantesInscritos" : [ ]
+    } ]
+  },
+  "caso-7" : {
+    "http" : 200,
+    "json" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : null,
+      "nombre_curso" : null,
+      "descripcion" : "Curso de verano",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Abierto",
+      "periodo" : "2025-2",
+      "objMateria" : null,
+      "objDocente" : null,
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ ],
+      "estudiantesInscritos" : [ ]
+    } ]
+  },
+  "caso-8" : {
+    "http" : 200,
+    "json" : [ ]
+  },
+  "caso-9" : {
+    "http" : 200,
+    "json" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : null,
+      "nombre_curso" : null,
+      "descripcion" : "Curso de verano",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Abierto",
+      "periodo" : "2025-2",
+      "objMateria" : null,
+      "objDocente" : null,
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ ],
+      "estudiantesInscritos" : [ ]
+    } ]
+  },
+  "caso-10" : {
+    "http" : 200,
+    "json" : [ ]
+  }
+}

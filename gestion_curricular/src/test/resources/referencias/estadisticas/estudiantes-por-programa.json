@@ -1,0 +1,9 @@
+{
+  "descripcion" : "Distribucion de estudiantes por programa academico",
+  "estudiantesPorPrograma" : {
+    "Ingeniería Civil" : 1,
+    "Ingeniería Electrónica" : 2,
+    "Ingeniería de Sistemas" : 2
+  },
+  "totalEstudiantes" : 6
+}

@@ -1,0 +1,8 @@
+{
+  "/estado #0/body/url": "http://localhost/api/solicitudes-pazysalvo/7/estado",
+  "/estado #3/body/url": "http://localhost/api/solicitudes-pazysalvo/7/estado",
+  "/estado #4/body/url": "http://localhost/api/solicitudes-pazysalvo/7/estado",
+  "/binding /body/url": "http://localhost/api/solicitudes-pazysalvo",
+  "/binding null/body/url": "http://localhost/api/solicitudes-pazysalvo",
+  "/binding {/body/url": "http://localhost/api/solicitudes-pazysalvo"
+}

@@ -6,8 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudReingresoDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudReingresoDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.SolicitudReingresoDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudReingresoDTORespuesta;
 
 @Mapper(
     componentModel = "spring",
@@ -26,13 +26,27 @@ public interface SolicitudReingresoMapperDominio {
     @Mapping(target = "objUsuario.objPrograma", ignore = true) // Propiedad no mapeada en Usuario
     @Mapping(target = "objUsuario.solicitudes", ignore = true) // Propiedad no mapeada en Usuario
     @Mapping(target = "objUsuario.cursosOfertadosInscritos", ignore = true) // Propiedad no mapeada en Usuario
-    SolicitudReingreso mappearDeSolicitudReingresoDTOPeticionASolicitudReingreso(SolicitudReingresoDTOPeticion peticion);
+    // OPC-2: el JSON conserva id_usuario, nombre_completo y estado_usuario
+    @Mapping(target = "objUsuario.idUsuario", source = "objUsuario.id_usuario")
+    @Mapping(target = "objUsuario.nombreCompleto", source = "objUsuario.nombre_completo")
+    @Mapping(target = "objUsuario.estadoUsuario", source = "objUsuario.estado_usuario")
+    // OPC-2: el DTO conserva el nombre snake_case
+    @Mapping(target = "idSolicitud", source = "id_solicitud")
+    @Mapping(target = "nombreSolicitud", source = "nombre_solicitud")
+    @Mapping(target = "periodoAcademico", source = "periodo_academico")
+    @Mapping(target = "fechaCeremonia", source = "fecha_ceremonia")
+    @Mapping(target = "fechaRegistroSolicitud", source = "fecha_registro_solicitud")
+    SolicitudReingreso mapearDeSolicitudReingresoDTOPeticionASolicitudReingreso(SolicitudReingresoDTOPeticion peticion);
 
     @Mapping(target = "categoria", ignore = true)
     @Mapping(target = "tipo_solicitud", ignore = true)
-    SolicitudReingresoDTORespuesta mappearDeSolicitudReingresoASolicitudReingresoDTORespuesta(SolicitudReingreso solicitud);
+    // OPC-2: el DTO conserva el nombre snake_case
+    @Mapping(target = "id_solicitud", source = "idSolicitud")
+    @Mapping(target = "nombre_solicitud", source = "nombreSolicitud")
+    @Mapping(target = "periodo_academico", source = "periodoAcademico")
+    @Mapping(target = "fecha_ceremonia", source = "fechaCeremonia")
+    @Mapping(target = "fecha_registro_solicitud", source = "fechaRegistroSolicitud")
+    SolicitudReingresoDTORespuesta mapearDeSolicitudReingresoASolicitudReingresoDTORespuesta(SolicitudReingreso solicitud);
 
-    List<SolicitudReingresoDTORespuesta> mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(List<SolicitudReingreso> solicitudes);
-
-    List<SolicitudReingreso> mappearDeListaSolicitudReingresoDTOPeticionASolicitudReingreso(List<SolicitudReingresoDTOPeticion> solicitudesDTO);
+    List<SolicitudReingresoDTORespuesta> mapearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(List<SolicitudReingreso> solicitudes);
 }

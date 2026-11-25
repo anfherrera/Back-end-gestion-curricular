@@ -1,5 +1,8 @@
 package co.edu.unicauca.decanatura.gestion_curricular.ecaes;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * ============================================================
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
-@WithMockUser(roles = { "SECRETARIA", "FUNCIONARIO", "COORDINADOR", "ESTUDIANTE" })
+@WithMockUser(username = "juan.perez@unicauca.edu.co", roles = { "Secretario", "Funcionario", "Coordinador", "Estudiante" })
 @DisplayName("Pruebas de Integración - REST API ECAES")
 class EcaesIntegracionTest {
 
@@ -42,7 +42,7 @@ class EcaesIntegracionTest {
     @Test
     @DisplayName("Test 1: Listar todas las fechas ECAES")
     void testListarFechasEcaes() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarFechasEcaes"))
+        mockMvc.perform(get("/api/solicitudes-ecaes/fechas"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -51,7 +51,7 @@ class EcaesIntegracionTest {
     @DisplayName("Test 2: Buscar fechas por período académico")
     void testBuscarFechasPorPeriodo() throws Exception {
         // Buscar fechas para período que existe en BD de test (puede dar 200, 404 o 500 si hay múltiples registros)
-        mockMvc.perform(get("/api/solicitudes-ecaes/buscarFechasPorPeriodo/2025-2"))
+        mockMvc.perform(get("/api/solicitudes-ecaes/fechas/2025-2"))
                 .andExpect(result -> {
                     int status = result.getResponse().getStatus();
                     if (status != 200 && status != 404 && status != 500)
@@ -62,7 +62,7 @@ class EcaesIntegracionTest {
     @Test
     @DisplayName("Test 3: Buscar fechas por período inexistente")
     void testBuscarFechasPorPeriodoInexistente() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-ecaes/buscarFechasPorPeriodo/2026-1"))
+        mockMvc.perform(get("/api/solicitudes-ecaes/fechas/2026-1"))
                 .andExpect(status().isNotFound());
     }
 
@@ -83,7 +83,7 @@ class EcaesIntegracionTest {
             }
             """;
 
-        mockMvc.perform(post("/api/solicitudes-ecaes/publicarFechasEcaes")
+        mockMvc.perform(post("/api/solicitudes-ecaes/fechas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonFechas))
                 .andExpect(result -> {
@@ -108,7 +108,7 @@ class EcaesIntegracionTest {
             }
             """;
 
-        mockMvc.perform(put("/api/solicitudes-ecaes/actualizarFechasEcaes")
+        mockMvc.perform(put("/api/solicitudes-ecaes/fechas/2025-1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonFechas))
                 .andExpect(result -> {
@@ -123,7 +123,7 @@ class EcaesIntegracionTest {
     @Test
     @DisplayName("Test 6: Listar todas las solicitudes de ECAES")
     void testListarSolicitudesEcaes() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitudes-Ecaes"))
+        mockMvc.perform(get("/api/solicitudes-ecaes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -131,7 +131,7 @@ class EcaesIntegracionTest {
     @Test
     @DisplayName("Test 7: Listar solicitudes por rol - Funcionario")
     void testListarSolicitudesFuncionario() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario"))
+        mockMvc.perform(get("/api/solicitudes-ecaes").param("rol", "funcionario").param("bandeja", "pendientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -139,7 +139,7 @@ class EcaesIntegracionTest {
     @Test
     @DisplayName("Test 8: Listar solicitudes con parámetro de rol")
     void testListarSolicitudesPorRolParametro() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol")
+        mockMvc.perform(get("/api/solicitudes-ecaes")
                         .param("rol", "ESTUDIANTE")
                         .param("idUsuario", "1"))
                 .andExpect(status().isOk())
@@ -171,7 +171,7 @@ class EcaesIntegracionTest {
             """;
 
         // Solo validamos que el endpoint existe y responde (puede ser 201, 200 o 400 por validaciones)
-        mockMvc.perform(post("/api/solicitudes-ecaes/crearSolicitud-Ecaes")
+        mockMvc.perform(post("/api/solicitudes-ecaes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest));
                 // No validamos status específico porque depende de datos en BD
@@ -183,7 +183,7 @@ class EcaesIntegracionTest {
         String jsonRequest = "{}";
 
         // Debe dar error de validación (400 o 422)
-        mockMvc.perform(post("/api/solicitudes-ecaes/crearSolicitud-Ecaes")
+        mockMvc.perform(post("/api/solicitudes-ecaes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().is4xxClientError());
@@ -195,7 +195,7 @@ class EcaesIntegracionTest {
     @DisplayName("Test 11: Buscar solicitud por ID - Valida endpoint")
     void testBuscarSolicitudPorId() throws Exception {
         // Simplemente validamos que el endpoint existe (usando ID 5 que existe en BD de test)
-        mockMvc.perform(get("/api/solicitudes-ecaes/buscarSolicitud-Ecaes/5"));
+        mockMvc.perform(get("/api/solicitudes-ecaes/5"));
                 // Puede ser 200 OK o 404 NOT FOUND dependiendo de si existe el ID
     }
 
@@ -203,7 +203,7 @@ class EcaesIntegracionTest {
     @DisplayName("Test 12: Buscar solicitud por ID muy grande")
     void testBuscarSolicitudPorIdGrande() throws Exception {
         // Validamos comportamiento con ID inexistente
-        mockMvc.perform(get("/api/solicitudes-ecaes/buscarSolicitud-Ecaes/999999"));
+        mockMvc.perform(get("/api/solicitudes-ecaes/999999"));
                 // Puede dar 404 o 500 dependiendo de la implementación
     }
 
@@ -212,14 +212,14 @@ class EcaesIntegracionTest {
     @Test
     @DisplayName("Test 13: Endpoint raíz de solicitudes funciona")
     void testEndpointRaizSolicitudes() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitudes-Ecaes"))
+        mockMvc.perform(get("/api/solicitudes-ecaes"))
                 .andExpect(status().isOk());
     }
 
     @Test
     @DisplayName("Test 14: Validar que la respuesta sea JSON")
     void testRespuestaEsJSON() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitudes-Ecaes"))
+        mockMvc.perform(get("/api/solicitudes-ecaes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -227,7 +227,7 @@ class EcaesIntegracionTest {
     @Test
     @DisplayName("Test 15: Listar solicitudes por rol con usuario específico")
     void testListarPorRolConUsuario() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol")
+        mockMvc.perform(get("/api/solicitudes-ecaes")
                         .param("rol", "ESTUDIANTE")
                         .param("idUsuario", "1"))
                 .andExpect(status().isOk())
@@ -246,7 +246,7 @@ class EcaesIntegracionTest {
             }
             """;
 
-        mockMvc.perform(put("/api/solicitudes-ecaes/actualizarEstadoSolicitud")
+        mockMvc.perform(put("/api/solicitudes-ecaes/6/estado")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest));
                 // Puede ser 204, 404 o 400 dependiendo de datos en BD
@@ -269,7 +269,7 @@ class EcaesIntegracionTest {
             }
             """;
 
-        mockMvc.perform(post("/api/solicitudes-ecaes/publicarFechasEcaes")
+        mockMvc.perform(post("/api/solicitudes-ecaes/fechas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonFechasInvalido));
                 // Puede dar 400 o 500 dependiendo de la validación

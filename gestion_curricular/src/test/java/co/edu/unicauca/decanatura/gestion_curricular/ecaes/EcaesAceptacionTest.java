@@ -1,5 +1,8 @@
 package co.edu.unicauca.decanatura.gestion_curricular.ecaes;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +13,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SolicitudesDePrueba;
 
 /**
  * ============================================================
@@ -39,12 +43,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
-@WithMockUser(roles = { "SECRETARIA", "FUNCIONARIO", "COORDINADOR", "ESTUDIANTE" })
+@WithMockUser(username = "juan.perez@unicauca.edu.co", roles = { "Secretario", "Funcionario", "Coordinador", "Estudiante" })
 @DisplayName("Pruebas de Aceptación - ECAES")
 class EcaesAceptacionTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private SolicitudRepositoryInt solicitudRepository;
+
+    @Autowired
+    private UsuarioRepositoryInt usuarioRepository;
+
+    private SolicitudesDePrueba solicitudes() {
+        return new SolicitudesDePrueba(solicitudRepository, usuarioRepository);
+    }
+
+    private static String cambioEstado(int idSolicitud, String nuevoEstado) {
+        return "{\"idSolicitud\": %d, \"nuevoEstado\": \"%s\"}".formatted(idSolicitud, nuevoEstado);
+    }
 
     // ==================== HE-03-HU-01: SECRETARIO PUBLICA FECHAS ====================
 
@@ -74,7 +92,7 @@ class EcaesAceptacionTest {
             }
             """;
 
-        mockMvc.perform(post("/api/solicitudes-ecaes/publicarFechasEcaes")
+        mockMvc.perform(post("/api/solicitudes-ecaes/fechas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonFechas))
                 .andExpect(result -> {
@@ -100,12 +118,12 @@ class EcaesAceptacionTest {
          */
         
         // Paso 1: Estudiante consulta todas las fechas disponibles
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarFechasEcaes"))
+        mockMvc.perform(get("/api/solicitudes-ecaes/fechas"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 2: Estudiante consulta fechas por período específico (puede dar 200, 404 o 500 si hay múltiples registros)
-        mockMvc.perform(get("/api/solicitudes-ecaes/buscarFechasPorPeriodo/2025-2"))
+        mockMvc.perform(get("/api/solicitudes-ecaes/fechas/2025-2"))
                 .andExpect(result -> {
                     int status = result.getResponse().getStatus();
                     if (status != 200 && status != 404 && status != 500)
@@ -148,12 +166,12 @@ class EcaesAceptacionTest {
             }
             """;
 
-        mockMvc.perform(post("/api/solicitudes-ecaes/crearSolicitud-Ecaes")
+        mockMvc.perform(post("/api/solicitudes-ecaes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonSolicitud))
                 .andExpect(result -> {
                     int s = result.getResponse().getStatus();
-                    if (s != 201 && s != 409) throw new AssertionError("Expected 201 or 409, got " + s);
+                    if (s != 201 && s != 400) throw new AssertionError("Expected 201 or 400, got " + s);
                 });
     }
 
@@ -176,12 +194,12 @@ class EcaesAceptacionTest {
          */
         
         // Paso 1: Secretario consulta solicitudes asignadas
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario"))
+        mockMvc.perform(get("/api/solicitudes-ecaes").param("rol", "funcionario").param("bandeja", "pendientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 2: Secretario consulta solicitud específica (usando ID 5 que existe en BD de test)
-        mockMvc.perform(get("/api/solicitudes-ecaes/buscarSolicitud-Ecaes/5"))
+        mockMvc.perform(get("/api/solicitudes-ecaes/5"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -204,15 +222,11 @@ class EcaesAceptacionTest {
          *       AND el estudiante debe poder verificar su estado de PreRegistro
          */
         
-        String jsonCambioEstado = """
-            {
-                "idSolicitud": 6,
-                "nuevoEstado": "preRegistrado"
-            }
-            """;
+        int idSolicitud = solicitudes().ecaes("Enviada");
+        String jsonCambioEstado = cambioEstado(idSolicitud, "preRegistrado");
 
         // Puede ser 204 (éxito) o 404 (si la solicitud no existe) o 500 (si hay error)
-        mockMvc.perform(put("/api/solicitudes-ecaes/actualizarEstadoSolicitud")
+        mockMvc.perform(put("/api/solicitudes-ecaes/" + idSolicitud + "/estado")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCambioEstado))
                 .andExpect(result -> {
@@ -240,7 +254,7 @@ class EcaesAceptacionTest {
          */
         
         // Consultar solicitudes del estudiante (usando ID 1)
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol")
+        mockMvc.perform(get("/api/solicitudes-ecaes")
                         .param("rol", "ESTUDIANTE")
                         .param("idUsuario", "1"))
                 .andExpect(status().isOk())
@@ -272,7 +286,7 @@ class EcaesAceptacionTest {
             }
             """;
 
-        mockMvc.perform(post("/api/solicitudes-ecaes/crearSolicitud-Ecaes")
+        mockMvc.perform(post("/api/solicitudes-ecaes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonInvalido))
                 .andExpect(status().is4xxClientError()); // Acepta cualquier error 4xx (400, 409, etc.)
@@ -301,7 +315,7 @@ class EcaesAceptacionTest {
             }
             """;
 
-        mockMvc.perform(put("/api/solicitudes-ecaes/actualizarEstadoSolicitud")
+        mockMvc.perform(put("/api/solicitudes-ecaes/999/estado")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCambioEstado))
                 .andExpect(result -> {
@@ -340,7 +354,7 @@ class EcaesAceptacionTest {
             }
             """;
 
-        mockMvc.perform(put("/api/solicitudes-ecaes/actualizarFechasEcaes")
+        mockMvc.perform(put("/api/solicitudes-ecaes/fechas/2025-1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonFechasActualizadas))
                 .andExpect(result -> {
@@ -366,7 +380,7 @@ class EcaesAceptacionTest {
          *       AND debe mantener registro de todos los estados anteriores
          */
         
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitudes-Ecaes"))
+        mockMvc.perform(get("/api/solicitudes-ecaes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }

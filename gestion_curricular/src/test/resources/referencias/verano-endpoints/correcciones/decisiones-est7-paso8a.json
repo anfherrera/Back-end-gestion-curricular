@@ -1,0 +1,162 @@
+{
+  "/~1api~1cursos-verano~1preinscripciones~17~1aprobar #0": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/aprobar",
+      "metodo": "PUT"
+    },
+    "status": 404
+  },
+  "/~1api~1cursos-verano~1preinscripciones~17~1aprobar #1": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/aprobar",
+      "metodo": "PUT"
+    },
+    "status": 404
+  },
+  "/~1api~1cursos-verano~1preinscripciones~17~1aprobar #2": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/aprobar",
+      "metodo": "PUT"
+    },
+    "status": 404
+  },
+  "/~1api~1cursos-verano~1preinscripciones~17~1aprobar #3": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/aprobar",
+      "metodo": "PUT"
+    },
+    "status": 404
+  },
+  "/~1api~1cursos-verano~1preinscripciones~17~1aprobar #4": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/aprobar",
+      "metodo": "PUT"
+    },
+    "status": 404
+  },
+  "/~1api~1cursos-verano~1preinscripciones~17~1aprobar #5": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/aprobar",
+      "metodo": "PUT"
+    },
+    "status": 404
+  },
+  "/~1api~1cursos-verano~1preinscripciones~17~1aprobar #6": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/aprobar",
+      "metodo": "PUT"
+    },
+    "status": 404
+  },
+  "/~1api~1cursos-verano~1preinscripciones~17~1aprobar #7": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/aprobar",
+      "metodo": "PUT"
+    },
+    "status": 404
+  },
+  "/~1api~1cursos-verano~1preinscripciones~17~1rechazar #0": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/rechazar",
+      "metodo": "PUT"
+    },
+    "status": 404
+  },
+  "/~1api~1cursos-verano~1preinscripciones~17~1rechazar #1": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/rechazar",
+      "metodo": "PUT"
+    },
+    "status": 404
+  },
+  "/~1api~1cursos-verano~1preinscripciones~17~1rechazar #2": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/rechazar",
+      "metodo": "PUT"
+    },
+    "status": 404
+  },
+  "/~1api~1cursos-verano~1preinscripciones~17~1rechazar #3": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/rechazar",
+      "metodo": "PUT"
+    },
+    "status": 404
+  },
+  "/~1api~1cursos-verano~1preinscripciones~17~1rechazar #4": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/rechazar",
+      "metodo": "PUT"
+    },
+    "status": 404
+  },
+  "/~1api~1cursos-verano~1preinscripciones~17~1rechazar #5": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/rechazar",
+      "metodo": "PUT"
+    },
+    "status": 404
+  },
+  "/~1api~1cursos-verano~1preinscripciones~17~1rechazar #6": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/rechazar",
+      "metodo": "PUT"
+    },
+    "status": 404
+  },
+  "/~1api~1cursos-verano~1preinscripciones~17~1rechazar #7": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/rechazar",
+      "metodo": "PUT"
+    },
+    "status": 404
+  }
+}

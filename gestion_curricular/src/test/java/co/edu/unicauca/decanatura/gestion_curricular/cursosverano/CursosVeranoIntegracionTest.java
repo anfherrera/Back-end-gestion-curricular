@@ -1,13 +1,10 @@
 package co.edu.unicauca.decanatura.gestion_curricular.cursosverano;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,8 +17,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 /**
  * ============================================================
@@ -146,19 +147,13 @@ class CursosVeranoIntegracionTest {
 
     // ==================== PRUEBAS DE LISTADO DE CURSOS ====================
 
-    @Test
-    @DisplayName("Test 1: Listar todos los cursos de verano")
-    void testListarTodosLosCursosVerano() throws Exception {
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
-                        .header("Authorization", tokenEstudiante))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-    }
+    // Test 1 (listar todos los cursos como estudiante) se quitó en EST-7, paso 8a: esa ruta se retira y su
+    // equivalente para estudiantes es la oferta del test 2.
 
     @Test
     @DisplayName("Test 2: Listar cursos de verano disponibles para estudiantes")
     void testListarCursosVeranoDisponibles() throws Exception {
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/disponibles")
+        mockMvc.perform(get("/api/cursos-verano/cursos?disponibles=true")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -167,7 +162,7 @@ class CursosVeranoIntegracionTest {
     @Test
     @DisplayName("Test 3: Listar todos los cursos para funcionarios")
     void testListarTodosLosCursosParaFuncionarios() throws Exception {
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/todos")
+        mockMvc.perform(get("/api/cursos-verano/cursos")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -176,7 +171,7 @@ class CursosVeranoIntegracionTest {
     @Test
     @DisplayName("Test 4: Listar cursos en estado preinscripción")
     void testListarCursosEnPreinscripcion() throws Exception {
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos/preinscripcion")
+        mockMvc.perform(get("/api/cursos-verano/cursos?estado=preinscripcion")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -185,7 +180,7 @@ class CursosVeranoIntegracionTest {
     @Test
     @DisplayName("Test 5: Listar cursos en estado inscripción")
     void testListarCursosEnInscripcion() throws Exception {
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos/inscripcion")
+        mockMvc.perform(get("/api/cursos-verano/cursos?estado=inscripcion")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -217,7 +212,7 @@ class CursosVeranoIntegracionTest {
             """;
 
         // Solo validamos que el endpoint existe y responde
-        mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
+        mockMvc.perform(post("/api/cursos-verano/preinscripciones")
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest));
@@ -261,19 +256,13 @@ class CursosVeranoIntegracionTest {
     @Test
     @DisplayName("Test 13: Validar que endpoint raíz funciona")
     void testEndpointRaizFunciona() throws Exception {
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
-                        .header("Authorization", tokenEstudiante))
+        // EST-7, paso 8a: la raíz de /cursos es el listado completo, solo para staff
+        mockMvc.perform(get("/api/cursos-verano/cursos")
+                        .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk());
     }
 
-    @Test
-    @DisplayName("Test 14: Validar que la respuesta sea JSON")
-    void testRespuestaEsJSON() throws Exception {
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
-                        .header("Authorization", tokenEstudiante))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-    }
+    // Test 14 (la respuesta del listado como estudiante es JSON) se quitó en EST-7, paso 8a: lo cubre el test 2.
 
     // Test 15: Comentado porque endpoint devuelve error 500
     // @Test

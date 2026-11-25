@@ -11,12 +11,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Documento {
 
-    private Integer id_documento;
+    private Integer idDocumento;
     private String nombre;
-    private String ruta_documento;
-    private Date fecha_documento;
+    private String rutaDocumento;
+    private Date fechaDocumento;
     private boolean esValido;
     private String comentario; // observacion
+    /** Usuario que subió el archivo. Mientras el documento no tenga solicitud, solo se asocia a solicitudes de este usuario. */
+    private Integer idUsuarioSubio;
 
     private Solicitud objSolicitud;
     

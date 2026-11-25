@@ -1,0 +1,460 @@
+{
+  "obtenerUsuarioPorId 1" : {
+    "@tipo" : "Usuario",
+    "cedula" : "123",
+    "codigo" : "104",
+    "correo" : "ana@unicauca.edu.co",
+    "cursosOfertadosInscritos" : [ ],
+    "estado_usuario" : true,
+    "id_usuario" : 1,
+    "nombre_completo" : "Ana Pérez",
+    "objPrograma" : {
+      "@tipo" : "Programa",
+      "codigo" : "SIS",
+      "id_programa" : 1,
+      "nombre_programa" : "Ingeniería de Sistemas"
+    },
+    "objRol" : {
+      "@tipo" : "Rol",
+      "id_rol" : 1,
+      "nombre" : "ESTUDIANTE",
+      "usuarios" : null
+    },
+    "password" : "$2a$hash",
+    "solicitudes" : [ ]
+  },
+  "obtenerUsuarioPorId 3" : {
+    "@tipo" : "Usuario",
+    "cedula" : null,
+    "codigo" : null,
+    "correo" : "rol@unicauca.edu.co",
+    "cursosOfertadosInscritos" : [ ],
+    "estado_usuario" : false,
+    "id_usuario" : 3,
+    "nombre_completo" : null,
+    "objPrograma" : {
+      "@tipo" : "Programa",
+      "codigo" : null,
+      "id_programa" : 4,
+      "nombre_programa" : null
+    },
+    "objRol" : {
+      "@tipo" : "Rol",
+      "id_rol" : null,
+      "nombre" : null,
+      "usuarios" : null
+    },
+    "password" : null,
+    "solicitudes" : [ ]
+  },
+  "buscarUsuarioPorId 2" : {
+    "@optional" : {
+      "@tipo" : "Usuario",
+      "cedula" : null,
+      "codigo" : null,
+      "correo" : "sin@unicauca.edu.co",
+      "cursosOfertadosInscritos" : [ ],
+      "estado_usuario" : false,
+      "id_usuario" : 2,
+      "nombre_completo" : null,
+      "objPrograma" : null,
+      "objRol" : null,
+      "password" : null,
+      "solicitudes" : [ ]
+    }
+  },
+  "buscarUsuarioPorId 9" : {
+    "@optional" : null
+  },
+  "buscarUsuarioPorCorreo" : {
+    "@tipo" : "Usuario",
+    "cedula" : "123",
+    "codigo" : "104",
+    "correo" : "ana@unicauca.edu.co",
+    "cursosOfertadosInscritos" : [ ],
+    "estado_usuario" : true,
+    "id_usuario" : 1,
+    "nombre_completo" : "Ana Pérez",
+    "objPrograma" : {
+      "@tipo" : "Programa",
+      "codigo" : "SIS",
+      "id_programa" : 1,
+      "nombre_programa" : "Ingeniería de Sistemas"
+    },
+    "objRol" : {
+      "@tipo" : "Rol",
+      "id_rol" : 1,
+      "nombre" : "ESTUDIANTE",
+      "usuarios" : null
+    },
+    "password" : "$2a$hash",
+    "solicitudes" : [ ]
+  },
+  "buscarUsuarioPorCedula" : {
+    "@tipo" : "Usuario",
+    "cedula" : "123",
+    "codigo" : "104",
+    "correo" : "ana@unicauca.edu.co",
+    "cursosOfertadosInscritos" : [ ],
+    "estado_usuario" : true,
+    "id_usuario" : 1,
+    "nombre_completo" : "Ana Pérez",
+    "objPrograma" : {
+      "@tipo" : "Programa",
+      "codigo" : "SIS",
+      "id_programa" : 1,
+      "nombre_programa" : "Ingeniería de Sistemas"
+    },
+    "objRol" : {
+      "@tipo" : "Rol",
+      "id_rol" : 1,
+      "nombre" : "ESTUDIANTE",
+      "usuarios" : null
+    },
+    "password" : "$2a$hash",
+    "solicitudes" : [ ]
+  },
+  "buscarUsuariosPorRol" : [ {
+    "@tipo" : "Usuario",
+    "cedula" : "123",
+    "codigo" : "104",
+    "correo" : "ana@unicauca.edu.co",
+    "cursosOfertadosInscritos" : [ ],
+    "estado_usuario" : true,
+    "id_usuario" : 1,
+    "nombre_completo" : "Ana Pérez",
+    "objPrograma" : {
+      "@tipo" : "Programa",
+      "codigo" : "SIS",
+      "id_programa" : 1,
+      "nombre_programa" : "Ingeniería de Sistemas"
+    },
+    "objRol" : {
+      "@tipo" : "Rol",
+      "id_rol" : 1,
+      "nombre" : "ESTUDIANTE",
+      "usuarios" : null
+    },
+    "password" : "$2a$hash",
+    "solicitudes" : [ ]
+  }, {
+    "@tipo" : "Usuario",
+    "cedula" : null,
+    "codigo" : null,
+    "correo" : "sin@unicauca.edu.co",
+    "cursosOfertadosInscritos" : [ ],
+    "estado_usuario" : false,
+    "id_usuario" : 2,
+    "nombre_completo" : null,
+    "objPrograma" : null,
+    "objRol" : null,
+    "password" : null,
+    "solicitudes" : [ ]
+  } ],
+  "listarUsuarios" : [ {
+    "@tipo" : "Usuario",
+    "cedula" : null,
+    "codigo" : null,
+    "correo" : "sin@unicauca.edu.co",
+    "cursosOfertadosInscritos" : [ ],
+    "estado_usuario" : false,
+    "id_usuario" : 2,
+    "nombre_completo" : null,
+    "objPrograma" : null,
+    "objRol" : null,
+    "password" : null,
+    "solicitudes" : [ ]
+  }, {
+    "@tipo" : "Usuario",
+    "cedula" : null,
+    "codigo" : null,
+    "correo" : "rol@unicauca.edu.co",
+    "cursosOfertadosInscritos" : [ ],
+    "estado_usuario" : false,
+    "id_usuario" : 3,
+    "nombre_completo" : null,
+    "objPrograma" : {
+      "@tipo" : "Programa",
+      "codigo" : null,
+      "id_programa" : 4,
+      "nombre_programa" : null
+    },
+    "objRol" : {
+      "@tipo" : "Rol",
+      "id_rol" : null,
+      "nombre" : null,
+      "usuarios" : null
+    },
+    "password" : null,
+    "solicitudes" : [ ]
+  }, {
+    "@tipo" : "Usuario",
+    "cedula" : "123",
+    "codigo" : "104",
+    "correo" : "ana@unicauca.edu.co",
+    "cursosOfertadosInscritos" : [ ],
+    "estado_usuario" : true,
+    "id_usuario" : 1,
+    "nombre_completo" : "Ana Pérez",
+    "objPrograma" : {
+      "@tipo" : "Programa",
+      "codigo" : "SIS",
+      "id_programa" : 1,
+      "nombre_programa" : "Ingeniería de Sistemas"
+    },
+    "objRol" : {
+      "@tipo" : "Rol",
+      "id_rol" : 1,
+      "nombre" : "ESTUDIANTE",
+      "usuarios" : null
+    },
+    "password" : "$2a$hash",
+    "solicitudes" : [ ]
+  } ],
+  "buscarUsuarioPorSolicitud" : {
+    "@tipo" : "Usuario",
+    "cedula" : "123",
+    "codigo" : "104",
+    "correo" : "ana@unicauca.edu.co",
+    "cursosOfertadosInscritos" : [ ],
+    "estado_usuario" : true,
+    "id_usuario" : 1,
+    "nombre_completo" : "Ana Pérez",
+    "objPrograma" : {
+      "@tipo" : "Programa",
+      "codigo" : "SIS",
+      "id_programa" : 1,
+      "nombre_programa" : "Ingeniería de Sistemas"
+    },
+    "objRol" : {
+      "@tipo" : "Rol",
+      "id_rol" : 1,
+      "nombre" : "ESTUDIANTE",
+      "usuarios" : null
+    },
+    "password" : "$2a$hash",
+    "solicitudes" : [ ]
+  },
+  "buscarUsuarioPorCodigo" : {
+    "@tipo" : "Usuario",
+    "cedula" : null,
+    "codigo" : null,
+    "correo" : "rol@unicauca.edu.co",
+    "cursosOfertadosInscritos" : [ ],
+    "estado_usuario" : false,
+    "id_usuario" : 3,
+    "nombre_completo" : null,
+    "objPrograma" : {
+      "@tipo" : "Programa",
+      "codigo" : null,
+      "id_programa" : 4,
+      "nombre_programa" : null
+    },
+    "objRol" : {
+      "@tipo" : "Rol",
+      "id_rol" : null,
+      "nombre" : null,
+      "usuarios" : null
+    },
+    "password" : null,
+    "solicitudes" : [ ]
+  },
+  "loadUserByUsername ana" : "org.springframework.security.core.userdetails.User [Username=ana@unicauca.edu.co, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_ESTUDIANTE]]",
+  "loadUserByUsername sin rol" : {
+    "excepcion" : "org.springframework.security.core.userdetails.UsernameNotFoundException",
+    "mensaje" : "El usuario no tiene un rol asignado: sin@unicauca.edu.co"
+  },
+  "crearUsuario completo" : {
+    "resultado" : {
+      "@tipo" : "Usuario",
+      "cedula" : "123",
+      "codigo" : "104",
+      "correo" : "ana@unicauca.edu.co",
+      "cursosOfertadosInscritos" : [ ],
+      "estado_usuario" : true,
+      "id_usuario" : 50,
+      "nombre_completo" : "Ana Pérez",
+      "objPrograma" : {
+        "@tipo" : "Programa",
+        "codigo" : "SIS",
+        "id_programa" : 1,
+        "nombre_programa" : "Ingeniería de Sistemas"
+      },
+      "objRol" : {
+        "@tipo" : "Rol",
+        "id_rol" : 1,
+        "nombre" : "ESTUDIANTE",
+        "usuarios" : null
+      },
+      "password" : "$2a$hash",
+      "solicitudes" : [ ]
+    },
+    "guardados" : [ {
+      "@tipo" : "UsuarioEntity",
+      "cedula" : "123",
+      "codigo" : "104",
+      "correo" : "ana@unicauca.edu.co",
+      "cursosOfertadosInscritos" : [ ],
+      "estado_usuario" : true,
+      "id_usuario" : 50,
+      "nombre_completo" : "Ana Pérez",
+      "objPrograma" : {
+        "@tipo" : "ProgramaEntity",
+        "codigo" : "SIS",
+        "id_programa" : 1,
+        "nombre_programa" : "Ingeniería de Sistemas",
+        "usuarios" : [ ]
+      },
+      "objRol" : {
+        "@tipo" : "RolEntity",
+        "id_rol" : 1,
+        "nombre" : "ESTUDIANTE",
+        "usuarios" : [ ]
+      },
+      "password" : "$2a$hash",
+      "solicitudes" : [ ]
+    } ]
+  },
+  "crearUsuario relaciones parciales" : {
+    "resultado" : {
+      "@tipo" : "Usuario",
+      "cedula" : "123",
+      "codigo" : "104",
+      "correo" : "ana@unicauca.edu.co",
+      "cursosOfertadosInscritos" : [ ],
+      "estado_usuario" : true,
+      "id_usuario" : 50,
+      "nombre_completo" : "Ana Pérez",
+      "objPrograma" : {
+        "@tipo" : "Programa",
+        "codigo" : "SIS",
+        "id_programa" : 1,
+        "nombre_programa" : "Ingeniería de Sistemas"
+      },
+      "objRol" : {
+        "@tipo" : "Rol",
+        "id_rol" : 1,
+        "nombre" : "ESTUDIANTE",
+        "usuarios" : null
+      },
+      "password" : "$2a$hash",
+      "solicitudes" : [ ]
+    },
+    "guardados" : [ {
+      "@tipo" : "UsuarioEntity",
+      "cedula" : "  ",
+      "codigo" : null,
+      "correo" : null,
+      "cursosOfertadosInscritos" : [ ],
+      "estado_usuario" : false,
+      "id_usuario" : 50,
+      "nombre_completo" : null,
+      "objPrograma" : {
+        "@tipo" : "ProgramaEntity",
+        "codigo" : null,
+        "id_programa" : 3,
+        "nombre_programa" : null,
+        "usuarios" : [ ]
+      },
+      "objRol" : {
+        "@tipo" : "RolEntity",
+        "id_rol" : 2,
+        "nombre" : null,
+        "usuarios" : [ ]
+      },
+      "password" : null,
+      "solicitudes" : [ ]
+    } ]
+  },
+  "actualizarUsuario completo" : {
+    "resultado" : {
+      "@tipo" : "Usuario",
+      "cedula" : " 123 ",
+      "codigo" : "104",
+      "correo" : "ana@unicauca.edu.co",
+      "cursosOfertadosInscritos" : [ ],
+      "estado_usuario" : true,
+      "id_usuario" : 1,
+      "nombre_completo" : "Ana Pérez",
+      "objPrograma" : {
+        "@tipo" : "Programa",
+        "codigo" : "SIS",
+        "id_programa" : 1,
+        "nombre_programa" : "Ingeniería de Sistemas"
+      },
+      "objRol" : {
+        "@tipo" : "Rol",
+        "id_rol" : 1,
+        "nombre" : "ESTUDIANTE",
+        "usuarios" : null
+      },
+      "password" : "$2a$hash",
+      "solicitudes" : [ ]
+    },
+    "guardados" : [ {
+      "@tipo" : "UsuarioEntity",
+      "cedula" : " 123 ",
+      "codigo" : "104",
+      "correo" : "ana@unicauca.edu.co",
+      "cursosOfertadosInscritos" : [ ],
+      "estado_usuario" : true,
+      "id_usuario" : 1,
+      "nombre_completo" : "Ana Pérez",
+      "objPrograma" : {
+        "@tipo" : "ProgramaEntity",
+        "codigo" : "SIS",
+        "id_programa" : 1,
+        "nombre_programa" : "Ingeniería de Sistemas",
+        "usuarios" : [ ]
+      },
+      "objRol" : {
+        "@tipo" : "RolEntity",
+        "id_rol" : 1,
+        "nombre" : "ESTUDIANTE",
+        "usuarios" : [ ]
+      },
+      "password" : "$2a$hash",
+      "solicitudes" : [ ]
+    } ]
+  },
+  "actualizarUsuario sin relaciones" : {
+    "resultado" : {
+      "@tipo" : "Usuario",
+      "cedula" : null,
+      "codigo" : null,
+      "correo" : null,
+      "cursosOfertadosInscritos" : [ ],
+      "estado_usuario" : false,
+      "id_usuario" : 2,
+      "nombre_completo" : null,
+      "objPrograma" : null,
+      "objRol" : {
+        "@tipo" : "Rol",
+        "id_rol" : null,
+        "nombre" : "SIN_ID",
+        "usuarios" : null
+      },
+      "password" : null,
+      "solicitudes" : [ ]
+    },
+    "guardados" : [ {
+      "@tipo" : "UsuarioEntity",
+      "cedula" : null,
+      "codigo" : null,
+      "correo" : null,
+      "cursosOfertadosInscritos" : [ ],
+      "estado_usuario" : false,
+      "id_usuario" : 2,
+      "nombre_completo" : null,
+      "objPrograma" : null,
+      "objRol" : {
+        "@tipo" : "RolEntity",
+        "id_rol" : null,
+        "nombre" : "SIN_ID",
+        "usuarios" : [ ]
+      },
+      "password" : null,
+      "solicitudes" : [ ]
+    } ]
+  }
+}

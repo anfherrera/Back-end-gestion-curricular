@@ -1,0 +1,25 @@
+{
+  "/GET ~1globales?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porPrograma": {
+    "Ingeniería Civil": 1,
+    "Ingeniería Electrónica": 2,
+    "Ingeniería de Sistemas": 4
+  },
+  "/GET ~1globales?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso": {
+    "Cursos de Verano": 2,
+    "ECAES": 1,
+    "Homologacion": 2,
+    "Paz y Salvo": 1,
+    "Reingreso": 1
+  },
+  "/GET ~1globales?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porcentajeAprobacion": 42.86,
+  "/GET ~1globales?periodoAcademico=[2025 - Primer Semestre]/cuerpo/totalAprobadas": 3,
+  "/GET ~1globales?periodoAcademico=[2025 - Primer Semestre]/cuerpo/totalEnProceso": 1,
+  "/GET ~1globales?periodoAcademico=[2025 - Primer Semestre]/cuerpo/totalRechazadas": 1,
+  "/GET ~1globales?periodoAcademico=[2025-3]/cuerpo/porPrograma": {},
+  "/GET ~1globales?periodoAcademico=[2025-3]/cuerpo/porTipoProceso": {},
+  "/GET ~1globales?periodoAcademico=[2025-3]/cuerpo/porcentajeAprobacion": 0.0,
+  "/GET ~1globales?periodoAcademico=[2025-3]/cuerpo/totalAprobadas": 0,
+  "/GET ~1globales?periodoAcademico=[2025-3]/cuerpo/totalEnviadas": 0,
+  "/GET ~1globales?periodoAcademico=[2025-3]/cuerpo/totalRechazadas": 0,
+  "/GET ~1globales?periodoAcademico=[2025-3]/cuerpo/totalSolicitudes": 0
+}

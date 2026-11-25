@@ -1,0 +1,241 @@
+{
+  "DELETE /api/roles/1": {
+    "status": 200,
+    "tipo": null,
+    "cuerpo": null
+  },
+  "DELETE /api/roles/9": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null
+  },
+  "DELETE /api/roles/eliminarRol/1": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/roles/eliminarRol/1",
+      "metodo": "DELETE"
+    }
+  },
+  "DELETE /api/roles/eliminarRol/9": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/roles/eliminarRol/9",
+      "metodo": "DELETE"
+    }
+  },
+  "GET /api/roles": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_rol": 1,
+        "nombre": "ADMIN"
+      },
+      {
+        "id_rol": 2,
+        "nombre": "ESTUDIANTE"
+      }
+    ]
+  },
+  "GET /api/roles/1": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_rol": 1,
+      "nombre": "ADMIN"
+    }
+  },
+  "GET /api/roles/9": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null
+  },
+  "GET /api/roles/buscarPorNombre?nombre=ADMIN": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/roles/buscarPorNombre",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/roles/buscarPorNombre?nombre=X": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/roles/buscarPorNombre",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/roles/buscarRolPorId/1": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/roles/buscarRolPorId/1",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/roles/buscarRolPorId/9": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/roles/buscarRolPorId/9",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/roles/buscarRolPorId/abc": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/roles/buscarRolPorId/abc",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/roles/listarRoles": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/roles/listarRoles",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/roles?nombre=ADMIN": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_rol": 1,
+      "nombre": "ADMIN"
+    }
+  },
+  "GET /api/roles?nombre=X": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null
+  },
+  "POST /api/roles {\"nombre\":\"AB\"}": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "nombre": "El nombre del rol debe tener entre 3 y 30 caracteres."
+    }
+  },
+  "POST /api/roles {\"nombre\":\"NUEVO\"}": {
+    "status": 201,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_rol": 7,
+      "nombre": "NUEVO"
+    }
+  },
+  "POST /api/roles {}": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "nombre": "El nombre del rol no puede estar vacío."
+    }
+  },
+  "POST /api/roles/crearRol {\"nombre\":\"AB\"}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/roles/crearRol",
+      "metodo": "POST"
+    }
+  },
+  "POST /api/roles/crearRol {\"nombre\":\"NUEVO\"}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/roles/crearRol",
+      "metodo": "POST"
+    }
+  },
+  "POST /api/roles/crearRol {}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/roles/crearRol",
+      "metodo": "POST"
+    }
+  },
+  "PUT /api/roles/3 {\"id_rol\":3,\"nombre\":\"EDITADO\"}": {
+    "status": 202,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_rol": 3,
+      "nombre": "EDITADO"
+    }
+  },
+  "PUT /api/roles/3 {\"id_rol\":5,\"nombre\":\"EDITADO\"}": {
+    "status": 202,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_rol": 3,
+      "nombre": "EDITADO"
+    }
+  },
+  "PUT /api/roles/3 {\"nombre\":\"EDITADO\"}": {
+    "status": 202,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_rol": 3,
+      "nombre": "EDITADO"
+    }
+  },
+  "PUT /api/roles/actualizarRol {\"id_rol\":3,\"nombre\":\"EDITADO\"}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/roles/actualizarRol",
+      "metodo": "PUT"
+    }
+  },
+  "PUT /api/roles/actualizarRol {\"nombre\":\"EDITADO\"}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/roles/actualizarRol",
+      "metodo": "PUT"
+    }
+  }
+}

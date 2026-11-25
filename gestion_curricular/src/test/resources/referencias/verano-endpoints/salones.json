@@ -1,0 +1,473 @@
+{
+  "normal/todos" : {
+    "http" : 200,
+    "json" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : null,
+      "nombre_curso" : null,
+      "descripcion" : "Curso de verano",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Abierto",
+      "periodo" : "2025-2",
+      "objMateria" : null,
+      "objDocente" : null,
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ ],
+      "estudiantesInscritos" : [ ]
+    } ]
+  },
+  "normal/detalle" : {
+    "http" : 200,
+    "json" : {
+      "descripcion" : "Curso de verano",
+      "objDocente" : null,
+      "cupo_maximo" : 20,
+      "estado" : "Abierto",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "codigo_curso" : null,
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "solicitudes" : 0,
+      "id_salon" : 81,
+      "nombre_curso" : null,
+      "espacio_asignado" : "221",
+      "objMateria" : null,
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "idCurso" : 71,
+      "cupo_disponible" : 20,
+      "salon" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      }
+    }
+  },
+  "normal/editar" : {
+    "http" : 200,
+    "json" : {
+      "id_salon" : 81,
+      "nombre_curso" : "Curso",
+      "espacio_asignado" : "221",
+      "debug_info" : "Cambios aplicados y guardados en BD",
+      "estado" : "Actualizado",
+      "codigo_curso" : "N/A",
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "message" : "Curso actualizado exitosamente",
+      "salon" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      }
+    }
+  },
+  "espacios/todos" : {
+    "http" : 200,
+    "json" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : null,
+      "nombre_curso" : null,
+      "descripcion" : "Curso de verano",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : " 221 ",
+      "estado" : "Abierto",
+      "periodo" : "2025-2",
+      "objMateria" : null,
+      "objDocente" : null,
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : " 221 ",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ ],
+      "estudiantesInscritos" : [ ]
+    } ]
+  },
+  "espacios/detalle" : {
+    "http" : 200,
+    "json" : {
+      "descripcion" : "Curso de verano",
+      "objDocente" : null,
+      "cupo_maximo" : 20,
+      "estado" : "Abierto",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "codigo_curso" : null,
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "solicitudes" : 0,
+      "id_salon" : null,
+      "nombre_curso" : null,
+      "espacio_asignado" : " 221 ",
+      "objMateria" : null,
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "idCurso" : 71,
+      "cupo_disponible" : 20,
+      "salon" : null
+    }
+  },
+  "espacios/editar" : {
+    "http" : 200,
+    "json" : {
+      "id_salon" : null,
+      "nombre_curso" : "Curso",
+      "espacio_asignado" : " 221 ",
+      "debug_info" : "Cambios aplicados y guardados en BD",
+      "estado" : "Actualizado",
+      "codigo_curso" : "N/A",
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "message" : "Curso actualizado exitosamente",
+      "salon" : null
+    }
+  },
+  "respaldo/todos" : {
+    "http" : 200,
+    "json" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : null,
+      "nombre_curso" : null,
+      "descripcion" : "Curso de verano",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Abierto",
+      "periodo" : "2025-2",
+      "objMateria" : null,
+      "objDocente" : null,
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ ],
+      "estudiantesInscritos" : [ ]
+    } ]
+  },
+  "respaldo/detalle" : {
+    "http" : 200,
+    "json" : {
+      "descripcion" : "Curso de verano",
+      "objDocente" : null,
+      "cupo_maximo" : 20,
+      "estado" : "Abierto",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "codigo_curso" : null,
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "solicitudes" : 0,
+      "id_salon" : null,
+      "nombre_curso" : null,
+      "espacio_asignado" : "221",
+      "objMateria" : null,
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "idCurso" : 71,
+      "cupo_disponible" : 20,
+      "salon" : null
+    }
+  },
+  "respaldo/editar" : {
+    "http" : 200,
+    "json" : {
+      "id_salon" : null,
+      "nombre_curso" : "Curso",
+      "espacio_asignado" : "221",
+      "debug_info" : "Cambios aplicados y guardados en BD",
+      "estado" : "Actualizado",
+      "codigo_curso" : "N/A",
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "message" : "Curso actualizado exitosamente",
+      "salon" : null
+    }
+  },
+  "error-total/todos" : {
+    "http" : 200,
+    "json" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : null,
+      "nombre_curso" : null,
+      "descripcion" : "Curso de verano",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Abierto",
+      "periodo" : "2025-2",
+      "objMateria" : null,
+      "objDocente" : null,
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ ],
+      "estudiantesInscritos" : [ ]
+    } ]
+  },
+  "error-total/detalle" : {
+    "http" : 200,
+    "json" : {
+      "descripcion" : "Curso de verano",
+      "objDocente" : null,
+      "cupo_maximo" : 20,
+      "estado" : "Abierto",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "codigo_curso" : null,
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "solicitudes" : 0,
+      "id_salon" : null,
+      "nombre_curso" : null,
+      "espacio_asignado" : "221",
+      "objMateria" : null,
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "idCurso" : 71,
+      "cupo_disponible" : 20,
+      "salon" : null
+    }
+  },
+  "error-total/editar" : {
+    "http" : 200,
+    "json" : {
+      "id_salon" : null,
+      "nombre_curso" : "Curso",
+      "espacio_asignado" : "221",
+      "debug_info" : "Cambios aplicados y guardados en BD",
+      "estado" : "Actualizado",
+      "codigo_curso" : "N/A",
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "message" : "Curso actualizado exitosamente",
+      "salon" : null
+    }
+  },
+  "inexistente/todos" : {
+    "http" : 200,
+    "json" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : null,
+      "nombre_curso" : null,
+      "descripcion" : "Curso de verano",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "999",
+      "estado" : "Abierto",
+      "periodo" : "2025-2",
+      "objMateria" : null,
+      "objDocente" : null,
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "999",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ ],
+      "estudiantesInscritos" : [ ]
+    } ]
+  },
+  "inexistente/detalle" : {
+    "http" : 200,
+    "json" : {
+      "descripcion" : "Curso de verano",
+      "objDocente" : null,
+      "cupo_maximo" : 20,
+      "estado" : "Abierto",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "codigo_curso" : null,
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "solicitudes" : 0,
+      "id_salon" : null,
+      "nombre_curso" : null,
+      "espacio_asignado" : "999",
+      "objMateria" : null,
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "idCurso" : 71,
+      "cupo_disponible" : 20,
+      "salon" : null
+    }
+  },
+  "inexistente/editar" : {
+    "http" : 200,
+    "json" : {
+      "id_salon" : null,
+      "nombre_curso" : "Curso",
+      "espacio_asignado" : "999",
+      "debug_info" : "Cambios aplicados y guardados en BD",
+      "estado" : "Actualizado",
+      "codigo_curso" : "N/A",
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "message" : "Curso actualizado exitosamente",
+      "salon" : null
+    }
+  },
+  "blanco/todos" : {
+    "http" : 200,
+    "json" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : null,
+      "nombre_curso" : null,
+      "descripcion" : "Curso de verano",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "   ",
+      "estado" : "Abierto",
+      "periodo" : "2025-2",
+      "objMateria" : null,
+      "objDocente" : null,
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "   ",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ ],
+      "estudiantesInscritos" : [ ]
+    } ]
+  },
+  "blanco/detalle" : {
+    "http" : 200,
+    "json" : {
+      "descripcion" : "Curso de verano",
+      "objDocente" : null,
+      "cupo_maximo" : 20,
+      "estado" : "Abierto",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "codigo_curso" : null,
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "solicitudes" : 0,
+      "id_salon" : null,
+      "nombre_curso" : null,
+      "espacio_asignado" : "   ",
+      "objMateria" : null,
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "idCurso" : 71,
+      "cupo_disponible" : 20,
+      "salon" : null
+    }
+  },
+  "blanco/editar" : {
+    "http" : 200,
+    "json" : {
+      "id_salon" : null,
+      "nombre_curso" : "Curso",
+      "espacio_asignado" : "   ",
+      "debug_info" : "Cambios aplicados y guardados en BD",
+      "estado" : "Actualizado",
+      "codigo_curso" : "N/A",
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "message" : "Curso actualizado exitosamente",
+      "salon" : null
+    }
+  },
+  "sin-salon/todos" : {
+    "http" : 200,
+    "json" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : null,
+      "nombre_curso" : null,
+      "descripcion" : "Curso de verano",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Abierto",
+      "periodo" : "2025-2",
+      "objMateria" : null,
+      "objDocente" : null,
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ ],
+      "estudiantesInscritos" : [ ]
+    } ]
+  },
+  "sin-salon/detalle" : {
+    "http" : 200,
+    "json" : {
+      "descripcion" : "Curso de verano",
+      "objDocente" : null,
+      "cupo_maximo" : 20,
+      "estado" : "Abierto",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "codigo_curso" : null,
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "solicitudes" : 0,
+      "id_salon" : null,
+      "nombre_curso" : null,
+      "espacio_asignado" : null,
+      "objMateria" : null,
+      "fecha_fin" : "2025-08-12T12:00:00Z",
+      "idCurso" : 71,
+      "cupo_disponible" : 20,
+      "salon" : null
+    }
+  },
+  "sin-salon/editar" : {
+    "http" : 200,
+    "json" : {
+      "id_salon" : null,
+      "nombre_curso" : "Curso",
+      "espacio_asignado" : null,
+      "debug_info" : "Cambios aplicados y guardados en BD",
+      "estado" : "Actualizado",
+      "codigo_curso" : "N/A",
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "message" : "Curso actualizado exitosamente",
+      "salon" : null
+    }
+  }
+}

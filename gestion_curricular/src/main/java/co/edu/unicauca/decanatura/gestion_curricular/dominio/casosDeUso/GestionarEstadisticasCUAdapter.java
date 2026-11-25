@@ -2,311 +2,218 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DashboardEjecutivo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EntradaHistorial;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPeriodo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorSemestre;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Globales;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Rendimiento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasCursosVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorMes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorProceso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaTendencias;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ConsultasEstadisticas;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.DashboardPorEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.DashboardPorMes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.DashboardPorProceso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.DashboardPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.DashboardTendencias;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.EstadisticasCursosVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.EstadisticasEstudiantes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.EstadisticasGlobales;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.HistorialEstadisticas;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ResumenEstadisticas;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.TipoProcesoSolicitud;
 
 public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIntPort {
 
     private final GestionarEstadisticasGatewayIntPort estadisticasGateway;
-    private final FormateadorResultadosIntPort formateadorResultados;
+    private final EstadisticasGlobales globales;
+    private final ConsultasEstadisticas consultas;
+    private final HistorialEstadisticas historial;
+    private final ResumenEstadisticas resumen;
+    private final EstadisticasEstudiantes estudiantes;
+    private final DashboardPorProceso dashboardPorProceso;
+    private final DashboardPorEstado dashboardPorEstado;
+    private final DashboardPorMes dashboardPorMes;
+    private final DashboardPorPrograma dashboardPorPrograma;
+    private final DashboardTendencias dashboardTendencias;
+    private final EstadisticasCursosVerano cursosVerano;
 
     public GestionarEstadisticasCUAdapter(
-            GestionarEstadisticasGatewayIntPort estadisticasGateway,
-            FormateadorResultadosIntPort formateadorResultados) {
+            GestionarEstadisticasGatewayIntPort estadisticasGateway) {
         this.estadisticasGateway = estadisticasGateway;
-        this.formateadorResultados = formateadorResultados;
+        this.globales = new EstadisticasGlobales(estadisticasGateway);
+        this.consultas = new ConsultasEstadisticas(estadisticasGateway);
+        this.historial = new HistorialEstadisticas(estadisticasGateway);
+        this.resumen = new ResumenEstadisticas(estadisticasGateway);
+        this.estudiantes = new EstadisticasEstudiantes(estadisticasGateway);
+        this.dashboardPorProceso = new DashboardPorProceso(estadisticasGateway);
+        this.dashboardPorEstado = new DashboardPorEstado(estadisticasGateway);
+        this.dashboardPorMes = new DashboardPorMes(estadisticasGateway);
+        this.dashboardPorPrograma = new DashboardPorPrograma(estadisticasGateway);
+        this.dashboardTendencias = new DashboardTendencias(estadisticasGateway);
+        this.cursosVerano = new EstadisticasCursosVerano(estadisticasGateway);
     }
 
     @Override
-    public Estadistica crearEstadistica(Estadistica estadistica) {
-        if (estadistica == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("La estadística no puede ser nula.");
-        }
-
-        return estadisticasGateway.crearEstadistica(estadistica);
+    public GlobalesContadas obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
+        return globales.globales(proceso, idPrograma, fechaInicio, fechaFin);
     }
 
     @Override
-    public Estadistica actualizarEstadistica(Estadistica estadistica) {
-        if (estadistica == null || estadistica.getId_estadistica() == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Estadística inválida para actualización.");
-        }
-
-        Estadistica existente = estadisticasGateway.obtenerEstadisticaPorId(estadistica.getId_estadistica());
-
-        if (existente == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró la estadística a actualizar.");
-        }
-
-        return estadisticasGateway.actualizarEstadistica(estadistica);
-    }
-
-    @Override
-    public Boolean eliminarEstadistica(Integer idEstadistica) {
-        if (idEstadistica == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un ID válido.");
-        }
-
-        Estadistica estadistica = estadisticasGateway.obtenerEstadisticaPorId(idEstadistica);
-
-        if (estadistica == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Estadística no encontrada para eliminar.");
-        }
-
-        return estadisticasGateway.eliminarEstadistica(idEstadistica);
-    }
-
-    @Override
-    public Estadistica obtenerEstadisticaPorId(Integer idEstadistica) {
-        if (idEstadistica == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un ID válido.");
-        }
-
-        Estadistica estadistica = estadisticasGateway.obtenerEstadisticaPorId(idEstadistica);
-
-        if (estadistica == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Estadística no encontrada.");
-        }
-
-        return estadistica;
-    }
-
-    @Override
-    public Estadistica obtenerEstadisticasSolicitudPeriodoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, Integer idPrograma) {
-        if (proceso == null || proceso.isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("El proceso no puede estar vacío.");
-        }
-
-        if (fechaInicio == null || fechaFin == null || idPrograma == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Parámetros incompletos para la consulta.");
-        }
-
-        return estadisticasGateway.obtenerEstadisticasSolicitudPeriodoYPrograma(idEstadistica, proceso, fechaInicio, fechaFin, idPrograma);
-    }
-
-    @Override
-    public Estadistica obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, String estado, Integer idPrograma) {
-        if (proceso == null || proceso.isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("El proceso no puede estar vacío.");
-        }
-
-        if (fechaInicio == null || fechaFin == null || idPrograma == null || estado == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Parámetros incompletos para la consulta.");
-        }
-
-        return estadisticasGateway.obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(idEstadistica, proceso, fechaInicio, fechaFin, estado, idPrograma);
-    }
-
-    @Override
-    public List<Estadistica> obtenerEstadisticasPeriodoEstadoYPrograma(Date fechaInicio, Date fechaFin, Integer idPrograma) {
-        if (fechaInicio == null || fechaFin == null || idPrograma == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Parámetros incompletos para la consulta.");
-        }
-
-        return estadisticasGateway.obtenerEstadisticasPeriodoEstadoYPrograma(fechaInicio, fechaFin, idPrograma);
-    }
-
-    @Override
-    public Map<String, Object> obtenerEstadisticasGlobales() {
-        return estadisticasGateway.obtenerEstadisticasGlobales();
-    }
-
-    @Override
-    public Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
-        return estadisticasGateway.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
-    }
-
-    @Override
-    public Map<String, Object> obtenerEstadisticasPorProceso(String tipoProceso) {
-        if (tipoProceso == null || tipoProceso.isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("El tipo de proceso no puede estar vacío.");
-        }
-
-        return estadisticasGateway.obtenerEstadisticasPorProceso(tipoProceso);
-    }
-
-    @Override
-    public Map<String, Object> obtenerEstadisticasPorEstado(String estado) {
+    public EstadisticasPorEstado obtenerEstadisticasPorEstado(String estado) {
         if (estado == null || estado.isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("El estado no puede estar vacío.");
+            throw new ReglaNegocioExcepcion("El estado no puede estar vacío.");
         }
 
-        return estadisticasGateway.obtenerEstadisticasPorEstado(estado);
+        return consultas.porEstado(estado);
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorPrograma(Integer idPrograma) {
+    public EstadisticasPorPrograma obtenerEstadisticasPorPrograma(Integer idPrograma) {
         if (idPrograma == null || idPrograma <= 0) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("El ID del programa debe ser válido.");
+            throw new ReglaNegocioExcepcion("El ID del programa debe ser válido.");
         }
 
-        return estadisticasGateway.obtenerEstadisticasPorPrograma(idPrograma);
+        return consultas.porPrograma(idPrograma);
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorPeriodo(Date fechaInicio, Date fechaFin) {
+    public EstadisticasPorPeriodo obtenerEstadisticasPorPeriodo(Date fechaInicio, Date fechaFin) {
         if (fechaInicio == null || fechaFin == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Las fechas de inicio y fin son requeridas.");
+            throw new ReglaNegocioExcepcion("Las fechas de inicio y fin son requeridas.");
         }
 
         if (fechaInicio.after(fechaFin)) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("La fecha de inicio no puede ser posterior a la fecha de fin.");
+            throw new ReglaNegocioExcepcion("La fecha de inicio no puede ser posterior a la fecha de fin.");
         }
 
-        return estadisticasGateway.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
+        return consultas.porPeriodo(fechaInicio, fechaFin);
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorProgramaYPeriodo(Integer idPrograma, Date fechaInicio, Date fechaFin) {
-        if (idPrograma == null || idPrograma <= 0) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("El ID del programa debe ser válido.");
-        }
-
-        if (fechaInicio == null || fechaFin == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Las fechas de inicio y fin son requeridas.");
-        }
-
-        if (fechaInicio.after(fechaFin)) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("La fecha de inicio no puede ser posterior a la fecha de fin.");
-        }
-
-        return estadisticasGateway.obtenerEstadisticasPorProgramaYPeriodo(idPrograma, fechaInicio, fechaFin);
+    public ResumenCompleto obtenerResumenCompleto(String periodoAcademico, Integer idPrograma) {
+        return resumen.resumenCompleto(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorProcesoYEstado(String tipoProceso, String estado) {
-        if (tipoProceso == null || tipoProceso.isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("El tipo de proceso no puede estar vacío.");
-        }
-
-        if (estado == null || estado.isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("El estado no puede estar vacío.");
-        }
-
-        return estadisticasGateway.obtenerEstadisticasPorProcesoYEstado(tipoProceso, estado);
+    public TotalEstudiantes obtenerNumeroTotalEstudiantes() {
+        return estudiantes.numeroTotalEstudiantes();
     }
 
     @Override
-    public Map<String, Object> obtenerResumenCompleto(String periodoAcademico, Integer idPrograma) {
-        return estadisticasGateway.obtenerResumenCompleto(periodoAcademico, idPrograma);
+    public EstudiantesPorPrograma obtenerEstudiantesPorPrograma(String periodoAcademico, Integer idPrograma) {
+        return estudiantes.estudiantesPorPrograma(idPrograma);
     }
 
     @Override
-    public Map<String, Object> obtenerTendenciasPorPeriodo(Date fechaInicio1, Date fechaFin1, Date fechaInicio2, Date fechaFin2) {
-        if (fechaInicio1 == null || fechaFin1 == null || fechaInicio2 == null || fechaFin2 == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Todas las fechas son requeridas para la comparación.");
-        }
-
-        if (fechaInicio1.after(fechaFin1) || fechaInicio2.after(fechaFin2)) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Las fechas de inicio no pueden ser posteriores a las fechas de fin.");
-        }
-
-        return estadisticasGateway.obtenerTendenciasPorPeriodo(fechaInicio1, fechaFin1, fechaInicio2, fechaFin2);
+    public VistaPorProceso obtenerEstadisticasDetalladasPorProceso(String periodoAcademico, Integer idPrograma) {
+        return dashboardPorProceso.detalladasPorProceso(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
-    public Map<String, Object> obtenerNumeroTotalEstudiantes() {
-        return estadisticasGateway.obtenerNumeroTotalEstudiantes();
+    public VistaPorEstado obtenerEstadisticasPorEstado(String periodoAcademico, Integer idPrograma) {
+        return dashboardPorEstado.porEstado(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
-    public Map<String, Object> obtenerEstudiantesPorPrograma(String periodoAcademico, Integer idPrograma) {
-        return estadisticasGateway.obtenerEstudiantesPorPrograma(periodoAcademico, idPrograma);
+    public VistaPorMes obtenerEstadisticasPorPeriodo(String periodoAcademico, Integer idPrograma) {
+        return dashboardPorMes.porPeriodo(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasDetalladasPorProceso(String periodoAcademico, Integer idPrograma) {
-        return estadisticasGateway.obtenerEstadisticasDetalladasPorProceso(periodoAcademico, idPrograma);
+    public VistaPorPrograma obtenerEstadisticasPorPrograma(String periodoAcademico, Integer idPrograma) {
+        return dashboardPorPrograma.porPrograma(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
-    public Map<String, Object> obtenerResumenPorProceso(String periodoAcademico, Integer idPrograma) {
-        return estadisticasGateway.obtenerResumenPorProceso(periodoAcademico, idPrograma);
+    public VistaTendencias obtenerTendenciasYComparativas(String periodoAcademico, Integer idPrograma) {
+        return dashboardTendencias.tendenciasYComparativas(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
-    public Map<String, Object> obtenerConfiguracionEstilos() {
-        return estadisticasGateway.obtenerConfiguracionEstilos();
+    public AnalisisCursosVerano obtenerEstadisticasCursosVerano(String periodoAcademico, Integer idPrograma) {
+        return cursosVerano.estadisticas(periodoAcademico, idPrograma);
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorEstado(String periodoAcademico, Integer idPrograma) {
-        return estadisticasGateway.obtenerEstadisticasPorEstado(periodoAcademico, idPrograma);
+    public TendenciasCursosVerano obtenerTendenciasTemporalesCursosVerano(String periodoAcademico, Integer idPrograma) {
+        return cursosVerano.tendenciasTemporales(periodoAcademico, idPrograma);
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorPeriodo(String periodoAcademico, Integer idPrograma) {
-        return estadisticasGateway.obtenerEstadisticasPorPeriodo(periodoAcademico, idPrograma);
-    }
-
-    @Override
-    public Map<String, Object> obtenerEstadisticasPorPrograma(String periodoAcademico, Integer idPrograma) {
-        return estadisticasGateway.obtenerEstadisticasPorPrograma(periodoAcademico, idPrograma);
-    }
-
-    @Override
-    public Map<String, Object> obtenerTiempoPromedioProcesamiento() {
-        return estadisticasGateway.obtenerTiempoPromedioProcesamiento();
-    }
-
-    @Override
-    public Map<String, Object> obtenerTendenciasYComparativas(String periodoAcademico, Integer idPrograma) {
-        return estadisticasGateway.obtenerTendenciasYComparativas(periodoAcademico, idPrograma);
-    }
-
-    @Override
-    public Map<String, Object> obtenerEstadisticasCursosVerano(String periodoAcademico, Integer idPrograma) {
-        return estadisticasGateway.obtenerEstadisticasCursosVerano(periodoAcademico, idPrograma);
-    }
-
-    @Override
-    public Map<String, Object> obtenerTendenciasTemporalesCursosVerano(String periodoAcademico, Integer idPrograma) {
-        return estadisticasGateway.obtenerTendenciasTemporalesCursosVerano(periodoAcademico, idPrograma);
-    }
-
-    @Override
-    public Map<String, Object> obtenerEstadisticasPorAnio(Integer anio) {
-        if (anio == null || anio < 2020 || anio > 2030) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Año inválido. Debe estar entre 2020 y 2030.");
-        }
-        return estadisticasGateway.obtenerEstadisticasPorAnio(anio);
-    }
-
-    @Override
-    public Map<String, Object> obtenerEstadisticasPorSemestre(Integer anio, Integer semestre) {
-        if (anio == null || anio < 2020 || anio > 2030) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Año inválido. Debe estar entre 2020 y 2030.");
-        }
-        if (semestre == null || (semestre != 1 && semestre != 2)) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Semestre inválido. Debe ser 1 o 2.");
-        }
-        return estadisticasGateway.obtenerEstadisticasPorSemestre(anio, semestre);
-    }
-
-    @Override
-    public List<Map<String, Object>> obtenerHistorialEstadisticas(Integer anioInicio, Integer anioFin) {
+    public List<EntradaHistorial> obtenerHistorialEstadisticas(Integer anioInicio, Integer anioFin) {
         // Validar años si se proporcionan
         if (anioInicio != null && (anioInicio < 2020 || anioInicio > 2030)) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Año de inicio inválido. Debe estar entre 2020 y 2030.");
+            throw new ReglaNegocioExcepcion("Año de inicio inválido. Debe estar entre 2020 y 2030.");
         }
         if (anioFin != null && (anioFin < 2020 || anioFin > 2030)) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Año de fin inválido. Debe estar entre 2020 y 2030.");
+            throw new ReglaNegocioExcepcion("Año de fin inválido. Debe estar entre 2020 y 2030.");
         }
         if (anioInicio != null && anioFin != null && anioInicio > anioFin) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("El año de inicio no puede ser mayor al año de fin.");
+            throw new ReglaNegocioExcepcion("El año de inicio no puede ser mayor al año de fin.");
         }
-        return estadisticasGateway.obtenerHistorialEstadisticas(anioInicio, anioFin);
+        return historial.historial(anioInicio, anioFin);
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorPeriodoAcademico(String periodoAcademico) {
+    public EstadisticasPorSemestre obtenerEstadisticasPorPeriodoAcademico(String periodoAcademico) {
         if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("El período académico no puede estar vacío.");
+            throw new ReglaNegocioExcepcion("El período académico no puede estar vacío.");
         }
-        return estadisticasGateway.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico.trim());
+        return historial.porPeriodoAcademico(periodoAcademico.trim());
+    }
+
+    @Override
+    public Globales obtenerEstadisticasGlobales(String proceso, Integer idPrograma, String periodoAcademico,
+            Date fechaInicio, Date fechaFin) {
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            return resumen.globalesDelPeriodo(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma, proceso);
+        }
+        return globales.globales(proceso, idPrograma, fechaInicio, fechaFin);
+    }
+
+    @Override
+    public ResumenCompleto obtenerResumenCompleto(String periodoAcademico, Integer idPrograma, String proceso) {
+        return resumen.resumenCompleto(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma, proceso);
+    }
+
+    @Override
+    public DashboardEjecutivo obtenerDashboardEjecutivo(String periodoAcademico, Integer idPrograma, String proceso) {
+        return resumen.dashboardEjecutivo(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma, proceso);
+    }
+
+    @Override
+    public Rendimiento obtenerEstadisticasRendimiento() {
+        return globales.rendimiento();
+    }
+
+    @Override
+    public DatosReporte prepararReporte(String proceso, Integer idPrograma, String periodoAcademico, Date fechaInicio, Date fechaFin) {
+        String periodo = PeriodoAcademicoEnum.normalizar(periodoAcademico);
+        Globales estadisticas = periodo == null
+                ? obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin)
+                : obtenerResumenCompleto(periodo, idPrograma).estadisticasGlobales();
+
+        boolean sinProceso = proceso == null || proceso.isBlank();
+        AnalisisCursosVerano cursosVerano = sinProceso
+                || TipoProcesoSolicitud.CURSOS_VERANO.equals(TipoProcesoSolicitud.porNombre(proceso))
+                ? obtenerEstadisticasCursosVerano(periodo, idPrograma) : null;
+        return new DatosReporte(estadisticas, cursosVerano);
     }
 }

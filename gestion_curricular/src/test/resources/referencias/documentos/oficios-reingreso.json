@@ -1,0 +1,82 @@
+{
+  "/api/solicitudes-reingreso/obtenerOficios/1" : {
+    "status" : 200,
+    "body" : [ {
+      "nombreArchivo" : "carta_solicitud_reingreso.pdf",
+      "ruta" : "r/carta",
+      "id" : 1,
+      "nombre" : "carta_solicitud_reingreso.pdf"
+    }, {
+      "nombreArchivo" : "oficio_reingreso.pdf",
+      "ruta" : "r/oficio",
+      "id" : 1,
+      "nombre" : "oficio_reingreso.pdf"
+    } ]
+  },
+  "/api/solicitudes-reingreso/obtenerOficios/2" : {
+    "status" : 200,
+    "body" : [ {
+      "nombreArchivo" : "carta_solicitud_reingreso.pdf",
+      "ruta" : "r/carta",
+      "id" : 2,
+      "nombre" : "carta_solicitud_reingreso.pdf"
+    } ]
+  },
+  "/api/solicitudes-reingreso/obtenerOficios/3" : {
+    "status" : 200,
+    "body" : [ {
+      "nombreArchivo" : "Resolucion_Reingreso.PDF",
+      "ruta" : "r/resolucion",
+      "id" : 3,
+      "nombre" : "Resolucion_Reingreso.PDF"
+    } ]
+  },
+  "/api/solicitudes-reingreso/obtenerOficios/4" : {
+    "status" : 200,
+    "body" : [ {
+      "nombreArchivo" : "Carta_Solicitud_Reingreso_Firmada.pdf",
+      "ruta" : "r/carta-firmada",
+      "id" : 4,
+      "nombre" : "Carta_Solicitud_Reingreso_Firmada.pdf"
+    }, {
+      "nombreArchivo" : "aprobacion.pdf",
+      "ruta" : "r/aprobacion",
+      "id" : 4,
+      "nombre" : "aprobacion.pdf"
+    } ]
+  },
+  "/api/solicitudes-reingreso/obtenerOficios/5" : {
+    "status" : 200,
+    "body" : [ {
+      "nombreArchivo" : "reingreso_aprobado.pdf",
+      "ruta" : "r/aprobado",
+      "id" : 5,
+      "nombre" : "reingreso_aprobado.pdf"
+    } ]
+  },
+  "/api/solicitudes-reingreso/descargarOficio/1" : {
+    "status" : 200,
+    "contentDisposition" : "attachment; filename=\"carta_solicitud_reingreso.pdf\"",
+    "body" : "r/carta"
+  },
+  "/api/solicitudes-reingreso/descargarOficio/2" : {
+    "status" : 200,
+    "contentDisposition" : "attachment; filename=\"carta_solicitud_reingreso.pdf\"",
+    "body" : "r/carta"
+  },
+  "/api/solicitudes-reingreso/descargarOficio/3" : {
+    "status" : 200,
+    "contentDisposition" : "attachment; filename=\"Resolucion_Reingreso.PDF\"",
+    "body" : "r/resolucion"
+  },
+  "/api/solicitudes-reingreso/descargarOficio/4" : {
+    "status" : 200,
+    "contentDisposition" : "attachment; filename=\"Carta_Solicitud_Reingreso_Firmada.pdf\"",
+    "body" : "r/carta-firmada"
+  },
+  "/api/solicitudes-reingreso/descargarOficio/5" : {
+    "status" : 200,
+    "contentDisposition" : "attachment; filename=\"reingreso_aprobado.pdf\"",
+    "body" : "r/aprobado"
+  }
+}

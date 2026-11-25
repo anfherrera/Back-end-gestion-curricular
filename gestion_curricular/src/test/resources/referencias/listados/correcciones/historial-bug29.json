@@ -1,0 +1,125 @@
+{
+  "/historial/Homologación/body" : {
+    "total" : 2,
+    "total_solicitudes_procesadas" : 10,
+    "total_solicitudes_sistema" : 25,
+    "total_solicitudes_no_procesadas" : 15,
+    "solicitudes" : [ {
+      "id_solicitud" : 3,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : 1710522000000,
+      "estadosSolicitud" : [ ],
+      "objUsuario" : null,
+      "documentos" : [ ],
+      "categoria" : "Homologación",
+      "tipo_solicitud" : "Homologacion"
+    }, {
+      "id_solicitud" : 11,
+      "nombre_solicitud" : "Homologación externa",
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : 1710522000000,
+      "estadosSolicitud" : [ ],
+      "objUsuario" : null,
+      "documentos" : [ ],
+      "categoria" : "Homologación",
+      "tipo_solicitud" : "Homologacion"
+    } ]
+  },
+  "/historial/homologacion/body" : {
+    "total" : 2,
+    "total_solicitudes_procesadas" : 10,
+    "total_solicitudes_sistema" : 25,
+    "total_solicitudes_no_procesadas" : 15,
+    "solicitudes" : [ {
+      "id_solicitud" : 3,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : 1710522000000,
+      "estadosSolicitud" : [ ],
+      "objUsuario" : null,
+      "documentos" : [ ],
+      "categoria" : "Homologación",
+      "tipo_solicitud" : "Homologacion"
+    }, {
+      "id_solicitud" : 11,
+      "nombre_solicitud" : "Homologación externa",
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : 1710522000000,
+      "estadosSolicitud" : [ ],
+      "objUsuario" : null,
+      "documentos" : [ ],
+      "categoria" : "Homologación",
+      "tipo_solicitud" : "Homologacion"
+    } ]
+  },
+  "/historial/Curso de verano/body" : {
+    "total" : 4,
+    "total_solicitudes_procesadas" : 10,
+    "total_solicitudes_sistema" : 25,
+    "total_solicitudes_no_procesadas" : 15,
+    "solicitudes" : [ {
+      "id_solicitud" : 5,
+      "nombre_solicitud" : "Preinscripción curso de verano",
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : 1710522000000,
+      "estadosSolicitud" : [ ],
+      "objUsuario" : null,
+      "documentos" : [ ],
+      "categoria" : "Cursos de Verano",
+      "tipo_solicitud" : "Preinscripcion"
+    }, {
+      "id_solicitud" : 6,
+      "nombre_solicitud" : "Inscripción curso verano",
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : [ ],
+      "objUsuario" : null,
+      "documentos" : [ ],
+      "categoria" : "Cursos de Verano",
+      "tipo_solicitud" : "Inscripcion"
+    }, {
+      "id_solicitud" : 7,
+      "nombre_solicitud" : "Curso nuevo",
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : 1710522000000,
+      "estadosSolicitud" : [ ],
+      "objUsuario" : null,
+      "documentos" : [ ],
+      "categoria" : "Cursos de Verano",
+      "tipo_solicitud" : "Curso Nuevo"
+    }, {
+      "id_solicitud" : 8,
+      "nombre_solicitud" : "Curso intersemestral de verano",
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : [ ],
+      "objUsuario" : null,
+      "documentos" : [ ],
+      "categoria" : "Cursos de Verano",
+      "tipo_solicitud" : "Curso Verano"
+    } ]
+  },
+  "/historial/intersemestral/body" : {
+    "total" : 0,
+    "total_solicitudes_procesadas" : 10,
+    "total_solicitudes_sistema" : 25,
+    "total_solicitudes_no_procesadas" : 15,
+    "solicitudes" : [ ]
+  },
+  "/historial/Académico raro/body" : {
+    "total" : 0,
+    "total_solicitudes_procesadas" : 10,
+    "total_solicitudes_sistema" : 25,
+    "total_solicitudes_no_procesadas" : 15,
+    "solicitudes" : [ ]
+  }
+}

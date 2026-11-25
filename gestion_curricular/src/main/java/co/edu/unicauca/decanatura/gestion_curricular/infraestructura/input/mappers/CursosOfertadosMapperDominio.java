@@ -8,44 +8,32 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CursosOfertadosDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosOfertadosDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstadoCursoOfertadoDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.MateriaDTORespuesta;
 
 @Mapper(componentModel = "spring", uses = {
     MateriaMapperDominio.class,
     DocenteMapperDominio.class,
-    UsuarioMapperDominio.class,
-    EstadoCursoOfertadoMapper.class
+    UsuarioMapperDominio.class
 })
 public interface CursosOfertadosMapperDominio {
 
-    // DTO Petición → Dominio
-    @Mapping(source = "objMateria", target = "objMateria")
-    @Mapping(source = "objDocente", target = "objDocente")
-    @Mapping(source = "grupo", target = "grupo")
-    @Mapping(source = "cupo_estimado", target = "cupo_estimado")
-    @Mapping(source = "salon", target = "salon")
-    @Mapping(target = "estadosCursoOfertados", ignore = true)
-    @Mapping(target = "estudiantesInscritos", ignore = true)
-    @Mapping(target = "solicitudes" , ignore = true)
-    @Mapping(target = "fecha_inicio", ignore = true) // Se asigna manualmente en el controlador
-    @Mapping(target = "fecha_fin", ignore = true) // Se asigna manualmente en el controlador
-    @Mapping(target = "periodo_academico", ignore = true) // Se asigna manualmente en el controlador
-    CursoOfertadoVerano mappearDeDTOPeticionACursoOfertado(CursosOfertadosDTOPeticion peticion);
-
     // Dominio → DTO Respuesta
-    @Mapping(source = "id_curso", target = "id_curso")
+    @Mapping(source = "idCurso", target = "id_curso")
     @Mapping(target = "idCurso", ignore = true) // Se asignará en post-mapping
     @Mapping(source = "objMateria.codigo", target = "codigo_curso")
     @Mapping(source = "objMateria.nombre", target = "nombre_curso")
     @Mapping(source = "objMateria", target = "objMateria")
     @Mapping(source = "objDocente", target = "objDocente")
     @Mapping(source = "grupo", target = "grupo", qualifiedByName = "convertirGrupoAString")
-    @Mapping(source = "cupo_estimado", target = "cupo_estimado")
+    @Mapping(source = "cupoEstimado", target = "cupo_estimado")
     @Mapping(source = "salon", target = "salon")
     @Mapping(source = "salon", target = "espacio_asignado")
-    @Mapping(source = "cupo_estimado", target = "cupo_maximo")
+    @Mapping(source = "cupoEstimado", target = "cupo_maximo")
     @Mapping(source = ".", target = "cupo_disponible", qualifiedByName = "calcularCupoDisponible")
     @Mapping(source = "estadosCursoOfertados", target = "estadosCursoOfertados")
     @Mapping(source = "estudiantesInscritos", target = "estudiantesInscritos")
@@ -56,28 +44,20 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = ".", target = "periodo", qualifiedByName = "calcularPeriodoDesdeCurso")
     @Mapping(target = "id_salon", ignore = true) // Se asignará manualmente después del mapeo
     @Mapping(target = "salonInfo", ignore = true) // Se asignará manualmente después del mapeo
-    CursosOfertadosDTORespuesta mappearDeCursoOfertadoARespuesta(CursoOfertadoVerano curso);
-    
-    // Método post-mapping para asignar idCurso desde id_curso
-    default CursosOfertadosDTORespuesta postMapCurso(CursosOfertadosDTORespuesta dto) {
-        if (dto != null && dto.getId_curso() != null) {
-            dto.setIdCurso(dto.getId_curso());
-        }
-        return dto;
-    }
+    CursosOfertadosDTORespuesta mapearDeCursoOfertadoARespuesta(CursoOfertadoVerano curso);
     
     // Mapper específico para cursos disponibles (estado "Disponible")
-    @Mapping(source = "id_curso", target = "id_curso")
+    @Mapping(source = "idCurso", target = "id_curso")
     @Mapping(target = "idCurso", ignore = true) // Se asignará en post-mapping
     @Mapping(source = "objMateria.codigo", target = "codigo_curso")
     @Mapping(source = "objMateria.nombre", target = "nombre_curso")
     @Mapping(source = "objMateria", target = "objMateria")
     @Mapping(source = "objDocente", target = "objDocente")
     @Mapping(source = "grupo", target = "grupo", qualifiedByName = "convertirGrupoAString")
-    @Mapping(source = "cupo_estimado", target = "cupo_estimado")
+    @Mapping(source = "cupoEstimado", target = "cupo_estimado")
     @Mapping(source = "salon", target = "salon")
     @Mapping(source = "salon", target = "espacio_asignado")
-    @Mapping(source = "cupo_estimado", target = "cupo_maximo")
+    @Mapping(source = "cupoEstimado", target = "cupo_maximo")
     @Mapping(source = ".", target = "cupo_disponible", qualifiedByName = "calcularCupoDisponible")
     @Mapping(source = "estadosCursoOfertados", target = "estadosCursoOfertados")
     @Mapping(source = "estudiantesInscritos", target = "estudiantesInscritos")
@@ -88,32 +68,21 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = ".", target = "periodo", qualifiedByName = "calcularPeriodoDesdeCurso")
     @Mapping(target = "id_salon", ignore = true) // Se asignará manualmente después del mapeo
     @Mapping(target = "salonInfo", ignore = true) // Se asignará manualmente después del mapeo
-    @Named("mappearDeCursoOfertadoARespuestaDisponible")
-    CursosOfertadosDTORespuesta mappearDeCursoOfertadoARespuestaDisponible(CursoOfertadoVerano curso);
+    @Named("mapearDeCursoOfertadoARespuestaDisponible")
+    CursosOfertadosDTORespuesta mapearDeCursoOfertadoARespuestaDisponible(CursoOfertadoVerano curso);
 
-    // Listas - mapeo manual para evitar problemas con métodos auxiliares
-    default List<CursosOfertadosDTORespuesta> mappearListaDeCursoOfertadoARespuesta(List<CursoOfertadoVerano> cursos) {
-        if (cursos == null) {
-            return null;
-        }
-        return cursos.stream()
-                .map(this::mappearDeCursoOfertadoARespuesta)
-                .map(this::postMapCurso) // Asignar idCurso
-                .collect(java.util.stream.Collectors.toList());
-    }
-    
-    default List<CursosOfertadosDTORespuesta> mappearListaDeCursoOfertadoARespuestaDisponible(List<CursoOfertadoVerano> cursos) {
-        if (cursos == null) {
-            return null;
-        }
-        return cursos.stream()
-                .map(this::mappearDeCursoOfertadoARespuestaDisponible)
-                .map(this::postMapCurso) // Asignar idCurso
-                .collect(java.util.stream.Collectors.toList());
-    }
-    
-    List<CursoOfertadoVerano> mappearListaDeDTOPeticionACursoOfertado(List<CursosOfertadosDTOPeticion> peticiones);
-    
+    /**
+     * Estado de un curso en la respuesta, sin su curso: el curso ya es quien lo contiene. Si se mapeara, un curso
+     * cargado con el grafo completo (estado → curso → estados → ...) recursaba hasta {@code StackOverflowError}
+     * (500 al preinscribir). En la respuesta este campo siempre salio null.
+     */
+    @Mapping(target = "objCursoOfertadoVerano", ignore = true)
+    // OPC-2: el DTO conserva el nombre snake_case
+    @Mapping(target = "id_estado", source = "idEstado")
+    @Mapping(target = "estado_actual", source = "estadoActual")
+    @Mapping(target = "fecha_registro_estado", source = "fechaRegistroEstado")
+    EstadoCursoOfertadoDTORespuesta mapearDeEstadoCursoOfertadoARespuesta(EstadoCursoOfertado estado);
+
     // Métodos auxiliares para mapear datos reales
     @Named("crearDescripcion")
     default String crearDescripcion(String nombreMateria) {
@@ -129,7 +98,7 @@ public interface CursosOfertadosMapperDominio {
             return "Abierto";
         }
         // Obtener el estado más reciente
-        return estados.get(estados.size() - 1).getEstado_actual();
+        return estados.get(estados.size() - 1).getEstadoActual();
     }
     
     @Named("obtenerFechaInicio")
@@ -138,7 +107,7 @@ public interface CursosOfertadosMapperDominio {
             return "2024-06-01T08:00:00Z";
         }
         // Obtener la fecha del estado más reciente
-        java.util.Date fecha = estados.get(estados.size() - 1).getFecha_registro_estado();
+        java.util.Date fecha = estados.get(estados.size() - 1).getFechaRegistroEstado();
         if (fecha == null) {
             return "2024-06-01T08:00:00Z";
         }
@@ -153,7 +122,7 @@ public interface CursosOfertadosMapperDominio {
             return 0;
         }
         
-        Integer cupoMaximo = curso.getCupo_estimado();
+        Integer cupoMaximo = curso.getCupoEstimado();
         if (cupoMaximo == null) {
             return 0;
         }
@@ -209,8 +178,8 @@ public interface CursosOfertadosMapperDominio {
     @Named("calcularPeriodoDesdeCurso")
     default String calcularPeriodoDesdeCurso(CursoOfertadoVerano curso) {
         // Si hay período académico guardado, usarlo
-        if (curso.getPeriodo_academico() != null && !curso.getPeriodo_academico().trim().isEmpty()) {
-            return curso.getPeriodo_academico().trim();
+        if (curso.getPeriodoAcademico() != null && !curso.getPeriodoAcademico().trim().isEmpty()) {
+            return curso.getPeriodoAcademico().trim();
         }
         // Si no hay período pero hay fecha_inicio, calcular desde la fecha
         if (curso.getFecha_inicio() != null) {
@@ -231,10 +200,13 @@ public interface CursosOfertadosMapperDominio {
     }
     
     @Named("convertirGrupoAString")
-    default String convertirGrupoAString(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano grupo) {
+    default String convertirGrupoAString(GrupoCursoVerano grupo) {
         if (grupo == null) {
             return "A"; // Valor por defecto
         }
         return grupo.toString();
     }
+
+    @Mapping(target = "id_materia", source = "idMateria")
+    MateriaDTORespuesta materiaToMateriaDTORespuesta(Materia materia);
 }

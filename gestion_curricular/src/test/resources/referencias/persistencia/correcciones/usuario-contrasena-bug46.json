@@ -1,0 +1,7 @@
+{
+  "/actualizarUsuario con contrasena/devuelta" : null,
+  "/actualizarUsuario contrasena en blanco/devuelta" : null,
+  "/actualizarUsuario sin contrasena/devuelta" : null,
+  "/crearUsuario/devuelta" : null,
+  "/json obtenerUsuarioPorId/password" : null
+}

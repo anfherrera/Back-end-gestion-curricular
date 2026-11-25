@@ -1,0 +1,173 @@
+{
+  "analisisPorPrograma" : [ {
+    "nombre" : "Ingeniería de Sistemas",
+    "porcentaje" : 100.0,
+    "solicitudes" : 3
+  } ],
+  "descripcion" : "Estadisticas detalladas de cursos de verano - Analisis de demanda y recomendaciones",
+  "estadosSolicitudes" : {
+    "APROBADA" : 2,
+    "ENVIADA" : 1,
+    "EN_PROCESO" : 0,
+    "RECHAZADA" : 0
+  },
+  "estadosSolicitudesEstructurados" : {
+    "APROBADA" : {
+      "cantidad" : 2,
+      "estado" : "APROBADA",
+      "porcentaje" : 66.67
+    },
+    "ENVIADA" : {
+      "cantidad" : 1,
+      "estado" : "ENVIADA",
+      "porcentaje" : 33.33
+    },
+    "EN_PROCESO" : {
+      "cantidad" : 0,
+      "estado" : "EN_PROCESO",
+      "porcentaje" : 0.0
+    },
+    "RECHAZADA" : {
+      "cantidad" : 0,
+      "estado" : "RECHAZADA",
+      "porcentaje" : 0.0
+    }
+  },
+  "predicciones" : {
+    "alertasCriticas" : [ ],
+    "confiabilidad" : "MEDIA",
+    "demandaEstimadaProximoPeriodo" : 2,
+    "estadisticasRecomendaciones" : {
+      "alertasCriticas" : 0,
+      "prioridadAlta" : 0,
+      "prioridadBaja" : 0,
+      "prioridadMedia" : 1,
+      "totalRecomendaciones" : 1
+    },
+    "materiasConTendenciaCreciente" : [ ],
+    "materiasConTendenciaDecreciente" : [ {
+      "demandaActual" : 3,
+      "demandaEstimada" : 2,
+      "nombre" : "Cálculo I",
+      "porcentajeVariacion" : -33,
+      "tendencia" : "DECRECIENTE",
+      "variacion" : -1
+    } ],
+    "materiasEstables" : [ ],
+    "prediccionesTemporales" : {
+      "demandaActualMesPico" : 2,
+      "demandaEstimadaMesPico" : 2,
+      "mesPico" : "Junio",
+      "mesesRecomendados" : [ "Julio", "Agosto", "Septiembre" ]
+    },
+    "programasConTendenciaCreciente" : [ ],
+    "programasConTendenciaDecreciente" : [ {
+      "demandaActual" : 3,
+      "demandaEstimada" : 2,
+      "nombre" : "Ingeniería de Sistemas",
+      "porcentajeVariacion" : -33,
+      "tendencia" : "DECRECIENTE",
+      "variacion" : -1
+    } ],
+    "programasEstables" : [ ],
+    "recomendaciones" : [ {
+      "acciones" : [ "Publicar calendario de cursos de verano 8 semanas antes de Junio", "Preparar capacidad para 2 estudiantes", "Coordinar disponibilidad de docentes con 6 semanas de anticipacion", "Reservar aulas y laboratorios con 4 semanas de anticipacion" ],
+      "categoria" : "CALENDARIO_ACADEMICO",
+      "descripcion" : "Junio es el mes pico de demanda para cursos de verano. Se proyecta un incremento del 0%, pasando de 2 a 2 solicitudes. Es fundamental anticipar la planificacion academica y logistica.",
+      "id" : "TEMPORAL_JUNIO",
+      "incrementoEsperado" : 0,
+      "justificacion" : "Analisis historico indica que Junio concentra el mayor volumen de solicitudes. Planificacion anticipada garantiza mejor experiencia estudiantil.",
+      "mesPico" : "Junio",
+      "porcentajeCrecimiento" : 0,
+      "prioridad" : "MEDIA",
+      "solicitudesActuales" : 2,
+      "solicitudesProyectadas" : 2,
+      "tipo" : "PLANIFICACION_TEMPORAL",
+      "titulo" : "Preparar oferta anticipada para Junio"
+    } ],
+    "todasLasPrediccionesPorPrograma" : [ {
+      "demandaActual" : 3,
+      "demandaEstimada" : 2,
+      "nombre" : "Ingeniería de Sistemas",
+      "porcentajeVariacion" : -33,
+      "tendencia" : "DECRECIENTE",
+      "variacion" : -1
+    } ]
+  },
+  "recomendaciones" : [ {
+    "acciones" : [ "Publicar calendario de cursos de verano 8 semanas antes de Junio", "Preparar capacidad para 2 estudiantes", "Coordinar disponibilidad de docentes con 6 semanas de anticipacion", "Reservar aulas y laboratorios con 4 semanas de anticipacion" ],
+    "categoria" : "CALENDARIO_ACADEMICO",
+    "descripcion" : "Junio es el mes pico de demanda para cursos de verano. Se proyecta un incremento del 0%, pasando de 2 a 2 solicitudes. Es fundamental anticipar la planificacion academica y logistica.",
+    "id" : "TEMPORAL_JUNIO",
+    "incrementoEsperado" : 0,
+    "justificacion" : "Analisis historico indica que Junio concentra el mayor volumen de solicitudes. Planificacion anticipada garantiza mejor experiencia estudiantil.",
+    "mesPico" : "Junio",
+    "porcentajeCrecimiento" : 0,
+    "prioridad" : "MEDIA",
+    "solicitudesActuales" : 2,
+    "solicitudesProyectadas" : 2,
+    "tipo" : "PLANIFICACION_TEMPORAL",
+    "titulo" : "Preparar oferta anticipada para Junio"
+  } ],
+  "resumen" : {
+    "materiasUnicas" : 1,
+    "programasParticipantes" : 1,
+    "tasaAprobacion" : 66.67,
+    "totalSolicitudes" : 3
+  },
+  "tendenciasTemporales" : [ {
+    "mes" : "Enero",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Febrero",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Marzo",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Abril",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Mayo",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Junio",
+    "porcentaje" : 66.67,
+    "solicitudes" : 2
+  }, {
+    "mes" : "Julio",
+    "porcentaje" : 33.33,
+    "solicitudes" : 1
+  }, {
+    "mes" : "Agosto",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Septiembre",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Octubre",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Noviembre",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Diciembre",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  } ],
+  "todosLosMeses" : [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ],
+  "topMaterias" : [ {
+    "nombre" : "Cálculo I",
+    "porcentaje" : 100.0,
+    "solicitudes" : 3
+  } ]
+}

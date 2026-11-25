@@ -1,0 +1,578 @@
+{
+  "/api/cursos-verano/preinscripciones/7/aprobar #0" : {
+    "body" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 7,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codigo_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Preinscripción aprobada exitosamente"
+    },
+    "status" : 200
+  },
+  "/api/cursos-verano/preinscripciones/7/aprobar #1" : {
+    "body" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 7,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codigo_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Preinscripción aprobada exitosamente"
+    },
+    "status" : 200
+  },
+  "/api/cursos-verano/preinscripciones/7/aprobar #2" : {
+    "body" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 7,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codigo_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Preinscripción aprobada exitosamente"
+    },
+    "status" : 200
+  },
+  "/api/cursos-verano/preinscripciones/7/aprobar #3" : {
+    "body" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 7,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codigo_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Preinscripción aprobada exitosamente"
+    },
+    "status" : 200
+  },
+  "/api/cursos-verano/preinscripciones/7/aprobar #4" : {
+    "body" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 7,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codigo_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Preinscripción aprobada exitosamente"
+    },
+    "status" : 200
+  },
+  "/api/cursos-verano/preinscripciones/7/aprobar #5" : {
+    "body" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 7,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codigo_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Preinscripción aprobada exitosamente"
+    },
+    "status" : 200
+  },
+  "/api/cursos-verano/preinscripciones/7/aprobar #6" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-verano/preinscripciones/7/aprobar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-verano/preinscripciones/7/aprobar #7" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-verano/preinscripciones/7/aprobar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-verano/preinscripciones/7/rechazar #0" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-verano/preinscripciones/7/rechazar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-verano/preinscripciones/7/rechazar #1" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-verano/preinscripciones/7/rechazar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-verano/preinscripciones/7/rechazar #2" : {
+    "body" : {
+      "error" : "Debe proporcionar un motivo para el rechazo"
+    },
+    "status" : 400
+  },
+  "/api/cursos-verano/preinscripciones/7/rechazar #3" : {
+    "body" : {
+      "error" : "Debe proporcionar un motivo para el rechazo"
+    },
+    "status" : 400
+  },
+  "/api/cursos-verano/preinscripciones/7/rechazar #4" : {
+    "body" : {
+      "motivo" : "prueba",
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 7,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codigo_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Preinscripción rechazada"
+    },
+    "status" : 200
+  },
+  "/api/cursos-verano/preinscripciones/7/rechazar #5" : {
+    "body" : {
+      "motivo" : "12",
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 7,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codigo_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Preinscripción rechazada"
+    },
+    "status" : 200
+  },
+  "/api/cursos-verano/preinscripciones/7/rechazar #6" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-verano/preinscripciones/7/rechazar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-verano/preinscripciones/7/rechazar #7" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-verano/preinscripciones/7/rechazar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/aprobar #0" : {
+    "body" : {
+      "success" : true,
+      "id_solicitud" : 7,
+      "message" : "Preinscripcion aprobada exitosamente"
+    },
+    "status" : 200
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/aprobar #1" : {
+    "body" : {
+      "success" : true,
+      "id_solicitud" : 7,
+      "message" : "Preinscripcion aprobada exitosamente"
+    },
+    "status" : 200
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/aprobar #2" : {
+    "body" : {
+      "success" : true,
+      "id_solicitud" : 7,
+      "message" : "Preinscripcion aprobada exitosamente"
+    },
+    "status" : 200
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/aprobar #3" : {
+    "body" : {
+      "success" : true,
+      "id_solicitud" : 7,
+      "message" : "Preinscripcion aprobada exitosamente"
+    },
+    "status" : 200
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/aprobar #4" : {
+    "body" : {
+      "success" : true,
+      "id_solicitud" : 7,
+      "message" : "Preinscripcion aprobada exitosamente"
+    },
+    "status" : 200
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/aprobar #5" : {
+    "body" : {
+      "success" : true,
+      "id_solicitud" : 7,
+      "message" : "Preinscripcion aprobada exitosamente"
+    },
+    "status" : 200
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/aprobar #6" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/preinscripciones/7/aprobar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/aprobar #7" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/preinscripciones/7/aprobar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/rechazar #0" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/preinscripciones/7/rechazar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/rechazar #1" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/preinscripciones/7/rechazar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/rechazar #2" : {
+    "body" : {
+      "error" : "Debe proporcionar un motivo para el rechazo"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/rechazar #3" : {
+    "body" : {
+      "error" : "Debe proporcionar un motivo para el rechazo"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/rechazar #4" : {
+    "body" : {
+      "motivo" : "prueba",
+      "success" : true,
+      "id_solicitud" : 7,
+      "message" : "Preinscripcion rechazada"
+    },
+    "status" : 200
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/rechazar #5" : {
+    "body" : {
+      "motivo" : "12",
+      "success" : true,
+      "id_solicitud" : 7,
+      "message" : "Preinscripcion rechazada"
+    },
+    "status" : 200
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/rechazar #6" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/preinscripciones/7/rechazar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/rechazar #7" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/preinscripciones/7/rechazar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/observaciones #0" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/preinscripciones/7/observaciones",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/observaciones #1" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/preinscripciones/7/observaciones",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/observaciones #2" : {
+    "body" : {
+      "error" : "Las observaciones no pueden estar vacias"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/observaciones #3" : {
+    "body" : {
+      "error" : "Las observaciones no pueden estar vacias"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/observaciones #4" : {
+    "body" : null,
+    "status" : 404
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/observaciones #5" : {
+    "body" : null,
+    "status" : 404
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/observaciones #6" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/preinscripciones/7/observaciones",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/preinscripciones/7/observaciones #7" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/preinscripciones/7/observaciones",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/aceptar #0" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/inscripciones/7/aceptar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/aceptar #1" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/inscripciones/7/aceptar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/aceptar #2" : {
+    "body" : {
+      "error" : "No se encontro la inscripcion con ID: 7"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/aceptar #3" : {
+    "body" : {
+      "error" : "No se encontro la inscripcion con ID: 7"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/aceptar #4" : {
+    "body" : {
+      "error" : "No se encontro la inscripcion con ID: 7"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/aceptar #5" : {
+    "body" : {
+      "error" : "No se encontro la inscripcion con ID: 7"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/aceptar #6" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/inscripciones/7/aceptar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/aceptar #7" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/inscripciones/7/aceptar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/rechazar #0" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/inscripciones/7/rechazar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/rechazar #1" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/inscripciones/7/rechazar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/rechazar #2" : {
+    "body" : {
+      "error" : "No se encontro la inscripcion con ID: 7"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/rechazar #3" : {
+    "body" : {
+      "error" : "No se encontro la inscripcion con ID: 7"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/rechazar #4" : {
+    "body" : {
+      "error" : "No se encontro la inscripcion con ID: 7"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/rechazar #5" : {
+    "body" : {
+      "error" : "No se encontro la inscripcion con ID: 7"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/rechazar #6" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/inscripciones/7/rechazar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/rechazar #7" : {
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-intersemestrales/inscripciones/7/rechazar",
+      "metodo" : "PUT"
+    },
+    "status" : 400
+  }
+}

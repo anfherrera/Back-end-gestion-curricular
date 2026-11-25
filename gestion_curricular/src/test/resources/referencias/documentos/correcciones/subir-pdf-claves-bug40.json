@@ -1,0 +1,7 @@
+{
+  "sin parametros" : [ "status:200", "tipo:STRING", "guardadoEnBD:BOOLEAN", "tamaño:NUMBER", "fechaSubida:NUMBER", "ruta:STRING", "id:NUMBER", "nombre:STRING" ],
+  "inscripcion" : [ "status:200", "tipo:STRING", "guardadoEnBD:BOOLEAN", "solicitudId:STRING", "tamaño:NUMBER", "fechaSubida:NUMBER", "inscripcionId:STRING", "ruta:STRING", "id:NUMBER", "nombre:STRING" ],
+  "solicitud" : [ "status:200", "tipo:STRING", "guardadoEnBD:BOOLEAN", "solicitudId:STRING", "tamaño:NUMBER", "fechaSubida:NUMBER", "ruta:STRING", "id:NUMBER", "nombre:STRING" ],
+  "tipo sin id" : [ "status:200", "tipo:STRING", "guardadoEnBD:BOOLEAN", "tamaño:NUMBER", "fechaSubida:NUMBER", "ruta:STRING", "tipoSolicitud:STRING", "id:NUMBER", "nombre:STRING" ],
+  "todos" : [ "status:200", "tipo:STRING", "guardadoEnBD:BOOLEAN", "solicitudId:STRING", "tamaño:NUMBER", "fechaSubida:NUMBER", "inscripcionId:STRING", "ruta:STRING", "tipoSolicitud:STRING", "id:NUMBER", "nombre:STRING" ]
+}

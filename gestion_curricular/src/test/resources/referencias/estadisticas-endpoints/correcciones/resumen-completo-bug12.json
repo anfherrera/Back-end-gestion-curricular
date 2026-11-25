@@ -1,0 +1,107 @@
+{
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/estadisticasGlobales/porPrograma": {
+    "Ingeniería Civil": 1,
+    "Ingeniería Electrónica": 2,
+    "Ingeniería de Sistemas": 4
+  },
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/estadisticasGlobales/porTipoProceso": {
+    "Cursos de Verano": 2,
+    "ECAES": 1,
+    "Homologacion": 2,
+    "Paz y Salvo": 1,
+    "Reingreso": 1
+  },
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/estadisticasGlobales/porcentajeAprobacion": 42.86,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/estadisticasGlobales/totalAprobadas": 3,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/estadisticasGlobales/totalEnProceso": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/estadisticasGlobales/totalRechazadas": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/filtrosAplicados/periodoAcademico": "2025-1",
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porEstado/APROBADA/porPrograma": {
+    "Ingeniería Electrónica": 1,
+    "Ingeniería de Sistemas": 2
+  },
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porEstado/APROBADA/porTipoProceso": {
+    "Cursos de Verano": 1,
+    "ECAES": 1,
+    "Paz y Salvo": 1
+  },
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porEstado/APROBADA/totalAprobadas": 3,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porEstado/APROBADA/totalSolicitudes": 3,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porEstado/APROBADA_COORDINADOR/porPrograma": {
+    "Ingeniería Electrónica": 1
+  },
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porEstado/APROBADA_COORDINADOR/porTipoProceso": {
+    "Homologacion": 1
+  },
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porEstado/APROBADA_COORDINADOR/totalEnProceso": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porEstado/APROBADA_COORDINADOR/totalSolicitudes": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porEstado/ENVIADA/porPrograma": {
+    "Ingeniería Civil": 1,
+    "Ingeniería de Sistemas": 1
+  },
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porEstado/ENVIADA/porTipoProceso": {
+    "Cursos de Verano": 1,
+    "Reingreso": 1
+  },
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porEstado/RECHAZADA/porPrograma": {
+    "Ingeniería de Sistemas": 1
+  },
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porEstado/RECHAZADA/porTipoProceso": {
+    "Homologacion": 1
+  },
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porEstado/RECHAZADA/totalRechazadas": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porEstado/RECHAZADA/totalSolicitudes": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Cursos de Verano/porEstado/APROBADA": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Cursos de Verano/porEstado/RECHAZADA": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Cursos de Verano/porcentajeAprobacion": 50.0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Cursos de Verano/totalAprobadas": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Cursos de Verano/totalRechazadas": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Cursos de Verano/totalSolicitudes": 2,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/ECAES/porEstado/APROBADA": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/ECAES/porEstado/RECHAZADA": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/ECAES/porcentajeAprobacion": 100.0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/ECAES/totalAprobadas": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/ECAES/totalRechazadas": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Homologacion/porEstado/APROBADA_COORDINADOR": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Homologacion/porEstado/RECHAZADA": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Homologacion/totalEnProceso": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Homologacion/totalRechazadas": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Homologacion/totalSolicitudes": 2,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Paz y Salvo/porEstado/APROBADA": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Paz y Salvo/porEstado/ENVIADA": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Paz y Salvo/porcentajeAprobacion": 100.0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Paz y Salvo/totalAprobadas": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Reingreso/porEstado/ENVIADA": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025 - Primer Semestre]/cuerpo/porTipoProceso/Reingreso/totalSolicitudes": 1,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/estadisticasGlobales/porPrograma": {},
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/estadisticasGlobales/porTipoProceso": {},
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/estadisticasGlobales/porcentajeAprobacion": 0.0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/estadisticasGlobales/totalAprobadas": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/estadisticasGlobales/totalEnviadas": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/estadisticasGlobales/totalRechazadas": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/estadisticasGlobales/totalSolicitudes": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/filtrosAplicados/periodoAcademico": "2025-3",
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porEstado/APROBADA/porPrograma": {},
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porEstado/APROBADA/porTipoProceso": {},
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porEstado/APROBADA/totalAprobadas": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porEstado/APROBADA/totalSolicitudes": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porEstado/ENVIADA/porPrograma": {},
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porEstado/ENVIADA/porTipoProceso": {},
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porEstado/ENVIADA/totalSolicitudes": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porEstado/RECHAZADA/porPrograma": {},
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porEstado/RECHAZADA/porTipoProceso": {},
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porEstado/RECHAZADA/totalRechazadas": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porEstado/RECHAZADA/totalSolicitudes": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porTipoProceso/Cursos de Verano/porEstado/APROBADA": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porTipoProceso/Cursos de Verano/porEstado/ENVIADA": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porTipoProceso/Cursos de Verano/porEstado/RECHAZADA": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porTipoProceso/Cursos de Verano/porcentajeAprobacion": 0.0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porTipoProceso/Cursos de Verano/totalAprobadas": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porTipoProceso/Cursos de Verano/totalRechazadas": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porTipoProceso/Cursos de Verano/totalSolicitudes": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porTipoProceso/ECAES/porEstado/RECHAZADA": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porTipoProceso/ECAES/totalRechazadas": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porTipoProceso/ECAES/totalSolicitudes": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porTipoProceso/Paz y Salvo/porEstado/ENVIADA": 0,
+  "/GET ~1resumen-completo?periodoAcademico=[2025-3]/cuerpo/porTipoProceso/Paz y Salvo/totalSolicitudes": 0
+}

@@ -1,0 +1,8 @@
+{
+  "/GET ~1api~1solicitudes-homologacion~1listarSolicitud-Homologacion~1porRol?rol=SECRETARIA [staff.sin.programa]": [
+    "A/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "B/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "B/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR"
+  ]
+}

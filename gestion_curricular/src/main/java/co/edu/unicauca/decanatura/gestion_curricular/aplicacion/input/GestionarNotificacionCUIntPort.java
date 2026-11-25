@@ -3,6 +3,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Notificacion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 
 public interface GestionarNotificacionCUIntPort {
 
@@ -26,12 +27,10 @@ public interface GestionarNotificacionCUIntPort {
 
     void marcarComoLeida(Integer idNotificacion);
 
-    void eliminarAntiguas(java.util.Date fechaLimite);
-
     // Métodos de utilidad para crear notificaciones automáticamente
-    void notificarCreacionSolicitud(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud solicitud, String tipoSolicitud);
+    void notificarCreacionSolicitud(Solicitud solicitud, String tipoSolicitud);
     
-    void notificarCambioEstadoSolicitud(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud solicitud, String estadoAnterior, String estadoNuevo, String tipoSolicitud);
+    void notificarCambioEstadoSolicitud(Solicitud solicitud, String estadoAnterior, String estadoNuevo, String tipoSolicitud);
 }
 
 

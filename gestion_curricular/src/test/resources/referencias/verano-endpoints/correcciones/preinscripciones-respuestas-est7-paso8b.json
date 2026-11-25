@@ -1,0 +1,121 @@
+{
+  "usuario 3": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/preinscripciones",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "usuario 4": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/preinscripciones",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "usuario alias": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/1",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "curso nuevo falla": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/solicitudes-curso-nuevo",
+      "metodo": "POST"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "preinscribir alias sin usuario": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/solicitudes/preinscripcion",
+      "metodo": "POST"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "curso 4": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/preinscripciones",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "aprobar sin cuerpo": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/preinscripciones/5/aprobar",
+      "metodo": "PUT"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  }
+}

@@ -3,130 +3,31 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarMateriasCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarMateriasIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 
 public class GestionarMateriasCUAdapter implements GestionarMateriasCUIntPort {
 
     private final GestionarMateriasIntPort materiasGateway;
-    private final FormateadorResultadosIntPort formateadorResultados;
 
-    public GestionarMateriasCUAdapter(GestionarMateriasIntPort materiasGateway,
-                                      FormateadorResultadosIntPort formateadorResultados) {
+    public GestionarMateriasCUAdapter(GestionarMateriasIntPort materiasGateway) {
         this.materiasGateway = materiasGateway;
-        this.formateadorResultados = formateadorResultados;
-    }
-
-    @Override
-    public Materia guardarMateria(Materia materia) {
-        if (materia == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("La materia no puede ser nula.");
-        }
-
-        materia.setId_materia(null); // Asegurarse de que el ID sea nulo para una nueva creación
-
-        // if (materia.getCodigo() == null || materia.getCodigo().isBlank()) {
-        //    formateadorResultados.retornarRespuestaErrorEntidadExiste("El código de la materia es obligatorio.");
-        // }
-
-        if (materiasGateway.existeMateriaPorCodigo(materia.getCodigo())) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe una materia con este código.");
-        }
-
-        return materiasGateway.guardarMateria(materia);
-    }
-
-    @Override
-    public Materia actualizarMateria(Materia materia) {
-        if (materia == null ) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("La materia no puede ser nula.");
-        }
-        if(materia.getId_materia() == null){
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un ID válido para actualizar.");
-        }
-        Materia existente = materiasGateway.obtenerMateriaPorId(materia.getId_materia());
-        if (existente == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró la materia a actualizar.");
-        }
-        return materiasGateway.actualizarMateria(materia);
-    }
-
-    @Override
-    public boolean eliminarMateria(Integer idMateria) {
-        if (idMateria == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un ID válido.");
-        }
-
-        Materia existente = materiasGateway.obtenerMateriaPorId(idMateria);
-        if (existente == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró la materia a eliminar.");
-        }
-
-        // Verificar si la materia tiene cursos asociados antes de eliminarla
-        if (materiasGateway.tieneCursosAsociados(idMateria)) {
-            formateadorResultados.retornarRespuestaErrorReglaDeNegocio(
-                "No se puede eliminar la materia porque tiene cursos asociados. " +
-                "Por favor, reasigne los cursos a otra materia antes de eliminar."
-            );
-        }
-
-        return materiasGateway.eliminarMateria(idMateria);
     }
 
     @Override
     public Materia obtenerMateriaPorId(Integer idMateria) {
         if (idMateria == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un ID válido.");
+            throw new ReglaNegocioExcepcion("Debe proporcionar un ID válido.");
         }
 
         Materia materia = materiasGateway.obtenerMateriaPorId(idMateria);
         if (materia == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Materia no encontrada.");
+            throw new EntidadNoExisteException("Materia no encontrada.");
         }
 
         return materia;
-    }
-
-    @Override
-    public Materia obtenerMateriaPorCodigo(String codigo) {
-        if (codigo == null || codigo.isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un código válido.");
-        }
-
-        Materia materia = materiasGateway.obtenerMateriaPorCodigo(codigo);
-        if (materia == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Materia no encontrada con ese código.");
-        }
-
-        return materia;
-    }
-
-    @Override
-    public boolean existeMateriaPorCodigo(String codigo) {
-        if (codigo == null || codigo.isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un código válido.");
-        }
-
-        return materiasGateway.existeMateriaPorCodigo(codigo);
-    }
-
-    @Override
-    public List<Materia> buscarPorNombreParcial(String nombreParcial) {
-        if (nombreParcial == null || nombreParcial.isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un nombre parcial.");
-        }
-
-        return materiasGateway.buscarPorNombreParcial(nombreParcial);
-    }
-
-    @Override
-    public List<Materia> buscarPorCreditos(Integer creditos) {
-        if (creditos == null || creditos <= 0) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Los créditos deben ser mayores a cero.");
-        }
-
-        return materiasGateway.buscarPorCreditos(creditos);
     }
 
     @Override

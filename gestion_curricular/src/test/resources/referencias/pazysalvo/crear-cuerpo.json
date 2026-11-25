@@ -1,0 +1,735 @@
+{
+  "staff \"texto\"" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud no soportado"
+    },
+    "capturas" : [ ]
+  },
+  "staff 5" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud no soportado"
+    },
+    "capturas" : [ ]
+  },
+  "staff true" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud no soportado"
+    },
+    "capturas" : [ ]
+  },
+  "staff []" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud no soportado"
+    },
+    "capturas" : [ ]
+  },
+  "staff [{\"idUsuario\":1}]" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud no soportado"
+    },
+    "capturas" : [ ]
+  },
+  "staff {}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Los datos de la solicitud son requeridos"
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":12}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 12,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : null,
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "staff {\"idUsuario\":\"12\"}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 12,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : null,
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "staff {\"idUsuario\":\" 12 \"}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 12,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : null,
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "staff {\"idUsuario\":null}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "El campo idUsuario es obligatorio"
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":\"\"}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "El campo idUsuario es obligatorio"
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":12.5}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: For input string: \"12.5\""
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":12.0}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: For input string: \"12.0\""
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":true}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: For input string: \"true\""
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":{\"a\":1}}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: For input string: \"{a=1}\""
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":[12]}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: For input string: \"[12]\""
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":\"1e3\"}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: For input string: \"1e3\""
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":2147483648}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: For input string: \"2147483648\""
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":-3}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : -3,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : null,
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "staff {\"idUsuario\":1,\"fecha_solicitud\":20250115}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: fecha_solicitud con formato inválido (yyyy-MM-dd)"
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":1,\"fecha_solicitud\":true}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: fecha_solicitud con formato inválido (yyyy-MM-dd)"
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":1,\"fecha_solicitud\":{\"x\":1}}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: fecha_solicitud con formato inválido (yyyy-MM-dd)"
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":1,\"fecha_solicitud\":\"2025-02-30\"}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: fecha_solicitud con formato inválido (yyyy-MM-dd)"
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":1,\"fecha_solicitud\":null}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 1,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : null,
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "staff {\"idUsuario\":1,\"fecha_solicitud\":\" 2025-01-15 \"}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: fecha_solicitud con formato inválido (yyyy-MM-dd)"
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":1,\"fecha_solicitud\":\"2025-01-15\"}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 1,
+      "guardar.fecha" : "2025-01-15",
+      "guardar.periodo" : null,
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "staff {\"idUsuario\":1,\"periodo_academico\":2024}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: Período académico inválido. Use formato: YYYY-P (ej: 2024-2)"
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":1,\"periodo_academico\":\"2024-1\"}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 1,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : "2024-1",
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "staff {\"idUsuario\":1,\"periodo_academico\":[\"2024-1\"]}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: Período académico inválido. Use formato: YYYY-P (ej: 2024-2)"
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"idUsuario\":1,\"periodo_academico\":\"  \"}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 1,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : null,
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "staff {\"idUsuario\":1,\"periodo_academico\":null}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 1,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : null,
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "staff {\"idUsuario\":1,\"titulo_trabajo_grado\":123,\"director_trabajo_grado\":45.0}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 1,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : null,
+      "guardar.titulo" : "123",
+      "guardar.director" : "45.0",
+      "guardar.nombre" : null
+    } ]
+  },
+  "staff {\"idUsuario\":1,\"titulo_trabajo_grado\":true,\"director_trabajo_grado\":{\"a\":1}}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 1,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : null,
+      "guardar.titulo" : "true",
+      "guardar.director" : "{a=1}",
+      "guardar.nombre" : null
+    } ]
+  },
+  "staff {\"idUsuario\":1,\"titulo_trabajo_grado\":[\"a\",\"b\"],\"director_trabajo_grado\":\"  Dr. X \"}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 1,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : null,
+      "guardar.titulo" : "[a, b]",
+      "guardar.director" : "Dr. X",
+      "guardar.nombre" : null
+    } ]
+  },
+  "staff {\"idUsuario\":1,\"titulo_trabajo_grado\":\"  \",\"director_trabajo_grado\":null}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 1,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : null,
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "staff {\"idUsuario\":1,\"objUsuario\":{\"id_usuario\":2},\"nombre_solicitud\":\"X\",\"otra\":[1]}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 1,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : null,
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "staff {\"objUsuario\":{\"id_usuario\":\"12\"},\"nombre_solicitud\":5,\"fecha_registro_solicitud\":\"2025-03-01\"}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "dto" : {
+        "id_solicitud" : null,
+        "nombre_solicitud" : "5",
+        "fecha_registro_solicitud" : 1740787200000,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "estado_actual" : null,
+        "objUsuario" : {
+          "id_usuario" : 12,
+          "nombre_completo" : null,
+          "id_rol" : null,
+          "codigo" : null,
+          "cedula" : null,
+          "correo" : null,
+          "password" : null,
+          "estado_usuario" : false,
+          "id_programa" : null
+        },
+        "documentos" : null
+      }
+    }, {
+      "guardar.idUsuario" : null,
+      "guardar.fecha" : null,
+      "guardar.periodo" : null,
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "staff {\"objUsuario\":{\"id_usuario\":12},\"nombre_solicitud\":\"X\",\"fecha_registro_solicitud\":1700000000000,\"periodo_academico\":\" 2024-2 \",\"id_solicitud\":7,\"otra\":1}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "dto" : {
+        "id_solicitud" : 7,
+        "nombre_solicitud" : "X",
+        "fecha_registro_solicitud" : 1700000000000,
+        "periodo_academico" : " 2024-2 ",
+        "fecha_ceremonia" : null,
+        "estado_actual" : null,
+        "objUsuario" : {
+          "id_usuario" : 12,
+          "nombre_completo" : null,
+          "id_rol" : null,
+          "codigo" : null,
+          "cedula" : null,
+          "correo" : null,
+          "password" : null,
+          "estado_usuario" : false,
+          "id_programa" : null
+        },
+        "documentos" : null
+      }
+    }, {
+      "guardar.idUsuario" : null,
+      "guardar.fecha" : null,
+      "guardar.periodo" : null,
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "staff {\"objUsuario\":{\"id_usuario\":12},\"nombre_solicitud\":\"X\",\"fecha_registro_solicitud\":\"01/03/2025\"}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: Cannot deserialize value of type `java.util.Date` from String \"01/03/2025\": not a valid representation (error: Failed to parse Date value '01/03/2025': Cannot parse date \"01/03/2025\": not compatible with any of standard forms (\"yyyy-MM-dd'T'HH:mm:ss.SSSX\", \"yyyy-MM-dd'T'HH:mm:ss.SSS\", \"EEE, dd MMM yyyy HH:mm:ss zzz\", \"yyyy-MM-dd\"))\n at [Source: UNKNOWN; byte offset: #UNKNOWN] (through reference chain: co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudPazYSalvoDTOPeticion[\"fecha_registro_solicitud\"])"
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"objUsuario\":\"12\",\"nombre_solicitud\":\"X\",\"fecha_registro_solicitud\":\"2025-03-01\"}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: Cannot construct instance of `co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.UsuarioDTOPeticion` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('12')\n at [Source: UNKNOWN; byte offset: #UNKNOWN] (through reference chain: co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudPazYSalvoDTOPeticion[\"objUsuario\"])"
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"objUsuario\":null,\"nombre_solicitud\":\"X\"}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "El usuario de la solicitud es obligatorio"
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"objUsuario\":{\"id_usuario\":12},\"nombre_solicitud\":\" \",\"fecha_registro_solicitud\":\"2025-03-01\"}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "El nombre de la solicitud es obligatorio"
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"objUsuario\":{\"id_usuario\":12},\"nombre_solicitud\":\"X\",\"fecha_registro_solicitud\":\"2025-03-01\",\"periodo_academico\":2024}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Período académico inválido. Use formato: YYYY-P (ej: 2024-2)"
+    },
+    "capturas" : [ ]
+  },
+  "estudiante {}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Los datos de la solicitud son requeridos"
+    },
+    "capturas" : [ ]
+  },
+  "estudiante {\"x\":1}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 99,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : null,
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "estudiante {\"idUsuario\":5}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 99,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : null,
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "estudiante {\"idUsuario\":null}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 99,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : null,
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "estudiante {\"objUsuario\":{\"id_usuario\":5},\"nombre_solicitud\":\"X\",\"fecha_registro_solicitud\":\"2025-03-01\"}" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "periodo_academico" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "estadosSolicitud" : null,
+      "objUsuario" : null,
+      "documentos" : null,
+      "categoria" : null,
+      "tipo_solicitud" : null
+    },
+    "capturas" : [ {
+      "guardar.idUsuario" : 99,
+      "guardar.fecha" : "HOY",
+      "guardar.periodo" : null,
+      "guardar.titulo" : null,
+      "guardar.director" : null,
+      "guardar.nombre" : null
+    } ]
+  },
+  "estudiante \"texto\"" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud no soportado"
+    },
+    "capturas" : [ ]
+  },
+  "estudiante [1]" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud no soportado"
+    },
+    "capturas" : [ ]
+  },
+  "sin cuenta {}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Los datos de la solicitud son requeridos"
+    },
+    "capturas" : [ ]
+  },
+  "sin cuenta {\"x\":1}" : {
+    "status" : 401,
+    "body" : {
+      "error" : "Usuario no autenticado"
+    },
+    "capturas" : [ ]
+  },
+  "sin cuenta [1]" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud no soportado"
+    },
+    "capturas" : [ ]
+  }
+}

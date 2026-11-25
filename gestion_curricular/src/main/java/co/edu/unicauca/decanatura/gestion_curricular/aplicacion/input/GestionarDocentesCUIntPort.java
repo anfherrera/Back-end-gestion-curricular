@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
 import java.util.List;
+
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 
 public interface GestionarDocentesCUIntPort {
@@ -14,8 +15,6 @@ public interface GestionarDocentesCUIntPort {
     Docente obtenerDocentePorId(Integer idDocente);
 
     Docente obtenerDocentePorCodigo(String codigo);
-
-    boolean existeDocentePorCodigo(String codigo);
 
     List<Docente> buscarPorNombreParcial(String nombreParcial);
 

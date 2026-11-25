@@ -1,0 +1,92 @@
+{
+  "GET /validarDocumentosRequeridos/{completa-con-guion}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/validarDocumentosRequeridos/{completa-con-guion}"
+    }
+  },
+  "GET /validarDocumentosRequeridos/{variantes-de-nombre}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/validarDocumentosRequeridos/{variantes-de-nombre}"
+    }
+  },
+  "GET /validarDocumentosRequeridos/{formato-con-guion-bajo}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/validarDocumentosRequeridos/{formato-con-guion-bajo}"
+    }
+  },
+  "GET /validarDocumentosRequeridos/{sin-documentos}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/validarDocumentosRequeridos/{sin-documentos}"
+    }
+  },
+  "GET /validarDocumentosRequeridos/{nombre-nulo}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/validarDocumentosRequeridos/{nombre-nulo}"
+    }
+  },
+  "GET /validarDocumentosRequeridos/{rechazos-ultimo-sin-comentario}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/validarDocumentosRequeridos/{rechazos-ultimo-sin-comentario}"
+    }
+  },
+  "GET /validarDocumentosRequeridos/{rechazos-con-comentario}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/validarDocumentosRequeridos/{rechazos-con-comentario}"
+    }
+  },
+  "GET /validarDocumentosRequeridos/{sin-comentarios}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/validarDocumentosRequeridos/{sin-comentarios}"
+    }
+  },
+  "GET /validarDocumentosRequeridos/{inexistente}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/validarDocumentosRequeridos/2000000000"
+    }
+  }
+}

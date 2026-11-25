@@ -1,0 +1,172 @@
+{
+  "GET /periodo?periodoAcademico=[ 2025-1 ]": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/periodo"
+    }
+  },
+  "GET /periodo?periodoAcademico=[2024-2]": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/periodo"
+    }
+  },
+  "GET /periodo?periodoAcademico=[2025-3]": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/periodo"
+    }
+  },
+  "GET /periodo?fechaInicio=[2024-07-01]&fechaFin=[2025-06-30]": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/periodo"
+    }
+  },
+  "GET /periodo": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/periodo"
+    }
+  },
+  "GET /proceso/Homologacion": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/proceso/Homologacion"
+    }
+  },
+  "GET /proceso/Paz y Salvo": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/proceso/Paz%20y%20Salvo"
+    }
+  },
+  "GET /proceso/Cursos de Verano": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/proceso/Cursos%20de%20Verano"
+    }
+  },
+  "GET /proceso/Desconocido": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/proceso/Desconocido"
+    }
+  },
+  "GET /estado/APROBADA": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/estado/APROBADA"
+    }
+  },
+  "GET /estado/Rechazada": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/estado/Rechazada"
+    }
+  },
+  "GET /estado/Aprobado": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/estado/Aprobado"
+    }
+  },
+  "GET /estado/Desconocido": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/estado/Desconocido"
+    }
+  },
+  "GET /programa/1": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/programa/1"
+    }
+  },
+  "GET /programa/2": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/programa/2"
+    }
+  },
+  "GET /programa/3": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/programa/3"
+    }
+  },
+  "GET /programa/99": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/estadisticas/programa/99"
+    }
+  }
+}

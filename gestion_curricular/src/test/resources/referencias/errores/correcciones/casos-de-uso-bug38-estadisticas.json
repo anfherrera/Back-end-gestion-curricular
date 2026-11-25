@@ -1,0 +1,288 @@
+{
+  "/estadisticas actualizar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encontró la estadística a actualizar.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/estadisticas actualizar sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Estadística inválida para actualización.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas crear nula" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: La estadística no puede ser nula.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas eliminar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Estadística no encontrada para eliminar.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/estadisticas eliminar sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un ID válido.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas historial fin invalido" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Año de fin inválido. Debe estar entre 2020 y 2030.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas historial inicio invalido" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Año de inicio inválido. Debe estar entre 2020 y 2030.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas historial invertido" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El año de inicio no puede ser mayor al año de fin.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas obtener inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Estadística no encontrada.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/estadisticas obtener sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un ID válido.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas periodo academico vacio" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El período académico no puede estar vacío.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas periodo estado programa incompleta" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Parámetros incompletos para la consulta.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas por estado vacio" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El estado no puede estar vacío.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas por periodo invertido" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: La fecha de inicio no puede ser posterior a la fecha de fin.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas por periodo sin fechas" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Las fechas de inicio y fin son requeridas.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas por proceso vacio" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El tipo de proceso no puede estar vacío.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas por programa invalido" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID del programa debe ser válido.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas proceso y estado sin estado" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El estado no puede estar vacío.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas proceso y estado sin proceso" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El tipo de proceso no puede estar vacío.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas programa y periodo invertido" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: La fecha de inicio no puede ser posterior a la fecha de fin.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas programa y periodo programa invalido" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID del programa debe ser válido.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas programa y periodo sin fechas" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Las fechas de inicio y fin son requeridas.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas solicitud incompleta" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Parámetros incompletos para la consulta.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas solicitud sin proceso" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El proceso no puede estar vacío.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas tendencias invertidas" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Las fechas de inicio no pueden ser posteriores a las fechas de fin.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/estadisticas tendencias sin fechas" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Todas las fechas son requeridas para la comparación.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  }
+}

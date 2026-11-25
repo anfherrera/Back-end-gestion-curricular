@@ -1,0 +1,299 @@
+{
+  "/aprobar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encontró la solicitud con ID: 30",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/completar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encontró la solicitud de inscripción con ID: 31",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/curso actualizar estado nulo" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No hay datos en el estado",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/curso actualizar estado sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No hay id en el estado",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/curso actualizar estado sin texto" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No hay datos en el estado actual",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/curso actualizar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encuentra el curso",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/curso actualizar nulo" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No hay datos en el curso",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/curso actualizar sin estados" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No se puede actualizar el curso, porque no tiene estados",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/curso actualizar sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No hay id en el curso",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/curso crear datos docente inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Docente no encontrado.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/curso crear datos materia inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Materia no encontrada.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/curso crear docente inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No existe el docente con el ID: 4",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/curso crear docente sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No hay datos en el docente",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/curso crear materia inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No existe la materia con el ID: 8",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/curso crear materia sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No hay datos en la   materia",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/curso crear nulo" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No hay datos en el curso",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/curso crear sin docente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No hay datos en el docente",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/curso crear sin materia" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No hay datos en la materia",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/curso eliminar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encuentra el curso",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/curso inscripcion sin publicar" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No se puede actualizar el curso, porque no esta publicado",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/curso inscripcion sin solicitudes" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No se puede publicar el curso, porque no hay solicitudes",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/curso preinscripcion sin publicar" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No se puede actualizar el curso, porque no esta publicado",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/curso preinscripcion sin solicitudes" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No se puede publicar el curso, porque no hay solicitudes",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/inscripcion usuario inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Usuario no encontrado",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/preinscripcion usuario inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Usuario no encontrado",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/rechazar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encontró la solicitud con ID: 30",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/validar pago inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encontró la solicitud de inscripción con ID: 31",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  }
+}

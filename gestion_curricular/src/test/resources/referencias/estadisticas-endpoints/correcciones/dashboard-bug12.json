@@ -1,0 +1,35 @@
+{
+  "/GET ~1dashboard?periodoAcademico=[2025 - Primer Semestre]/cuerpo/filtrosAplicados/periodoAcademico": "2025-1",
+  "/GET ~1dashboard?periodoAcademico=[2025 - Primer Semestre]/cuerpo/resumenGlobal/porPrograma": {
+    "Ingeniería Civil": 1,
+    "Ingeniería Electrónica": 2,
+    "Ingeniería de Sistemas": 4
+  },
+  "/GET ~1dashboard?periodoAcademico=[2025 - Primer Semestre]/cuerpo/resumenGlobal/porTipoProceso": {
+    "Cursos de Verano": 2,
+    "ECAES": 1,
+    "Homologacion": 2,
+    "Paz y Salvo": 1,
+    "Reingreso": 1
+  },
+  "/GET ~1dashboard?periodoAcademico=[2025 - Primer Semestre]/cuerpo/resumenGlobal/porcentajeAprobacion": 42.86,
+  "/GET ~1dashboard?periodoAcademico=[2025 - Primer Semestre]/cuerpo/resumenGlobal/totalAprobadas": 3,
+  "/GET ~1dashboard?periodoAcademico=[2025 - Primer Semestre]/cuerpo/resumenGlobal/totalEnProceso": 1,
+  "/GET ~1dashboard?periodoAcademico=[2025 - Primer Semestre]/cuerpo/resumenGlobal/totalRechazadas": 1,
+  "/GET ~1dashboard?periodoAcademico=[2025 - Primer Semestre]/cuerpo/topProcesos": {
+    "Cursos de Verano": 2,
+    "ECAES": 1,
+    "Homologacion": 2,
+    "Paz y Salvo": 1,
+    "Reingreso": 1
+  },
+  "/GET ~1dashboard?periodoAcademico=[2025-3]/cuerpo/filtrosAplicados/periodoAcademico": "2025-3",
+  "/GET ~1dashboard?periodoAcademico=[2025-3]/cuerpo/resumenGlobal/porPrograma": {},
+  "/GET ~1dashboard?periodoAcademico=[2025-3]/cuerpo/resumenGlobal/porTipoProceso": {},
+  "/GET ~1dashboard?periodoAcademico=[2025-3]/cuerpo/resumenGlobal/porcentajeAprobacion": 0.0,
+  "/GET ~1dashboard?periodoAcademico=[2025-3]/cuerpo/resumenGlobal/totalAprobadas": 0,
+  "/GET ~1dashboard?periodoAcademico=[2025-3]/cuerpo/resumenGlobal/totalEnviadas": 0,
+  "/GET ~1dashboard?periodoAcademico=[2025-3]/cuerpo/resumenGlobal/totalRechazadas": 0,
+  "/GET ~1dashboard?periodoAcademico=[2025-3]/cuerpo/resumenGlobal/totalSolicitudes": 0,
+  "/GET ~1dashboard?periodoAcademico=[2025-3]/cuerpo/topProcesos": {}
+}

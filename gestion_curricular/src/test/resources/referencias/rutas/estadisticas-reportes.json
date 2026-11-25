@@ -1,0 +1,336 @@
+{
+  "GET /api/estadisticas/export/pdf [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/pdf;charset=UTF-8",
+    "cuerpo" : "pdfCompleto",
+    "disposicion" : "attachment; filename=\"estadisticas_generales.pdf\"",
+    "llamadas" : [ "pdfCompleto(null, null, null, null, null)" ]
+  },
+  "GET /api/estadisticas/reportes?formato=pdf [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/estadisticas/reportes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/export/pdf?proceso=Reingreso&idPrograma=1&periodoAcademico=2025-2&fechaInicio=2025-01-01&fechaFin=2025-06-30 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/pdf;charset=UTF-8",
+    "cuerpo" : "pdfCompleto",
+    "disposicion" : "attachment; filename=\"estadisticas_generales.pdf\"",
+    "llamadas" : [ "pdfCompleto(Reingreso, 1, 2025-2, 2025-01-01 00:00, 2025-06-30 00:00)" ]
+  },
+  "GET /api/estadisticas/reportes?formato=pdf&proceso=Reingreso&idPrograma=1&periodoAcademico=2025-2&fechaInicio=2025-01-01&fechaFin=2025-06-30 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/estadisticas/reportes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/export/pdf [admin]" : {
+    "status" : 200,
+    "tipo" : "application/pdf;charset=UTF-8",
+    "cuerpo" : "pdfCompleto",
+    "disposicion" : "attachment; filename=\"estadisticas_generales.pdf\"",
+    "llamadas" : [ "pdfCompleto(null, null, null, null, null)" ]
+  },
+  "GET /api/estadisticas/reportes?formato=pdf [admin]" : {
+    "status" : 404,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/estadisticas/reportes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/export/pdf [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/reportes?formato=pdf [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/export/pdf/cursos-verano [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/pdf;charset=UTF-8",
+    "cuerpo" : "pdfCursosVerano",
+    "disposicion" : "attachment; filename=\"estadisticas_cursos_verano.pdf\"",
+    "llamadas" : [ "pdfCursosVerano(null, null)" ]
+  },
+  "GET /api/estadisticas/cursos-verano/reportes?formato=pdf [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/estadisticas/cursos-verano/reportes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/export/pdf/cursos-verano?periodoAcademico=2025-2&idPrograma=1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/pdf;charset=UTF-8",
+    "cuerpo" : "pdfCursosVerano",
+    "disposicion" : "attachment; filename=\"estadisticas_cursos_verano_2025_2_programa_1.pdf\"",
+    "llamadas" : [ "pdfCursosVerano(2025-2, 1)" ]
+  },
+  "GET /api/estadisticas/cursos-verano/reportes?formato=pdf&periodoAcademico=2025-2&idPrograma=1 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/estadisticas/cursos-verano/reportes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/export/pdf/cursos-verano [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/cursos-verano/reportes?formato=pdf [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/export/excel [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    "cuerpo" : "excelCompleto",
+    "disposicion" : "attachment; filename=\"estadisticas_generales.xlsx\"",
+    "llamadas" : [ "excelCompleto(null, null, null, null, null)" ]
+  },
+  "GET /api/estadisticas/reportes?formato=excel [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/estadisticas/reportes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/export/excel?proceso=Reingreso&idPrograma=1&periodoAcademico=2025-2&fechaInicio=2025-01-01&fechaFin=2025-06-30 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    "cuerpo" : "excelCompleto",
+    "disposicion" : "attachment; filename=\"estadisticas_generales.xlsx\"",
+    "llamadas" : [ "excelCompleto(Reingreso, 1, 2025-2, 2025-01-01 00:00, 2025-06-30 00:00)" ]
+  },
+  "GET /api/estadisticas/reportes?formato=excel&proceso=Reingreso&idPrograma=1&periodoAcademico=2025-2&fechaInicio=2025-01-01&fechaFin=2025-06-30 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/estadisticas/reportes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/export/excel [admin]" : {
+    "status" : 200,
+    "tipo" : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    "cuerpo" : "excelCompleto",
+    "disposicion" : "attachment; filename=\"estadisticas_generales.xlsx\"",
+    "llamadas" : [ "excelCompleto(null, null, null, null, null)" ]
+  },
+  "GET /api/estadisticas/reportes?formato=excel [admin]" : {
+    "status" : 404,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/estadisticas/reportes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/export/excel [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/reportes?formato=excel [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/export/excel/cursos-verano [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    "cuerpo" : "excelCursosVerano",
+    "disposicion" : "attachment; filename=\"estadisticas_cursos_verano.xlsx\"",
+    "llamadas" : [ "excelCursosVerano(null, null)" ]
+  },
+  "GET /api/estadisticas/cursos-verano/reportes?formato=excel [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/estadisticas/cursos-verano/reportes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/export/excel/cursos-verano?periodoAcademico=2025-2&idPrograma=1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8",
+    "cuerpo" : "excelCursosVerano",
+    "disposicion" : "attachment; filename=\"estadisticas_cursos_verano_2025_2_programa_1.xlsx\"",
+    "llamadas" : [ "excelCursosVerano(2025-2, 1)" ]
+  },
+  "GET /api/estadisticas/cursos-verano/reportes?formato=excel&periodoAcademico=2025-2&idPrograma=1 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/estadisticas/cursos-verano/reportes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/export/excel/cursos-verano [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/cursos-verano/reportes?formato=excel [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/reportes [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/estadisticas/reportes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/reportes?formato=csv [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/estadisticas/reportes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/reportes?formato=PDF [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/estadisticas/reportes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/cursos-verano/reportes [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/estadisticas/cursos-verano/reportes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/cursos-verano/reportes?formato=csv [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/estadisticas/cursos-verano/reportes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/cursos-verano/reportes?formato=PDF [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/estadisticas/cursos-verano/reportes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  }
+}

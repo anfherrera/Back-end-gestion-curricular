@@ -1,12 +1,11 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers;
 
-import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.UsuarioDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.UsuarioDTORespuesta;
 
 
 @Mapper(componentModel = "spring", uses = {ProgramaMapperDominio.class,
@@ -14,15 +13,14 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 public interface UsuarioMapperDominio {
 
     // De modelo → DTO de respuesta
-    @Mapping(source = "id_usuario", target = "id_usuario")
-    @Mapping(source = "nombre_completo", target = "nombre_completo")
+    @Mapping(source = "idUsuario", target = "id_usuario")
+    @Mapping(source = "nombreCompleto", target = "nombre_completo")
     @Mapping(source = "objRol", target = "rol", nullValuePropertyMappingStrategy = org.mapstruct.NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "codigo", target = "codigo")
     @Mapping(source = "cedula", target = "cedula")
     @Mapping(source = "correo", target = "correo")
-    @Mapping(source = "estado_usuario", target = "estado_usuario")
+    @Mapping(source = "estadoUsuario", target = "estado_usuario")
     @Mapping(source = "objPrograma", target = "objPrograma", nullValuePropertyMappingStrategy = org.mapstruct.NullValuePropertyMappingStrategy.IGNORE)
-    UsuarioDTORespuesta mappearDeUsuarioAUsuarioDTORespuesta(Usuario usuario);
+    UsuarioDTORespuesta mapearDeUsuarioAUsuarioDTORespuesta(Usuario usuario);
 
-    List<UsuarioDTORespuesta> mappearListaDeUsuarioAUsuarioDTORespuesta(List<Usuario> usuarios);
 }

@@ -1,0 +1,19 @@
+{
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Funcionario/Aprobadas [coord.listados]" : [ "HTTP 404" ],
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Coordinador/Aprobadas [coord.listados]" : [ "HTTP 404" ],
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Secretaria/Aprobadas [coord.listados]" : [ "HTTP 404" ],
+  "GET /api/solicitudes-pazysalvo?rol=funcionario&bandeja=procesadas [staff.sin.programa]" : [ "HTTP 404" ],
+  "GET /api/solicitudes-pazysalvo?rol=funcionario&bandeja=procesadas&periodoAcademico=todos [staff.sin.programa]" : [ "HTTP 404" ],
+  "GET /api/solicitudes-pazysalvo?rol=funcionario&bandeja=procesadas&periodoAcademico=2090-1 [staff.sin.programa]" : [ "HTTP 404" ],
+  "GET /api/solicitudes-pazysalvo?rol=secretaria&bandeja=procesadas [staff.sin.programa]" : [ "HTTP 404" ],
+  "GET /api/solicitudes-pazysalvo?rol=secretaria&bandeja=procesadas&periodoAcademico=todos [staff.sin.programa]" : [ "HTTP 404" ],
+  "GET /api/solicitudes-pazysalvo?rol=secretaria&bandeja=procesadas&periodoAcademico=2090-1 [staff.sin.programa]" : [ "HTTP 404" ],
+  "GET /api/solicitudes-pazysalvo?rol=coordinador&bandeja=procesadas [coord.listados]" : [ "HTTP 404" ],
+  "GET /api/solicitudes-pazysalvo?rol=coordinador&bandeja=procesadas&periodoAcademico=2090-1 [coord.listados]" : [ "HTTP 404" ],
+  "GET /api/solicitudes-pazysalvo?rol=coordinador&bandeja=procesadas&periodoAcademico=2090-1 [staff.sin.programa]" : [ "HTTP 404" ],
+  "GET /api/solicitudes-pazysalvo?rol=otro&bandeja=procesadas [staff.sin.programa]" : [ "HTTP 404" ],
+  "GET /api/solicitudes-pazysalvo?rol=funcionario&bandeja=otra [staff.sin.programa]" : [ "HTTP 404" ],
+  "GET /api/solicitudes-pazysalvo?rol=funcionario [staff.sin.programa]" : [ "HTTP 404" ],
+  "GET /api/solicitudes-pazysalvo?bandeja=procesadas [staff.sin.programa]" : [ "HTTP 404" ],
+  "GET /api/solicitudes-pazysalvo [staff.sin.programa]" : [ "HTTP 404" ]
+}

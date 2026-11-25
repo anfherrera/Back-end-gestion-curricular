@@ -1,0 +1,154 @@
+{
+  "periodo=[null] proceso=[null]" : {
+    "incluyeCursosVerano" : true,
+    "porTipoProceso" : {
+      "Cursos de Verano" : 5,
+      "Paz y Salvo" : 2,
+      "Homologacion" : 3,
+      "Reingreso" : 2,
+      "ECAES" : 2
+    }
+  },
+  "periodo=[null] proceso=[]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : { }
+  },
+  "periodo=[null] proceso=[  ]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : { }
+  },
+  "periodo=[null] proceso=[CURSO_VERANO]" : {
+    "incluyeCursosVerano" : true,
+    "porTipoProceso" : {
+      "Cursos de Verano" : 5
+    }
+  },
+  "periodo=[null] proceso=[Cursos de Verano]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : {
+      "Cursos de Verano" : 5
+    }
+  },
+  "periodo=[null] proceso=[Curso Intersemestral]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : {
+      "Cursos de Verano" : 5
+    }
+  },
+  "periodo=[null] proceso=[verano]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : {
+      "Cursos de Verano" : 5
+    }
+  },
+  "periodo=[null] proceso=[Reingreso]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : {
+      "Reingreso" : 2
+    }
+  },
+  "periodo=[null] proceso=[Homologación]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : {
+      "Homologacion" : 3
+    }
+  },
+  "periodo=[null] proceso=[homolog]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : {
+      "Homologacion" : 3
+    }
+  },
+  "periodo=[null] proceso=[Desconocido]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : { }
+  },
+  "periodo=[2025-2] proceso=[null]" : {
+    "incluyeCursosVerano" : true,
+    "porTipoProceso" : {
+      "Cursos de Verano" : 5,
+      "Paz y Salvo" : 1,
+      "ECAES" : 1
+    }
+  },
+  "periodo=[2025-2] proceso=[]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : {
+      "Cursos de Verano" : 5,
+      "Paz y Salvo" : 1,
+      "ECAES" : 1
+    }
+  },
+  "periodo=[2025-2] proceso=[  ]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : {
+      "Cursos de Verano" : 5,
+      "Paz y Salvo" : 1,
+      "ECAES" : 1
+    }
+  },
+  "periodo=[2025-2] proceso=[CURSO_VERANO]" : {
+    "incluyeCursosVerano" : true,
+    "porTipoProceso" : {
+      "Cursos de Verano" : 5,
+      "Paz y Salvo" : 1,
+      "ECAES" : 1
+    }
+  },
+  "periodo=[2025-2] proceso=[Cursos de Verano]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : {
+      "Cursos de Verano" : 5,
+      "Paz y Salvo" : 1,
+      "ECAES" : 1
+    }
+  },
+  "periodo=[2025-2] proceso=[Curso Intersemestral]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : {
+      "Cursos de Verano" : 5,
+      "Paz y Salvo" : 1,
+      "ECAES" : 1
+    }
+  },
+  "periodo=[2025-2] proceso=[verano]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : {
+      "Cursos de Verano" : 5,
+      "Paz y Salvo" : 1,
+      "ECAES" : 1
+    }
+  },
+  "periodo=[2025-2] proceso=[Reingreso]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : {
+      "Cursos de Verano" : 5,
+      "Paz y Salvo" : 1,
+      "ECAES" : 1
+    }
+  },
+  "periodo=[2025-2] proceso=[Homologación]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : {
+      "Cursos de Verano" : 5,
+      "Paz y Salvo" : 1,
+      "ECAES" : 1
+    }
+  },
+  "periodo=[2025-2] proceso=[homolog]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : {
+      "Cursos de Verano" : 5,
+      "Paz y Salvo" : 1,
+      "ECAES" : 1
+    }
+  },
+  "periodo=[2025-2] proceso=[Desconocido]" : {
+    "incluyeCursosVerano" : false,
+    "porTipoProceso" : {
+      "Cursos de Verano" : 5,
+      "Paz y Salvo" : 1,
+      "ECAES" : 1
+    }
+  }
+}

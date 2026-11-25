@@ -1,0 +1,259 @@
+{
+  "dashboard sin datos" : {
+    "status" : 200,
+    "body" : {
+      "cursosActivos" : 0,
+      "totalCursos" : 0,
+      "totalPreinscripciones" : 0,
+      "cursosGestionados" : 0,
+      "totalInscripciones" : 0,
+      "porcentajeProgreso" : 0
+    },
+    "claves" : [ ".cursosActivos:NUMBER", ".totalCursos:NUMBER", ".totalPreinscripciones:NUMBER", ".cursosGestionados:NUMBER", ".totalInscripciones:NUMBER", ".porcentajeProgreso:NUMBER" ]
+  },
+  "dashboard con datos" : {
+    "status" : 200,
+    "body" : {
+      "cursosActivos" : 3,
+      "totalCursos" : 6,
+      "totalPreinscripciones" : 2,
+      "cursosGestionados" : 5,
+      "totalInscripciones" : 1,
+      "porcentajeProgreso" : 83
+    },
+    "claves" : [ ".cursosActivos:NUMBER", ".totalCursos:NUMBER", ".totalPreinscripciones:NUMBER", ".cursosGestionados:NUMBER", ".totalInscripciones:NUMBER", ".porcentajeProgreso:NUMBER" ]
+  },
+  "seguimiento 1" : {
+    "status" : 200,
+    "body" : {
+      "preinscripciones" : [ {
+        "accionesDisponibles" : [ "proceder_inscripcion" ],
+        "fecha" : 1710522000000,
+        "estado" : "Aprobado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 1,
+        "curso" : "Materia 1",
+        "estadoCurso" : "Inscripcion",
+        "id" : 10,
+        "cursoId" : 1
+      }, {
+        "accionesDisponibles" : [ "esperando_inscripcion" ],
+        "fecha" : null,
+        "estado" : "Aprobado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 1,
+        "curso" : "Materia 2",
+        "estadoCurso" : "Preinscripcion",
+        "id" : 11,
+        "cursoId" : 2
+      }, {
+        "accionesDisponibles" : [ "esperando_aprobacion" ],
+        "fecha" : 1710522000000,
+        "estado" : "Enviada",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 1,
+        "curso" : "Materia 3",
+        "estadoCurso" : "No disponible",
+        "id" : 12,
+        "cursoId" : 3
+      }, {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Rechazado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 1,
+        "curso" : "Materia 4",
+        "estadoCurso" : "Publicado",
+        "id" : 13,
+        "cursoId" : 4
+      }, {
+        "accionesDisponibles" : [ ],
+        "fecha" : 1710522000000,
+        "estado" : "Enviado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 1,
+        "curso" : "Materia 5",
+        "estadoCurso" : "Publicado",
+        "id" : 14,
+        "cursoId" : 5
+      }, {
+        "accionesDisponibles" : [ "esperando_aprobacion_curso" ],
+        "fecha" : null,
+        "estado" : "Enviada",
+        "tipo" : "Solicitud de Curso Nuevo",
+        "estudianteId" : 1,
+        "curso" : "Cálculo III",
+        "estadoCurso" : "No disponible",
+        "id" : 15,
+        "cursoId" : null
+      }, {
+        "accionesDisponibles" : [ "curso_aprobado_esperando_apertura" ],
+        "fecha" : 1710522000000,
+        "estado" : "Aprobado",
+        "tipo" : "Solicitud de Curso Nuevo",
+        "estudianteId" : 1,
+        "curso" : "Física II",
+        "estadoCurso" : "No disponible",
+        "id" : 16,
+        "cursoId" : null
+      }, {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Rechazado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 1,
+        "curso" : "sin separador",
+        "estadoCurso" : "No disponible",
+        "id" : 17,
+        "cursoId" : null
+      }, {
+        "accionesDisponibles" : [ ],
+        "fecha" : 1710522000000,
+        "estado" : "Enviado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 1,
+        "curso" : "Curso no disponible",
+        "estadoCurso" : "No disponible",
+        "id" : 18,
+        "cursoId" : null
+      } ],
+      "totalPreinscripciones" : 9,
+      "totalActividades" : 18,
+      "inscripciones" : [ {
+        "accionesDisponibles" : [ "esperando_validacion_pago" ],
+        "fecha" : 1710522000000,
+        "estado" : "Enviada",
+        "estudianteId" : 1,
+        "tipoSolicitud" : "Inscripcion",
+        "curso" : "Materia 1",
+        "nombreSolicitud" : "Inscripción 0",
+        "estadoCurso" : "PENDIENTE",
+        "id" : 30,
+        "cursoId" : 1
+      }, {
+        "accionesDisponibles" : [ "inscripcion_aceptada" ],
+        "fecha" : null,
+        "estado" : "Pago_Validado",
+        "estudianteId" : 1,
+        "tipoSolicitud" : "Inscripcion",
+        "curso" : "Materia 2",
+        "nombreSolicitud" : "Inscripción 1",
+        "estadoCurso" : "INSCRITO",
+        "id" : 31,
+        "cursoId" : 2
+      }, {
+        "accionesDisponibles" : [ ],
+        "fecha" : 1710522000000,
+        "estado" : "Inscripcion_Completada",
+        "estudianteId" : 1,
+        "tipoSolicitud" : "Inscripcion",
+        "curso" : "Materia 3",
+        "nombreSolicitud" : "Inscripción 2",
+        "estadoCurso" : "ACTIVO",
+        "id" : 32,
+        "cursoId" : 3
+      }, {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Curso_Aprobado",
+        "estudianteId" : 1,
+        "tipoSolicitud" : "Inscripcion",
+        "curso" : "Materia 4",
+        "nombreSolicitud" : "Inscripción 3",
+        "estadoCurso" : "APROBADO",
+        "id" : 33,
+        "cursoId" : 4
+      }, {
+        "accionesDisponibles" : [ ],
+        "fecha" : 1710522000000,
+        "estado" : "Curso_Finalizado",
+        "estudianteId" : 1,
+        "tipoSolicitud" : "Inscripcion",
+        "curso" : "Materia 5",
+        "nombreSolicitud" : "Inscripción 4",
+        "estadoCurso" : "FINALIZADO",
+        "id" : 34,
+        "cursoId" : 5
+      }, {
+        "accionesDisponibles" : [ "pago_rechazado" ],
+        "fecha" : null,
+        "estado" : "Pago_Rechazado",
+        "estudianteId" : 1,
+        "tipoSolicitud" : "Inscripcion",
+        "curso" : "Materia 6",
+        "nombreSolicitud" : "Inscripción 5",
+        "estadoCurso" : "RECHAZADO",
+        "id" : 35,
+        "cursoId" : 6
+      }, {
+        "accionesDisponibles" : [ ],
+        "fecha" : 1710522000000,
+        "estado" : "Otro",
+        "estudianteId" : 1,
+        "tipoSolicitud" : "Inscripcion",
+        "curso" : "Curso no disponible",
+        "nombreSolicitud" : "Inscripción 6",
+        "estadoCurso" : "PENDIENTE",
+        "id" : 36,
+        "cursoId" : null
+      }, {
+        "accionesDisponibles" : [ "esperando_validacion_pago" ],
+        "fecha" : null,
+        "estado" : "Enviada",
+        "estudianteId" : 1,
+        "tipoSolicitud" : "Inscripcion",
+        "curso" : "Materia 8",
+        "nombreSolicitud" : "Inscripción 7",
+        "estadoCurso" : "PENDIENTE",
+        "id" : 37,
+        "cursoId" : 8
+      }, {
+        "accionesDisponibles" : [ "esperando_validacion_pago" ],
+        "fecha" : 1710522000000,
+        "estado" : "Enviada",
+        "estudianteId" : 1,
+        "tipoSolicitud" : "Inscripcion",
+        "curso" : "Curso no disponible",
+        "nombreSolicitud" : null,
+        "estadoCurso" : "PENDIENTE",
+        "id" : 40,
+        "cursoId" : null
+      } ],
+      "totalInscripciones" : 9
+    },
+    "claves" : [ ".preinscripciones:ARRAY", ".preinscripciones[0].accionesDisponibles:ARRAY", ".preinscripciones[0].fecha:NUMBER", ".preinscripciones[0].estado:STRING", ".preinscripciones[0].tipo:STRING", ".preinscripciones[0].estudianteId:NUMBER", ".preinscripciones[0].curso:STRING", ".preinscripciones[0].estadoCurso:STRING", ".preinscripciones[0].id:NUMBER", ".preinscripciones[0].cursoId:NUMBER", ".preinscripciones[1].accionesDisponibles:ARRAY", ".preinscripciones[1].fecha:NULL", ".preinscripciones[1].estado:STRING", ".preinscripciones[1].tipo:STRING", ".preinscripciones[1].estudianteId:NUMBER", ".preinscripciones[1].curso:STRING", ".preinscripciones[1].estadoCurso:STRING", ".preinscripciones[1].id:NUMBER", ".preinscripciones[1].cursoId:NUMBER", ".preinscripciones[2].accionesDisponibles:ARRAY", ".preinscripciones[2].fecha:NUMBER", ".preinscripciones[2].estado:STRING", ".preinscripciones[2].tipo:STRING", ".preinscripciones[2].estudianteId:NUMBER", ".preinscripciones[2].curso:STRING", ".preinscripciones[2].estadoCurso:STRING", ".preinscripciones[2].id:NUMBER", ".preinscripciones[2].cursoId:NUMBER", ".preinscripciones[3].accionesDisponibles:ARRAY", ".preinscripciones[3].fecha:NULL", ".preinscripciones[3].estado:STRING", ".preinscripciones[3].tipo:STRING", ".preinscripciones[3].estudianteId:NUMBER", ".preinscripciones[3].curso:STRING", ".preinscripciones[3].estadoCurso:STRING", ".preinscripciones[3].id:NUMBER", ".preinscripciones[3].cursoId:NUMBER", ".preinscripciones[4].accionesDisponibles:ARRAY", ".preinscripciones[4].fecha:NUMBER", ".preinscripciones[4].estado:STRING", ".preinscripciones[4].tipo:STRING", ".preinscripciones[4].estudianteId:NUMBER", ".preinscripciones[4].curso:STRING", ".preinscripciones[4].estadoCurso:STRING", ".preinscripciones[4].id:NUMBER", ".preinscripciones[4].cursoId:NUMBER", ".preinscripciones[5].accionesDisponibles:ARRAY", ".preinscripciones[5].fecha:NULL", ".preinscripciones[5].estado:STRING", ".preinscripciones[5].tipo:STRING", ".preinscripciones[5].estudianteId:NUMBER", ".preinscripciones[5].curso:STRING", ".preinscripciones[5].estadoCurso:STRING", ".preinscripciones[5].id:NUMBER", ".preinscripciones[5].cursoId:NULL", ".preinscripciones[6].accionesDisponibles:ARRAY", ".preinscripciones[6].fecha:NUMBER", ".preinscripciones[6].estado:STRING", ".preinscripciones[6].tipo:STRING", ".preinscripciones[6].estudianteId:NUMBER", ".preinscripciones[6].curso:STRING", ".preinscripciones[6].estadoCurso:STRING", ".preinscripciones[6].id:NUMBER", ".preinscripciones[6].cursoId:NULL", ".preinscripciones[7].accionesDisponibles:ARRAY", ".preinscripciones[7].fecha:NULL", ".preinscripciones[7].estado:STRING", ".preinscripciones[7].tipo:STRING", ".preinscripciones[7].estudianteId:NUMBER", ".preinscripciones[7].curso:STRING", ".preinscripciones[7].estadoCurso:STRING", ".preinscripciones[7].id:NUMBER", ".preinscripciones[7].cursoId:NULL", ".preinscripciones[8].accionesDisponibles:ARRAY", ".preinscripciones[8].fecha:NUMBER", ".preinscripciones[8].estado:STRING", ".preinscripciones[8].tipo:STRING", ".preinscripciones[8].estudianteId:NUMBER", ".preinscripciones[8].curso:STRING", ".preinscripciones[8].estadoCurso:STRING", ".preinscripciones[8].id:NUMBER", ".preinscripciones[8].cursoId:NULL", ".totalPreinscripciones:NUMBER", ".totalActividades:NUMBER", ".inscripciones:ARRAY", ".inscripciones[0].accionesDisponibles:ARRAY", ".inscripciones[0].fecha:NUMBER", ".inscripciones[0].estado:STRING", ".inscripciones[0].estudianteId:NUMBER", ".inscripciones[0].tipoSolicitud:STRING", ".inscripciones[0].curso:STRING", ".inscripciones[0].nombreSolicitud:STRING", ".inscripciones[0].estadoCurso:STRING", ".inscripciones[0].id:NUMBER", ".inscripciones[0].cursoId:NUMBER", ".inscripciones[1].accionesDisponibles:ARRAY", ".inscripciones[1].fecha:NULL", ".inscripciones[1].estado:STRING", ".inscripciones[1].estudianteId:NUMBER", ".inscripciones[1].tipoSolicitud:STRING", ".inscripciones[1].curso:STRING", ".inscripciones[1].nombreSolicitud:STRING", ".inscripciones[1].estadoCurso:STRING", ".inscripciones[1].id:NUMBER", ".inscripciones[1].cursoId:NUMBER", ".inscripciones[2].accionesDisponibles:ARRAY", ".inscripciones[2].fecha:NUMBER", ".inscripciones[2].estado:STRING", ".inscripciones[2].estudianteId:NUMBER", ".inscripciones[2].tipoSolicitud:STRING", ".inscripciones[2].curso:STRING", ".inscripciones[2].nombreSolicitud:STRING", ".inscripciones[2].estadoCurso:STRING", ".inscripciones[2].id:NUMBER", ".inscripciones[2].cursoId:NUMBER", ".inscripciones[3].accionesDisponibles:ARRAY", ".inscripciones[3].fecha:NULL", ".inscripciones[3].estado:STRING", ".inscripciones[3].estudianteId:NUMBER", ".inscripciones[3].tipoSolicitud:STRING", ".inscripciones[3].curso:STRING", ".inscripciones[3].nombreSolicitud:STRING", ".inscripciones[3].estadoCurso:STRING", ".inscripciones[3].id:NUMBER", ".inscripciones[3].cursoId:NUMBER", ".inscripciones[4].accionesDisponibles:ARRAY", ".inscripciones[4].fecha:NUMBER", ".inscripciones[4].estado:STRING", ".inscripciones[4].estudianteId:NUMBER", ".inscripciones[4].tipoSolicitud:STRING", ".inscripciones[4].curso:STRING", ".inscripciones[4].nombreSolicitud:STRING", ".inscripciones[4].estadoCurso:STRING", ".inscripciones[4].id:NUMBER", ".inscripciones[4].cursoId:NUMBER", ".inscripciones[5].accionesDisponibles:ARRAY", ".inscripciones[5].fecha:NULL", ".inscripciones[5].estado:STRING", ".inscripciones[5].estudianteId:NUMBER", ".inscripciones[5].tipoSolicitud:STRING", ".inscripciones[5].curso:STRING", ".inscripciones[5].nombreSolicitud:STRING", ".inscripciones[5].estadoCurso:STRING", ".inscripciones[5].id:NUMBER", ".inscripciones[5].cursoId:NUMBER", ".inscripciones[6].accionesDisponibles:ARRAY", ".inscripciones[6].fecha:NUMBER", ".inscripciones[6].estado:STRING", ".inscripciones[6].estudianteId:NUMBER", ".inscripciones[6].tipoSolicitud:STRING", ".inscripciones[6].curso:STRING", ".inscripciones[6].nombreSolicitud:STRING", ".inscripciones[6].estadoCurso:STRING", ".inscripciones[6].id:NUMBER", ".inscripciones[6].cursoId:NULL", ".inscripciones[7].accionesDisponibles:ARRAY", ".inscripciones[7].fecha:NULL", ".inscripciones[7].estado:STRING", ".inscripciones[7].estudianteId:NUMBER", ".inscripciones[7].tipoSolicitud:STRING", ".inscripciones[7].curso:STRING", ".inscripciones[7].nombreSolicitud:STRING", ".inscripciones[7].estadoCurso:STRING", ".inscripciones[7].id:NUMBER", ".inscripciones[7].cursoId:NUMBER", ".inscripciones[8].accionesDisponibles:ARRAY", ".inscripciones[8].fecha:NUMBER", ".inscripciones[8].estado:STRING", ".inscripciones[8].estudianteId:NUMBER", ".inscripciones[8].tipoSolicitud:STRING", ".inscripciones[8].curso:STRING", ".inscripciones[8].nombreSolicitud:NULL", ".inscripciones[8].estadoCurso:STRING", ".inscripciones[8].id:NUMBER", ".inscripciones[8].cursoId:NULL", ".totalInscripciones:NUMBER" ]
+  },
+  "seguimiento 2" : {
+    "status" : 200,
+    "body" : {
+      "preinscripciones" : [ ],
+      "totalPreinscripciones" : 0,
+      "totalActividades" : 0,
+      "inscripciones" : [ ],
+      "totalInscripciones" : 0
+    },
+    "claves" : [ ".preinscripciones:ARRAY", ".totalPreinscripciones:NUMBER", ".totalActividades:NUMBER", ".inscripciones:ARRAY", ".totalInscripciones:NUMBER" ]
+  },
+  "seguimiento 3" : {
+    "status" : 200,
+    "body" : {
+      "preinscripciones" : [ ],
+      "totalPreinscripciones" : 0,
+      "totalActividades" : 0,
+      "inscripciones" : [ ],
+      "totalInscripciones" : 0
+    },
+    "claves" : [ ".preinscripciones:ARRAY", ".totalPreinscripciones:NUMBER", ".totalActividades:NUMBER", ".inscripciones:ARRAY", ".totalInscripciones:NUMBER" ]
+  },
+  "seguimiento 4" : {
+    "status" : 200,
+    "body" : {
+      "preinscripciones" : [ ],
+      "totalPreinscripciones" : 0,
+      "totalActividades" : 0,
+      "inscripciones" : [ ],
+      "totalInscripciones" : 0
+    },
+    "claves" : [ ".preinscripciones:ARRAY", ".totalPreinscripciones:NUMBER", ".totalActividades:NUMBER", ".inscripciones:ARRAY", ".totalInscripciones:NUMBER" ]
+  }
+}

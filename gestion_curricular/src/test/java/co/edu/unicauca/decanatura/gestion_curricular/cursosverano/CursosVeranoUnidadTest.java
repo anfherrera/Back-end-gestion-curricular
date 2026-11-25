@@ -1,13 +1,11 @@
 package co.edu.unicauca.decanatura.gestion_curricular.cursosverano;
 
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarCursoOfertadoVeranoCUAdapter;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,12 +13,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doThrow;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarCursoOfertadoVeranoCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
 /**
  * ============================================================
@@ -59,7 +65,7 @@ class CursosVeranoUnidadTest {
     private GestionarDocenteGatewayIntPort docenteGateway;
 
     @Mock
-    private FormateadorResultadosIntPort formateadorResultados;
+    private GestionarSalonesIntPort salonesGateway;
 
     @Mock
     private GestionarNotificacionCUIntPort notificacionCU;
@@ -77,24 +83,24 @@ class CursosVeranoUnidadTest {
                 usuarioGateway,
                 materiasGateway,
                 docenteGateway,
-                formateadorResultados,
+                salonesGateway,
                 notificacionCU
         );
 
         // Crear curso de ejemplo
         cursoEjemplo = new CursoOfertadoVerano();
-        cursoEjemplo.setId_curso(1);
-        cursoEjemplo.setCupo_estimado(30);
+        cursoEjemplo.setIdCurso(1);
+        cursoEjemplo.setCupoEstimado(30);
         cursoEjemplo.setSalon("A-101");
         
         Materia materia = new Materia();
-        materia.setId_materia(1);
+        materia.setIdMateria(1);
         materia.setNombre("Cálculo I");
         cursoEjemplo.setObjMateria(materia);
         
         Docente docente = new Docente();
-        docente.setId_docente(1);
-        docente.setNombre_docente("Juan Pérez");
+        docente.setIdDocente(1);
+        docente.setNombreDocente("Juan Pérez");
         cursoEjemplo.setObjDocente(docente);
     }
 
@@ -149,7 +155,7 @@ class CursosVeranoUnidadTest {
 
         // Assert
         assertThat(resultado).isNotNull();
-        assertThat(resultado.getId_curso()).isEqualTo(1);
+        assertThat(resultado.getIdCurso()).isEqualTo(1);
         // El adapter llama al gateway 1 vez
         verify(cursoVeranoGateway, times(1)).obtenerCursoPorId(idBuscado);
     }
@@ -161,12 +167,10 @@ class CursosVeranoUnidadTest {
         int idInexistente = 999;
         when(cursoVeranoGateway.obtenerCursoPorId(idInexistente))
                 .thenReturn(null);
-        doThrow(new RuntimeException("No se encuentra el curso"))
-                .when(formateadorResultados).retornarRespuestaErrorEntidadNoExiste(anyString());
 
         // Act & Assert
         assertThatThrownBy(() -> cursosVeranoCU.obtenerCursoPorId(idInexistente))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(EntidadNoExisteException.class)
                 .hasMessageContaining("No se encuentra el curso");
         verify(cursoVeranoGateway, atLeastOnce()).obtenerCursoPorId(idInexistente);
     }
@@ -174,18 +178,21 @@ class CursosVeranoUnidadTest {
     // ==================== PRUEBAS DE CREACIÓN ====================
 
     @Test
-    @DisplayName("Test 5: Crear curso - Delega correctamente al gateway")
-    void testCrearCursoDelegaCorrectamente() {
-        // Arrange
-        when(cursoVeranoGateway.crearCurso(any(CursoOfertadoVerano.class)))
-                .thenReturn(cursoEjemplo);
+    @DisplayName("Test 5: Crear curso - Rechaza el grupo que ya usa otro curso de la materia")
+    void testCrearCursoRechazaGrupoEnUso() {
+        // MUE-11: sustituye al caso "curso crear grupo en uso" de ErroresCasosDeUsoCaracterizacionTest, que
+        // llegaba a esta regla por crearCurso(CursoOfertadoVerano), ya borrado.
+        when(materiasGateway.obtenerMateriaPorId(1)).thenReturn(cursoEjemplo.getObjMateria());
+        when(docenteGateway.obtenerDocentePorId(1)).thenReturn(cursoEjemplo.getObjDocente());
+        cursoEjemplo.setGrupo(GrupoCursoVerano.A);
+        when(cursoVeranoGateway.listarTodos()).thenReturn(List.of(cursoEjemplo));
+        var datos = new GestionarCursoOfertadoVeranoCUIntPort.DatosCreacion(1, 1, 30, new Date(1000), new Date(2000),
+                "2025-2", null, "A-101", "a", null);
 
-        // Act
-        CursoOfertadoVerano resultado = cursosVeranoCU.crearCurso(cursoEjemplo);
-
-        // Assert
-        assertThat(resultado).isNotNull();
-        verify(cursoVeranoGateway, times(1)).crearCurso(cursoEjemplo);
+        assertThatThrownBy(() -> cursosVeranoCU.crearCurso(datos))
+                .isInstanceOf(EntidadYaExisteException.class)
+                .hasMessage("El grupo asignado ya está en uso: A");
+        verify(cursoVeranoGateway, never()).crearCurso(any());
     }
 
     // ==================== PRUEBAS DE ELIMINACIÓN ====================
@@ -195,6 +202,7 @@ class CursosVeranoUnidadTest {
     void testEliminarCursoExistenteRetornaTrue() {
         // Arrange
         int idCurso = 1;
+        when(cursoVeranoGateway.obtenerCursoPorId(idCurso)).thenReturn(cursoEjemplo);
         when(cursoVeranoGateway.eliminarCurso(idCurso)).thenReturn(true);
 
         // Act
@@ -206,41 +214,17 @@ class CursosVeranoUnidadTest {
     }
 
     @Test
-    @DisplayName("Test 7: Eliminar curso inexistente - Retorna false")
-    void testEliminarCursoInexistenteRetornaFalse() {
+    @DisplayName("Test 7: Eliminar curso inexistente - Lanza excepción")
+    void testEliminarCursoInexistenteLanzaExcepcion() {
         // Arrange
         int idInexistente = 999;
-        when(cursoVeranoGateway.eliminarCurso(idInexistente)).thenReturn(false);
+        when(cursoVeranoGateway.obtenerCursoPorId(idInexistente)).thenReturn(null);
 
-        // Act
-        boolean resultado = cursosVeranoCU.eliminarCurso(idInexistente);
-
-        // Assert
-        assertThat(resultado).isFalse();
-        verify(cursoVeranoGateway, times(1)).eliminarCurso(idInexistente);
-    }
-
-    // ==================== PRUEBAS DE ACTUALIZACIÓN ====================
-
-    @Test
-    @DisplayName("Test 8: Actualizar curso - Requiere curso válido con ID")
-    void testActualizarCursoRequiereCursoValidoConId() {
-        // Arrange - Curso sin ID
-        CursoOfertadoVerano cursoSinId = new CursoOfertadoVerano();
-        EstadoCursoOfertado estado = new EstadoCursoOfertado();
-        estado.setId_estado(1);
-        estado.setEstado_actual("Abierto");
-        
-        doThrow(new RuntimeException("No hay id en el curso"))
-                .when(formateadorResultados).retornarRespuestaErrorEntidadExiste("No hay id en el curso");
-        
         // Act & Assert
-        assertThatThrownBy(() -> cursosVeranoCU.actualizarCurso(cursoSinId, estado))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("No hay id en el curso");
-        
-        // Verificar que NO se llamó al gateway porque el curso no tiene ID
-        verify(cursoVeranoGateway, never()).obtenerCursoPorId(anyInt());
+        assertThatThrownBy(() -> cursosVeranoCU.eliminarCurso(idInexistente))
+                .isInstanceOf(EntidadNoExisteException.class)
+                .hasMessageContaining("No se encuentra el curso");
+        verify(cursoVeranoGateway, never()).eliminarCurso(idInexistente);
     }
 
     // ==================== PRUEBAS DE MANEJO DE EXCEPCIONES ====================
@@ -297,23 +281,48 @@ class CursosVeranoUnidadTest {
         // Assert - Verificar que es la misma instancia (no se hace copia)
         assertThat(resultado).isSameAs(listaOriginal);
     }
-
     @Test
-    @DisplayName("Test 13: Verificar interacción con múltiples gateways en operación compleja")
-    void testVerificarInteraccionMultiplesGateways() {
-        // Arrange
-        when(cursoVeranoGateway.crearCurso(any(CursoOfertadoVerano.class)))
-                .thenReturn(cursoEjemplo);
+    void listarPorFiltrosConservaCursosSinSolicitudesYRespetaElUltimoEstado() {
+        Programa programa = new Programa();
+        programa.setIdPrograma(7);
+        Usuario estudiante = new Usuario();
+        estudiante.setObjPrograma(programa);
+        Solicitud solicitud = new Solicitud();
+        solicitud.setObjUsuario(estudiante);
 
-        // Act
-        CursoOfertadoVerano resultado = cursosVeranoCU.crearCurso(cursoEjemplo);
+        CursoOfertadoVerano libre = cursoEnPeriodo("2025-2", "Publicado");
+        CursoOfertadoVerano conSolicitud = cursoEnPeriodo("2025-2", "Preinscripcion");
+        conSolicitud.setSolicitudes(List.of(solicitud));
+        CursoOfertadoVerano conInscrito = cursoEnPeriodo("2025-2", "Inscripcion");
+        conInscrito.setEstudiantesInscritos(List.of(estudiante));
+        CursoOfertadoVerano cerrado = cursoEnPeriodo("2025-2", "Publicado", "Cerrado");
+        CursoOfertadoVerano otroPeriodo = cursoEnPeriodo("2025-1", "Publicado");
+        CursoOfertadoVerano sinEstado = cursoEnPeriodo("2025-2");
 
-        // Assert
-        assertThat(resultado).isNotNull();
-        verify(cursoVeranoGateway, times(1)).crearCurso(any(CursoOfertadoVerano.class));
-        // Verificar que NO se llamaron otros gateways innecesariamente
-        verify(solicitudGateway, never()).listarSolicitudes();
-        verify(usuarioGateway, never()).listarUsuarios();
+        when(cursoVeranoGateway.listarTodos())
+                .thenReturn(List.of(libre, conSolicitud, conInscrito, cerrado, otroPeriodo, sinEstado));
+
+        when(cursoVeranoGateway.listarPorPeriodo("2025-2"))
+                .thenReturn(List.of(libre, conSolicitud, conInscrito, cerrado, sinEstado));
+
+        assertThat(cursosVeranoCU.listarPorFiltros("2025-2", 7, true))
+                .containsExactly(libre, conSolicitud, conInscrito);
+        assertThat(cursosVeranoCU.listarPorFiltros("2025-2", 8, false))
+                .containsExactly(libre, cerrado, sinEstado);
+        assertThat(cursosVeranoCU.listarPorFiltros(null, null, true))
+                .containsExactly(libre, conSolicitud, conInscrito, otroPeriodo);
     }
+
+    private CursoOfertadoVerano cursoEnPeriodo(String periodo, String... estados) {
+        CursoOfertadoVerano curso = new CursoOfertadoVerano();
+        curso.setPeriodoAcademico(periodo);
+        curso.setEstadosCursoOfertados(Arrays.stream(estados).map(nombre -> {
+            EstadoCursoOfertado estado = new EstadoCursoOfertado();
+            estado.setEstadoActual(nombre);
+            return estado;
+        }).toList());
+        return curso;
+    }
+
 }
 

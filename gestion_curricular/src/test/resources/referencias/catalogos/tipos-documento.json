@@ -1,0 +1,116 @@
+{
+  "todos" : {
+    "status" : 200,
+    "body" : {
+      "data" : [ {
+        "codigo" : "CC",
+        "descripcion" : "Cédula de Ciudadanía"
+      }, {
+        "codigo" : "TI",
+        "descripcion" : "Tarjeta de Identidad"
+      }, {
+        "codigo" : "CE",
+        "descripcion" : "Cédula de Extranjería"
+      }, {
+        "codigo" : "PA",
+        "descripcion" : "Pasaporte"
+      }, {
+        "codigo" : "RC",
+        "descripcion" : "Registro Civil"
+      }, {
+        "codigo" : "NIT",
+        "descripcion" : "Número de Identificación Tributaria"
+      }, {
+        "codigo" : "NUIP",
+        "descripcion" : "Número Único de Identificación Personal"
+      } ],
+      "success" : true,
+      "message" : "Tipos de documento obtenidos exitosamente"
+    },
+    "claves" : [ "data", "success", "message" ]
+  },
+  "CC" : {
+    "validar" : {
+      "status" : 200,
+      "body" : {
+        "data" : true,
+        "success" : true,
+        "message" : "Tipo de documento válido"
+      },
+      "claves" : [ "data", "success", "message" ]
+    },
+    "info" : {
+      "status" : 200,
+      "body" : {
+        "data" : {
+          "descripcion" : "Cédula de Ciudadanía",
+          "codigo" : "CC"
+        },
+        "success" : true,
+        "message" : "Información del tipo de documento obtenida exitosamente"
+      },
+      "claves" : [ "data", "success", "message", "data.descripcion", "data.codigo" ]
+    }
+  },
+  "NUIP" : {
+    "validar" : {
+      "status" : 200,
+      "body" : {
+        "data" : true,
+        "success" : true,
+        "message" : "Tipo de documento válido"
+      },
+      "claves" : [ "data", "success", "message" ]
+    },
+    "info" : {
+      "status" : 200,
+      "body" : {
+        "data" : {
+          "descripcion" : "Número Único de Identificación Personal",
+          "codigo" : "NUIP"
+        },
+        "success" : true,
+        "message" : "Información del tipo de documento obtenida exitosamente"
+      },
+      "claves" : [ "data", "success", "message", "data.descripcion", "data.codigo" ]
+    }
+  },
+  "cc" : {
+    "validar" : {
+      "status" : 200,
+      "body" : {
+        "data" : false,
+        "success" : true,
+        "message" : "Tipo de documento no válido"
+      },
+      "claves" : [ "data", "success", "message" ]
+    },
+    "info" : {
+      "status" : 400,
+      "body" : {
+        "success" : false,
+        "message" : "Tipo de documento no válido: cc"
+      },
+      "claves" : [ "success", "message" ]
+    }
+  },
+  "XX" : {
+    "validar" : {
+      "status" : 200,
+      "body" : {
+        "data" : false,
+        "success" : true,
+        "message" : "Tipo de documento no válido"
+      },
+      "claves" : [ "data", "success", "message" ]
+    },
+    "info" : {
+      "status" : 400,
+      "body" : {
+        "success" : false,
+        "message" : "Tipo de documento no válido: XX"
+      },
+      "claves" : [ "success", "message" ]
+    }
+  }
+}

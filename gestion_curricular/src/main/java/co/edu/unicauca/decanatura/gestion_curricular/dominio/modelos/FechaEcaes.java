@@ -12,11 +12,11 @@ import lombok.NoArgsConstructor;
 public class FechaEcaes {
     private Integer idFechaEcaes;
     private String periodoAcademico; // Ejemplo: "2025-2"
-    private LocalDate inscripcion_est_by_facultad;
-    private LocalDate registro_recaudo_ordinario;
-    private LocalDate registro_recaudo_extraordinario;
+    private LocalDate inscripcionEstByFacultad;
+    private LocalDate registroRecaudoOrdinario;
+    private LocalDate registroRecaudoExtraordinario;
     private LocalDate citacion;
     private LocalDate aplicacion;
-    private LocalDate resultados_individuales;
+    private LocalDate resultadosIndividuales;
 
 }

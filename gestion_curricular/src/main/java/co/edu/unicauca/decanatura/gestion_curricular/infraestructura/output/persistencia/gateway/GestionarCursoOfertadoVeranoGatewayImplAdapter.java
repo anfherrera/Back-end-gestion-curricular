@@ -5,48 +5,43 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.extern.slf4j.Slf4j;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoCursoOfertadoEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVeranoEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadoCursoOfertadoRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.DocenteRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.MateriaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocenteEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoCursoOfertadoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.MateriaEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.enums.GrupoCursoVeranoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.SolicitudMapperPersistencia;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.DocenteRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadoCursoOfertadoRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.MateriaRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 
 @Service
 @Transactional
-@Slf4j
 public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements GestionarCursoOfertadoVeranoGatewayIntPort {
 
     private final CursoOfertadoVeranoRepositoryInt cursoRepository;
     private final UsuarioRepositoryInt usuarioRepository;
-    private final EstadoCursoOfertadoRepositoryInt objEstadoCursoOfertadoRepository;
+    private final EstadoCursoOfertadoRepositoryInt estadoCursoOfertadoRepository;
     private final DocenteRepositoryInt docenteRepository;
     private final MateriaRepositoryInt materiaRepository;
-    private final ModelMapper cursoMapper;
 
-    public GestionarCursoOfertadoVeranoGatewayImplAdapter(CursoOfertadoVeranoRepositoryInt cursoRepository, UsuarioRepositoryInt usuarioRepository,EstadoCursoOfertadoRepositoryInt objEstadoCursoOfertadoRepository, DocenteRepositoryInt docenteRepository, MateriaRepositoryInt materiaRepository, @Qualifier("mapperCurso") ModelMapper cursoMapper) {
+    public GestionarCursoOfertadoVeranoGatewayImplAdapter(CursoOfertadoVeranoRepositoryInt cursoRepository, UsuarioRepositoryInt usuarioRepository,EstadoCursoOfertadoRepositoryInt estadoCursoOfertadoRepository, DocenteRepositoryInt docenteRepository, MateriaRepositoryInt materiaRepository) {
         this.cursoRepository = cursoRepository;
         this.usuarioRepository = usuarioRepository;
-        this.objEstadoCursoOfertadoRepository = objEstadoCursoOfertadoRepository;
+        this.estadoCursoOfertadoRepository = estadoCursoOfertadoRepository;
         this.docenteRepository = docenteRepository;
         this.materiaRepository = materiaRepository;
-        this.cursoMapper = cursoMapper;
     }
 
     @Override
@@ -54,21 +49,21 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     public CursoOfertadoVerano crearCurso(CursoOfertadoVerano curso) {
         // Crear entidad del curso (nueva instancia para evitar reutilización)
         CursoOfertadoVeranoEntity cursoEntity = new CursoOfertadoVeranoEntity();
-        cursoEntity.setCupo_estimado(curso.getCupo_estimado());
+        cursoEntity.setCupo_estimado(curso.getCupoEstimado());
         cursoEntity.setSalon(curso.getSalon());
         cursoEntity.setFecha_inicio(curso.getFecha_inicio()); // Guardar fecha de inicio directamente en el curso
         cursoEntity.setFecha_fin(curso.getFecha_fin()); // Guardar fecha de fin directamente en el curso
-        cursoEntity.setPeriodo_academico(curso.getPeriodo_academico()); // Guardar período académico directamente en el curso
+        cursoEntity.setPeriodo_academico(curso.getPeriodoAcademico()); // Guardar período académico directamente en el curso
         
         // Mapear grupo
-        GrupoCursoVeranoEntity grupoEntity = cursoMapper.map(curso.getGrupo(), GrupoCursoVeranoEntity.class);
+        GrupoCursoVeranoEntity grupoEntity = SolicitudMapperPersistencia.aEntidad(curso.getGrupo());
         cursoEntity.setGrupo(grupoEntity);
         
         // Obtener y asignar materia existente de la base de datos
-        if (curso.getObjMateria() != null && curso.getObjMateria().getId_materia() != null) {
+        if (curso.getObjMateria() != null && curso.getObjMateria().getIdMateria() != null) {
             // Obtener la materia desde la base de datos (forzar nueva consulta)
-            MateriaEntity materiaEntity = materiaRepository.findById(curso.getObjMateria().getId_materia())
-                .orElseThrow(() -> new RuntimeException("Materia no encontrada con ID: " + curso.getObjMateria().getId_materia()));
+            MateriaEntity materiaEntity = materiaRepository.findById(curso.getObjMateria().getIdMateria())
+                .orElseThrow(() -> new RuntimeException("Materia no encontrada con ID: " + curso.getObjMateria().getIdMateria()));
             
             // Asignar la materia al curso
             cursoEntity.setObjMateria(materiaEntity);
@@ -77,10 +72,10 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
         }
         
         // Obtener y asignar docente existente de la base de datos
-        if (curso.getObjDocente() != null && curso.getObjDocente().getId_docente() != null) {
+        if (curso.getObjDocente() != null && curso.getObjDocente().getIdDocente() != null) {
             // Obtener el docente desde la base de datos (forzar nueva consulta)
-            DocenteEntity docenteEntity = docenteRepository.findById(curso.getObjDocente().getId_docente())
-                .orElseThrow(() -> new RuntimeException("Docente no encontrado con ID: " + curso.getObjDocente().getId_docente()));
+            DocenteEntity docenteEntity = docenteRepository.findById(curso.getObjDocente().getIdDocente())
+                .orElseThrow(() -> new RuntimeException("Docente no encontrado con ID: " + curso.getObjDocente().getIdDocente()));
             
             // Asignar el docente al curso
             cursoEntity.setObjDocente(docenteEntity);
@@ -94,9 +89,9 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
             // Usar el estado que viene del modelo
             for (EstadoCursoOfertado estadoCurso : curso.getEstadosCursoOfertados()) {
                 EstadoCursoOfertadoEntity estadoCursoEntity = new EstadoCursoOfertadoEntity();
-                estadoCursoEntity.setEstado_actual(estadoCurso.getEstado_actual());
-                estadoCursoEntity.setFecha_registro_estado(estadoCurso.getFecha_registro_estado() != null ? 
-                    estadoCurso.getFecha_registro_estado() : new Date());
+                estadoCursoEntity.setEstado_actual(estadoCurso.getEstadoActual());
+                estadoCursoEntity.setFecha_registro_estado(estadoCurso.getFechaRegistroEstado() != null ? 
+                    estadoCurso.getFechaRegistroEstado() : new Date());
                 // fecha_fin y periodo_academico ahora están solo en el curso, no en estados
                 estadoCursoEntity.setObjCursoOfertadoVerano(cursoEntity);
                 estadosCursoEntity.add(estadoCursoEntity);
@@ -126,41 +121,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
             .orElseThrow(() -> new RuntimeException("Curso no encontrado después de guardar con ID: " + saved.getId_curso()));
         
 
-        return cursoMapper.map(cursoDesdeBD, CursoOfertadoVerano.class);
-    }
-
-    @Override
-    @Transactional
-    public CursoOfertadoVerano actualizarCurso(CursoOfertadoVerano curso, EstadoCursoOfertado estadoCurso) {
-        cursoRepository.findById(curso.getId_curso())
-            .orElseThrow(() -> new RuntimeException("Curso no encontrado con ID: " + curso.getId_curso()));
-            
-
-        CursoOfertadoVeranoEntity cursoEntity = cursoMapper.map(curso, CursoOfertadoVeranoEntity.class);
-        EstadoCursoOfertadoEntity estadoCursoEntity = null;
-        EstadoCursoOfertadoEntity estadoCursoGuardado = null;
-
-        if(estadoCurso != null) {
-            estadoCursoEntity = cursoMapper.map(estadoCurso, EstadoCursoOfertadoEntity.class);
-
-        } else {
-            estadoCursoEntity = new EstadoCursoOfertadoEntity();
-            estadoCursoEntity.setEstado_actual("Publicado");
-            estadoCursoEntity.setFecha_registro_estado(new Date());
-
-        }
-            
-            estadoCursoEntity.setObjCursoOfertadoVerano(cursoEntity);
-
-            estadoCursoGuardado = this.objEstadoCursoOfertadoRepository.save(estadoCursoEntity);
-
-            cursoEntity.getEstadosCursoOfertados().add(estadoCursoGuardado);
-
-        CursoOfertadoVeranoEntity cursoGuardado = cursoRepository.save(cursoEntity);
-
-        return cursoMapper.map(cursoGuardado, CursoOfertadoVerano.class);
-
-        //return null;
+        return SolicitudMapperPersistencia.aDominioCurso(cursoDesdeBD);
     }
 
     @Override
@@ -178,47 +139,24 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     @Transactional(readOnly = true)
     public CursoOfertadoVerano obtenerCursoPorId(Integer idCurso) {
         return cursoRepository.findById(idCurso)
-            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
+            .map(entity -> SolicitudMapperPersistencia.aDominioCurso(entity))
             .orElse(null);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CursoOfertadoVerano> buscarPorGrupo(GrupoCursoVerano grupo) {
-        GrupoCursoVeranoEntity grupoEntity = cursoMapper.map(grupo, GrupoCursoVeranoEntity.class);
-        return cursoRepository.buscarPorGrupo(grupoEntity).stream()
-            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
-            .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CursoOfertadoVerano> buscarPorMateria(Integer idMateria) {
-        return cursoRepository.buscarPorMateria(idMateria).stream()
-            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
-            .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CursoOfertadoVerano> buscarPorDocente(Integer idDocente) {
-        return cursoRepository.buscarPorDocente(idDocente).stream()
-            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
-            .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Integer contarPorSalon(String salon) {
-        return cursoRepository.contarPorSalon(salon);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<CursoOfertadoVerano> listarTodos() {
         return cursoRepository.findAll().stream()
-            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
+            .map(entity -> SolicitudMapperPersistencia.aDominioCurso(entity))
             .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CursoOfertadoVerano> listarPorPeriodo(String periodo) {
+        return cursoRepository.listarPorPeriodo(periodo).stream()
+                .map(entity -> SolicitudMapperPersistencia.aDominioCurso(entity))
+                .toList();
     }
 
     @Override
@@ -247,24 +185,34 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     }
 
     @Override
-    @Transactional
-    public Boolean desasociarUsuarioCurso(Integer idUsuario, Integer idCurso) {
-        Optional<UsuarioEntity> usuarioEntityOptional = usuarioRepository.findById(idUsuario);
-        Optional<CursoOfertadoVeranoEntity> cursoEntityOptional = cursoRepository.findById(idCurso);
-        Boolean usuarioYaEliminado = false;
-        Integer result = 0;
-            if(usuarioEntityOptional.isPresent() && cursoEntityOptional.isPresent()) {
-            UsuarioEntity usuarioEntity = usuarioEntityOptional.get();
-            CursoOfertadoVeranoEntity cursoEntity = cursoEntityOptional.get();
-            result = cursoRepository.eliminarEstudianteDeCurso(cursoEntity.getId_curso(), usuarioEntity.getId_usuario());
-                if (result == 1){
-                    usuarioYaEliminado = true;
-                }
-
+    public CursoOfertadoVerano guardarCambiosCurso(Integer idCurso, Integer cupoEstimado, String salon, String nuevoEstado) {
+        CursoOfertadoVeranoEntity curso = cursoRepository.findByIdConEstados(idCurso);
+        if (curso == null) {
+            return null;
         }
-        
+        if (cupoEstimado != null) {
+            curso.setCupo_estimado(cupoEstimado);
+        }
+        if (salon != null) {
+            curso.setSalon(salon);
+        }
+        CursoOfertadoVeranoEntity guardado = cursoRepository.save(curso);
+        if (nuevoEstado != null) {
+            EstadoCursoOfertadoEntity estado = new EstadoCursoOfertadoEntity();
+            estado.setEstado_actual(nuevoEstado);
+            estado.setFecha_registro_estado(new Date());
+            estado.setObjCursoOfertadoVerano(guardado);
+            estadoCursoOfertadoRepository.save(estado);
+        }
+        return SolicitudMapperPersistencia.aDominioCurso(guardado);
+    }
 
-
-        return usuarioYaEliminado;
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existeCurso(Integer idMateria, Integer idDocente, String periodoAcademico, GrupoCursoVerano grupo) {
+        GrupoCursoVeranoEntity grupoEntity = grupo != null
+                ? GrupoCursoVeranoEntity.valueOf(grupo.name())
+                : GrupoCursoVeranoEntity.A;
+        return cursoRepository.existePorMateriaDocentePeriodoGrupo(idMateria, idDocente, periodoAcademico, grupoEntity);
     }
 }

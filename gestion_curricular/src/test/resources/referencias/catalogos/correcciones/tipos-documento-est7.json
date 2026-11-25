@@ -1,0 +1,70 @@
+{
+  "/CC/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/tipos-documento/validar/CC",
+      "metodo": "GET"
+    },
+    "claves": [
+      "codigoError",
+      "mensaje",
+      "codigoHttp",
+      "url",
+      "metodo"
+    ]
+  },
+  "/NUIP/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/tipos-documento/validar/NUIP",
+      "metodo": "GET"
+    },
+    "claves": [
+      "codigoError",
+      "mensaje",
+      "codigoHttp",
+      "url",
+      "metodo"
+    ]
+  },
+  "/XX/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/tipos-documento/validar/XX",
+      "metodo": "GET"
+    },
+    "claves": [
+      "codigoError",
+      "mensaje",
+      "codigoHttp",
+      "url",
+      "metodo"
+    ]
+  },
+  "/cc/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/tipos-documento/validar/cc",
+      "metodo": "GET"
+    },
+    "claves": [
+      "codigoError",
+      "mensaje",
+      "codigoHttp",
+      "url",
+      "metodo"
+    ]
+  }
+}

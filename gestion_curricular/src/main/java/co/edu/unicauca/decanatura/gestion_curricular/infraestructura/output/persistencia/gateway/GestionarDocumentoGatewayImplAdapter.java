@@ -1,9 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,90 +9,84 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocumentoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.SolicitudMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.DocumentoRepositoryInt;
 
 @Service
 @Transactional
 public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentosGatewayIntPort {
+    @Override
+    @Transactional(readOnly = true)
+    public java.util.Optional<AccesoDocumento> accesoDocumento(Integer idDocumento) {
+        return documentoRepository.findById(idDocumento).map(this::acceso);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AccesoDocumento> accesosPorNombre(String nombre) {
+        return documentoRepository.findAllByNombre(nombre).stream().map(this::acceso).toList();
+    }
+
+    private AccesoDocumento acceso(DocumentoEntity documento) {
+        SolicitudEntity solicitud = documento.getObjSolicitud();
+        Integer dueno = solicitud != null && solicitud.getObjUsuario() != null
+                ? solicitud.getObjUsuario().getId_usuario() : null;
+        return new AccesoDocumento(documento.getIdUsuarioSubio(), dueno,
+                documento.getRuta_documento(), documento.getNombre());
+    }
 
 
     private final DocumentoRepositoryInt documentoRepository;
-    private final ModelMapper documentoMapper;
 
-    public GestionarDocumentoGatewayImplAdapter(DocumentoRepositoryInt documentoRepository, ModelMapper documentoMapper){
+    public GestionarDocumentoGatewayImplAdapter(DocumentoRepositoryInt documentoRepository){
         this.documentoRepository = documentoRepository;
-        this.documentoMapper = documentoMapper;
     }
 
     @Override
     @Transactional
     public Documento crearDocumento(Documento documento) {
-        DocumentoEntity documentoEntity = documentoMapper.map(documento, DocumentoEntity.class);
+        DocumentoEntity documentoEntity = SolicitudMapperPersistencia.aEntidad(documento);
         DocumentoEntity saved = documentoRepository.save(documentoEntity);
-        return documentoMapper.map(saved, Documento.class);
+        return SolicitudMapperPersistencia.aDominio(saved);
     }
 
     @Override
     @Transactional
     public Documento actualizarDocumento(Documento documento) {
-        DocumentoEntity existente = documentoRepository.findById(documento.getId_documento())
-            .orElseThrow(() -> new RuntimeException("Documento no encontrado con ID: " + documento.getId_documento()));
+        DocumentoEntity existente = documentoRepository.findById(documento.getIdDocumento())
+            .orElseThrow(() -> new RuntimeException("Documento no encontrado con ID: " + documento.getIdDocumento()));
 
         // Actualizar solo campos editables; no sobrescribir objSolicitud cuando viene null en el dominio
         // (p. ej. tras buscarDocumentoId sin cargar la relación), para no perder la asociación.
         existente.setNombre(documento.getNombre());
-        existente.setRuta_documento(documento.getRuta_documento());
-        existente.setFecha_documento(documento.getFecha_documento());
+        existente.setRuta_documento(documento.getRutaDocumento());
+        existente.setFecha_documento(documento.getFechaDocumento());
         existente.setEsValido(documento.isEsValido());
         existente.setComentario(documento.getComentario());
         if (documento.getObjSolicitud() != null) {
-            existente.setObjSolicitud(documentoMapper.map(documento.getObjSolicitud(), SolicitudEntity.class));
+            existente.setObjSolicitud(SolicitudMapperPersistencia.aEntidad(documento.getObjSolicitud(), SolicitudEntity.class));
         }
         // si documento.getObjSolicitud() == null, se mantiene el valor actual de existente (no se desasocia)
 
         DocumentoEntity actualizado = documentoRepository.save(existente);
-        return documentoMapper.map(actualizado, Documento.class);
+        return SolicitudMapperPersistencia.aDominio(actualizado);
     }
     @Override
     @Transactional(readOnly = true)
     public Documento buscarDocumentoId(Integer idDocumento) {
         return documentoRepository.findById(idDocumento)
-            .map(entity -> documentoMapper.map(entity, Documento.class))
+            .map(entity -> SolicitudMapperPersistencia.aDominio(entity))
             .orElse(null);
     }
 
     @Override
-    @Transactional
-    public boolean eliminarDocumento(Documento documento) {
-        Optional<DocumentoEntity> entityOpt = documentoRepository.findById(documento.getId_documento());
-        if (entityOpt.isPresent()) {
-            documentoRepository.deleteById(documento.getId_documento());
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public List<Documento> buscarDocumentosSinSolicitud() {
-       return documentoRepository.findByobjSolicitudIsNull()
+    public List<Documento> buscarDocumentosSinSolicitud(Integer idUsuario) {
+       if (idUsuario == null) {
+           return List.of();
+       }
+       return documentoRepository.findByObjSolicitudIsNullAndIdUsuarioSubio(idUsuario)
             .stream()
-            .map(entity -> documentoMapper.map(entity, Documento.class))
+            .map(entity -> SolicitudMapperPersistencia.aDominio(entity))
             .toList();
     }
-
-    @Override
-    public void añadirComentario(Documento documento, String comentario) {
-        
-        
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<Documento> buscarDocumentoPorNombre(String nombre) {
-        return documentoRepository.findByNombre(nombre)
-            .map(entity -> documentoMapper.map(entity, Documento.class));
-    }
-
-    
-    
 }

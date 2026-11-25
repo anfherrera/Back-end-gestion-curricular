@@ -1,17 +1,17 @@
 package co.edu.unicauca.decanatura.gestion_curricular.estadisticas;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * ============================================================
@@ -79,7 +79,7 @@ class GestionEstadisticasFuncionalTest {
          * RESULTADO ESPERADO: Estadísticas detalladas de un proceso específico
          */
         
-        mockMvc.perform(get("/api/estadisticas/proceso/PAZ_Y_SALVO"))
+        mockMvc.perform(get("/api/estadisticas/estadisticas-por-proceso"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -100,7 +100,7 @@ class GestionEstadisticasFuncionalTest {
          * RESULTADO ESPERADO: Estadísticas por estado de solicitud
          */
         
-        mockMvc.perform(get("/api/estadisticas/estado/PENDIENTE"))
+        mockMvc.perform(get("/api/estadisticas/estado-solicitudes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -121,7 +121,7 @@ class GestionEstadisticasFuncionalTest {
          * RESULTADO ESPERADO: Estadísticas comparativas por programa
          */
         
-        mockMvc.perform(get("/api/estadisticas/programa/1"))
+        mockMvc.perform(get("/api/estadisticas/por-programa"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -142,7 +142,7 @@ class GestionEstadisticasFuncionalTest {
          * RESULTADO ESPERADO: Análisis de tendencias con comparativas
          */
         
-        mockMvc.perform(get("/api/estadisticas/tendencias"))
+        mockMvc.perform(get("/api/estadisticas/tendencias-comparativas"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -226,7 +226,7 @@ class GestionEstadisticasFuncionalTest {
          * RESULTADO ESPERADO: Documento PDF con estadísticas
          */
         
-        mockMvc.perform(get("/api/estadisticas/export/pdf"))
+        mockMvc.perform(get("/api/estadisticas/reportes").param("formato", "pdf"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
     }
@@ -245,7 +245,7 @@ class GestionEstadisticasFuncionalTest {
          * RESULTADO ESPERADO: Archivo Excel con datos estructurados
          */
         
-        mockMvc.perform(get("/api/estadisticas/export/excel"))
+        mockMvc.perform(get("/api/estadisticas/reportes").param("formato", "excel"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(
                     MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")));
@@ -253,47 +253,7 @@ class GestionEstadisticasFuncionalTest {
 
     // ==================== FLUJO 11: FILTRADO DINÁMICO ====================
 
-    @Test
-    @DisplayName("Funcional 11: Flujo de análisis personalizado - Usuario aplica múltiples filtros")
-    void testFlujoFiltraoDinamico() throws Exception {
-        /*
-         * FLUJO DE NEGOCIO:
-         * 1. Usuario necesita análisis muy específico
-         * 2. Usuario aplica filtros dinámicos (proceso, fecha, programa, estado)
-         * 3. Sistema genera estadísticas personalizadas
-         * 4. Usuario obtiene respuestas a preguntas específicas
-         * 
-         * ACTORES: Cualquier usuario autorizado
-         * RESULTADO ESPERADO: Estadísticas filtradas según criterios
-         */
-        
-        mockMvc.perform(get("/api/estadisticas/filtros-dinamicos")
-                        .param("proceso", "PAZ_Y_SALVO")
-                        .param("estado", "APROBADO"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-    }
-
     // ==================== FLUJO 12: ESTADÍSTICAS CONSOLIDADAS ====================
-
-    @Test
-    @DisplayName("Funcional 12: Flujo de reporte ejecutivo - Rector solicita informe consolidado")
-    void testFlujoReporteConsolidado() throws Exception {
-        /*
-         * FLUJO DE NEGOCIO:
-         * 1. Rector necesita informe para junta directiva
-         * 2. Rector solicita estadísticas consolidadas de todo el sistema
-         * 3. Sistema genera reporte completo con todas las métricas
-         * 4. Rector presenta resultados en junta directiva
-         * 
-         * ACTORES: Rector, Vicerrectores
-         * RESULTADO ESPERADO: Reporte consolidado institucional
-         */
-        
-        mockMvc.perform(get("/api/estadisticas/consolidado"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-    }
 
     // ==================== FLUJO 13: FLUJO COMPLETO DE ANÁLISIS ====================
 
@@ -317,19 +277,19 @@ class GestionEstadisticasFuncionalTest {
                 .andExpect(status().isOk());
 
         // Paso 2: Estadísticas del programa
-        mockMvc.perform(get("/api/estadisticas/programa/1"))
+        mockMvc.perform(get("/api/estadisticas/por-programa"))
                 .andExpect(status().isOk());
 
         // Paso 3: Analizar proceso específico
-        mockMvc.perform(get("/api/estadisticas/proceso/PAZ_Y_SALVO"))
+        mockMvc.perform(get("/api/estadisticas/estadisticas-por-proceso"))
                 .andExpect(status().isOk());
 
         // Paso 4: Ver tendencias
-        mockMvc.perform(get("/api/estadisticas/tendencias"))
+        mockMvc.perform(get("/api/estadisticas/tendencias-comparativas"))
                 .andExpect(status().isOk());
 
         // Paso 5: Exportar reporte
-        mockMvc.perform(get("/api/estadisticas/export/pdf"))
+        mockMvc.perform(get("/api/estadisticas/reportes").param("formato", "pdf"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
     }

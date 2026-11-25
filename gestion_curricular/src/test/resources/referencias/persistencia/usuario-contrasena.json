@@ -1,0 +1,40 @@
+{
+  "crearUsuario" : {
+    "guardada" : "codificada(clave)",
+    "devuelta" : "$2a$10$hashGuardado"
+  },
+  "actualizarUsuario sin contrasena" : {
+    "guardada" : "$2a$10$hashGuardado",
+    "devuelta" : "$2a$10$hashGuardado"
+  },
+  "actualizarUsuario contrasena en blanco" : {
+    "guardada" : "$2a$10$hashGuardado",
+    "devuelta" : "$2a$10$hashGuardado"
+  },
+  "actualizarUsuario con contrasena" : {
+    "guardada" : "codificada(nueva)",
+    "devuelta" : "codificada(nueva)"
+  },
+  "loadUserByUsername" : "$2a$10$hashGuardado",
+  "json obtenerUsuarioPorId" : {
+    "id_usuario" : 1,
+    "nombre_completo" : "Ana Pérez",
+    "objRol" : {
+      "id_rol" : 1,
+      "nombre" : "ESTUDIANTE",
+      "usuarios" : null
+    },
+    "codigo" : "104",
+    "cedula" : "123",
+    "correo" : "ana@unicauca.edu.co",
+    "password" : "$2a$10$hashGuardado",
+    "estado_usuario" : true,
+    "objPrograma" : {
+      "id_programa" : 1,
+      "codigo" : "SIS",
+      "nombre_programa" : "Ingeniería de Sistemas"
+    },
+    "solicitudes" : [ ],
+    "cursosOfertadosInscritos" : [ ]
+  }
+}

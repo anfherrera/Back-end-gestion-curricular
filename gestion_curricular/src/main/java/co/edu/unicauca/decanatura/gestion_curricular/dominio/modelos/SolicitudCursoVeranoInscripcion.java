@@ -1,0 +1,20 @@
+package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.CondicionSolicitudVerano;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+public class SolicitudCursoVeranoInscripcion extends Solicitud {
+
+    private String nombreEstudiante;
+    private CondicionSolicitudVerano condicionSolicitud;
+    private String observacion;
+
+}

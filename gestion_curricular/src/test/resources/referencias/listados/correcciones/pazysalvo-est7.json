@@ -1,0 +1,8 @@
+{
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo [staff.sin.programa]": [
+    "HTTP 404"
+  ],
+  "GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Funcionario [coord.listados]": [
+    "HTTP 404"
+  ]
+}

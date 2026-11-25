@@ -1,13 +1,10 @@
 package co.edu.unicauca.decanatura.gestion_curricular.pazysalvo;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,8 +17,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 /**
  * ============================================================
@@ -190,14 +191,14 @@ class GestionPazYSalvoFuncionalTest {
             """;
 
         // Paso 1: Crear solicitud
-        mockMvc.perform(post("/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo")
+        mockMvc.perform(post("/api/solicitudes-pazysalvo")
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonSolicitud))
                 .andExpect(status().isCreated());
 
-        // Paso 2: Verificar que la solicitud aparece en el listado
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo")
+        // Paso 2: Verificar que la solicitud aparece en la bandeja de pendientes del funcionario
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=funcionario&bandeja=pendientes")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -219,7 +220,7 @@ class GestionPazYSalvoFuncionalTest {
          */
         
         // Paso 1: Coordinador consulta solicitudes pendientes
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Coordinador")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=coordinador&bandeja=pendientes")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -227,9 +228,9 @@ class GestionPazYSalvoFuncionalTest {
         // Paso 2: El coordinador aprueba una solicitud que el funcionario ya aprobó
         // (el flujo es Funcionario -> Coordinador -> Secretaria; no se pueden saltar pasos)
         int id = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA_FUNCIONARIO"));
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenCoordinador, id, "APROBADA_COORDINADOR"));
     }
 
@@ -237,19 +238,33 @@ class GestionPazYSalvoFuncionalTest {
     @DisplayName("Funcional 2b: El coordinador no puede aprobar antes que el funcionario")
     void testCoordinadorNoPuedeSaltarseAlFuncionario() throws Exception {
         int id = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
-        // Desde ENVIADA el paso le corresponde al funcionario
-        org.junit.jupiter.api.Assertions.assertEquals(403,
-                SoportePazYSalvo.cambiarEstado(mockMvc, tokenCoordinador, id, "APROBADA_FUNCIONARIO"));
-        // Saltar directamente a APROBADA no es un paso válido
-        org.junit.jupiter.api.Assertions.assertEquals(400,
-                SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA"));
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/" + id + "/estado")
+                        .header("Authorization", tokenCoordinador)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nuevoEstado\":\"APROBADA_FUNCIONARIO\"}"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.codigo").value("ROL_NO_AUTORIZADO"))
+                .andExpect(jsonPath("$.estadoActual").value("ENVIADA"))
+                .andExpect(jsonPath("$.error").value("Este paso le corresponde al rol Funcionario"));
+
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/" + id + "/estado")
+                        .header("Authorization", tokenFuncionario)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nuevoEstado\":\"APROBADA\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.codigo").value("TRANSICION_NO_PERMITIDA"))
+                .andExpect(jsonPath("$.estadoActual").value("ENVIADA"))
+                .andExpect(jsonPath("$.error").isNotEmpty());
+
+        org.junit.jupiter.api.Assertions.assertEquals(204,
+                SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA_FUNCIONARIO"));
     }
 
     @Test
     @DisplayName("Funcional 2c: Un estudiante no puede tener dos solicitudes en trámite")
     void testNoPermiteDosSolicitudesEnTramite() throws Exception {
         SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
-        mockMvc.perform(post("/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo")
+        mockMvc.perform(post("/api/solicitudes-pazysalvo")
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"fecha_solicitud\": \"2025-01-15\"}"))
@@ -270,7 +285,7 @@ class GestionPazYSalvoFuncionalTest {
          */
         
         // Paso 1: Funcionario consulta sus solicitudes
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Funcionario")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=funcionario&bandeja=pendientes")
                         .header("Authorization", tokenFuncionario))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -293,42 +308,16 @@ class GestionPazYSalvoFuncionalTest {
          */
         
         // Paso 1: Secretaria consulta solicitudes aprobadas
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Secretaria")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=secretaria&bandeja=pendientes")
                         .header("Authorization", tokenSecretaria))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-        // Paso 2: Secretaria genera documento oficial (usando ID 37 que existe en BD)
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/pdf")
-                        .header("Authorization", tokenSecretaria))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF))
-                .andExpect(header().string("Content-Disposition", "attachment; filename=\"PazYSalvo_37.pdf\""));
-    }
-
-    // ==================== FLUJO 3: GENERACIÓN DE DOCUMENTOS ====================
-
-    @Test
-    @DisplayName("Funcional 5: Flujo de generación de documentos en múltiples formatos")
-    void testFlujoGeneracionDocumentosMultiplesFormatos() throws Exception {
-        /*
-         * FLUJO DE NEGOCIO:
-         * 1. Usuario solicita documento en formato PDF
-         * 2. Usuario solicita documento en formato DOCX para edición
-         * 3. Sistema genera ambos formatos correctamente
-         * 
-         * ACTORES: Secretaria, Estudiante
-         * RESULTADO ESPERADO: Documentos generados en ambos formatos
-         */
-        
-        // Paso 1: Generar PDF (usando ID 37 que existe en BD)
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/pdf")
-                        .header("Authorization", tokenSecretaria))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
-
-        // Paso 2: Generar DOCX (usando ID 37 que existe en BD)
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/docx")
+        // Paso 2: Secretaria genera documento oficial (usando ID 37 que existe en BD). El documento por defecto
+        // en PDF y DOCX (/generarDocumentoPazYSalvo) se retiró en EST-7: el frontend genera este.
+        mockMvc.perform(post("/api/solicitudes-pazysalvo/37/documento-generado")
+                        .param("numeroDocumento", "PYS-37")
+                        .param("fechaDocumento", "2025-03-01")
                         .header("Authorization", tokenSecretaria))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_OCTET_STREAM));
@@ -351,16 +340,31 @@ class GestionPazYSalvoFuncionalTest {
         
         // El estudiante autenticado consulta sus propias solicitudes
         int idEstudiante = SoportePazYSalvo.idUsuario(usuarioRepository, ESTUDIANTE_EMAIL);
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/" + idEstudiante)
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/usuarios/" + idEstudiante + "/solicitudes")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Y no puede consultar las de otro usuario
         int idCoordinador = SoportePazYSalvo.idUsuario(usuarioRepository, COORDINADOR_EMAIL);
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/" + idCoordinador)
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/usuarios/" + idCoordinador + "/solicitudes")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isForbidden());
+
+        // Ve el detalle de una solicitud suya; la de otro usuario, no (BUG-4)
+        int idSolicitud = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/" + idSolicitud)
+                        .header("Authorization", tokenEstudiante))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id_solicitud").value(idSolicitud));
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/" + Integer.MAX_VALUE)
+                        .header("Authorization", tokenEstudiante))
+                .andExpect(status().isForbidden());
+
+        // La ruta que mezclaba solicitud, usuario y rol ya no existe (BUG-4)
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/" + idEstudiante)
+                        .header("Authorization", tokenEstudiante))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -377,17 +381,17 @@ class GestionPazYSalvoFuncionalTest {
          */
         
         // Coordinador ve solicitudes de su programa
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Coordinador")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=coordinador&bandeja=pendientes")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk());
 
         // Funcionario ve solicitudes en proceso administrativo
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Funcionario")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=funcionario&bandeja=pendientes")
                         .header("Authorization", tokenFuncionario))
                 .andExpect(status().isOk());
 
         // Secretaria ve solicitudes para emisión final
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Secretaria")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=secretaria&bandeja=pendientes")
                         .header("Authorization", tokenSecretaria))
                 .andExpect(status().isOk());
     }
@@ -416,7 +420,7 @@ class GestionPazYSalvoFuncionalTest {
             }
             """;
 
-        mockMvc.perform(post("/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo")
+        mockMvc.perform(post("/api/solicitudes-pazysalvo")
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonInvalido))
@@ -442,7 +446,7 @@ class GestionPazYSalvoFuncionalTest {
             }
             """;
 
-        mockMvc.perform(put("/api/solicitudes-pazysalvo/cambiarEstadoSolicitud/999")
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/999/estado")
                         .header("Authorization", tokenCoordinador)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCambioEstado))
@@ -467,24 +471,26 @@ class GestionPazYSalvoFuncionalTest {
         // Paso 1: Crear solicitud
         int id = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
 
-        // Paso 2: Consultar solicitudes (simulando diferentes roles)
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo")
+        // Paso 2: Consultar la bandeja del funcionario, donde está la solicitud nueva
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=funcionario&bandeja=pendientes")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk());
 
         // Paso 3: Aprobación completa: Funcionario -> Coordinador -> Secretaria
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA_FUNCIONARIO"));
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenCoordinador, id, "APROBADA_COORDINADOR"));
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenSecretaria, id, "APROBADA"));
 
         // Paso 4: Generar documento final de esa solicitud
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/" + id + "/pdf")
+        mockMvc.perform(post("/api/solicitudes-pazysalvo/" + id + "/documento-generado")
+                        .param("numeroDocumento", "PYS-" + id)
+                        .param("fechaDocumento", "2025-03-01")
                         .header("Authorization", tokenSecretaria))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_OCTET_STREAM));
     }
 }
 

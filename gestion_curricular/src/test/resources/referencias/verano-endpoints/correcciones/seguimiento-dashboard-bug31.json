@@ -1,0 +1,33 @@
+{
+  "seguimiento 3" : {
+    "status" : 200,
+    "body" : {
+      "preinscripciones" : [ {
+        "accionesDisponibles" : [ "esperando_aprobacion" ],
+        "fecha" : 1710522000000,
+        "estado" : "Enviada",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 3,
+        "curso" : "Materia 1",
+        "estadoCurso" : "Publicado",
+        "id" : 20,
+        "cursoId" : 1
+      }, {
+        "accionesDisponibles" : [ "esperando_aprobacion" ],
+        "fecha" : null,
+        "estado" : "Enviada",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 3,
+        "curso" : "Curso no disponible",
+        "estadoCurso" : "Publicado",
+        "id" : 21,
+        "cursoId" : 2
+      } ],
+      "totalPreinscripciones" : 2,
+      "totalActividades" : 2,
+      "inscripciones" : [ ],
+      "totalInscripciones" : 0
+    },
+    "claves" : [ ".preinscripciones:ARRAY", ".preinscripciones[0].accionesDisponibles:ARRAY", ".preinscripciones[0].fecha:NUMBER", ".preinscripciones[0].estado:STRING", ".preinscripciones[0].tipo:STRING", ".preinscripciones[0].estudianteId:NUMBER", ".preinscripciones[0].curso:STRING", ".preinscripciones[0].estadoCurso:STRING", ".preinscripciones[0].id:NUMBER", ".preinscripciones[0].cursoId:NUMBER", ".preinscripciones[1].accionesDisponibles:ARRAY", ".preinscripciones[1].fecha:NULL", ".preinscripciones[1].estado:STRING", ".preinscripciones[1].tipo:STRING", ".preinscripciones[1].estudianteId:NUMBER", ".preinscripciones[1].curso:STRING", ".preinscripciones[1].estadoCurso:STRING", ".preinscripciones[1].id:NUMBER", ".preinscripciones[1].cursoId:NUMBER", ".totalPreinscripciones:NUMBER", ".totalActividades:NUMBER", ".inscripciones:ARRAY", ".totalInscripciones:NUMBER" ]
+  }
+}

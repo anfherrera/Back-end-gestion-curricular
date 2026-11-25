@@ -1,0 +1,14 @@
+{
+  "/actualizarCurso completo/resultado/estudiantesInscritos/0/password": null,
+  "/actualizarCurso completo/resultado/solicitudes/0/objUsuario/password": null,
+  "/crearCurso/resultado/estudiantesInscritos/0/password": null,
+  "/crearCurso/resultado/solicitudes/0/objUsuario/password": null,
+  "/guardarCambiosCurso/resultado/estudiantesInscritos/0/password": null,
+  "/guardarCambiosCurso/resultado/solicitudes/0/objUsuario/password": null,
+  "/listarPorPeriodo/0/estudiantesInscritos/0/password": null,
+  "/listarPorPeriodo/0/solicitudes/0/objUsuario/password": null,
+  "/listarTodos/0/estudiantesInscritos/0/password": null,
+  "/listarTodos/0/solicitudes/0/objUsuario/password": null,
+  "/obtenerCursoPorId 4/estudiantesInscritos/0/password": null,
+  "/obtenerCursoPorId 4/solicitudes/0/objUsuario/password": null
+}

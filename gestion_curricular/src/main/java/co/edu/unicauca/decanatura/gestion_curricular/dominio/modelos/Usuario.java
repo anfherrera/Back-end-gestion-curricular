@@ -11,14 +11,14 @@ import lombok.Data;
 @AllArgsConstructor
 public class Usuario {
 
-    private Integer id_usuario;
-    private String nombre_completo;
+    private Integer idUsuario;
+    private String nombreCompleto;
     private Rol objRol;
     private String codigo;
     private String cedula;
     private String correo;
     private String password;
-    private boolean estado_usuario;
+    private boolean estadoUsuario;
     private Programa objPrograma;
 
     private List<Solicitud> solicitudes;

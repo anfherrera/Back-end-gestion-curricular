@@ -1,9 +1,19 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,37 +23,29 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import co.edu.unicauca.decanatura.gestion_curricular.Security.JwtUtil;
-import co.edu.unicauca.decanatura.gestion_curricular.Security.LoginRateLimiter;
-import co.edu.unicauca.decanatura.gestion_curricular.Security.SecurityAuditService;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.LoginDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.UsuarioDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.LoginDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.UsuarioDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.UsuarioMapperDominio;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.LoginDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.UsuarioDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.LoginDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.UsuarioDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.ErroresUsuario;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.UsuarioMapperDominio;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.JwtUtil;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.LoginRateLimiter;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.SecurityAuditService;
 
 
 
@@ -53,8 +55,8 @@ import java.util.stream.Collectors;
 @Validated
 @Tag(name = "Usuarios", description = "API para la gestión de usuarios del sistema")
 public class UsuarioRestController {
-    private final GestionarUsuarioCUIntPort objUsuarioCUIntPort;
-    private final UsuarioMapperDominio objUsuarioMapperDominio;
+    private final GestionarUsuarioCUIntPort usuarioCUIntPort;
+    private final UsuarioMapperDominio usuarioMapperDominio;
     private final AuthenticationManager authManager;
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
@@ -62,40 +64,43 @@ public class UsuarioRestController {
     private final LoginRateLimiter loginRateLimiter;
 
 
-    @PostMapping("/crearUsuario")
-    @PreAuthorize("hasRole('Administrador') or hasRole('Coordinador')")
+    /**
+     * Rutas según la convención de EST-7: {@code POST /}, {@code GET /}, {@code GET|PUT|DELETE /{id}} y
+     * {@code PUT /{id}/estado}. {@code POST /login} se conserva (decisión del usuario, revisión 26).
+     */
+    @PostMapping
+    @PreAuthorize("(hasRole('Administrador') or hasRole('Coordinador')) and @autorizacion.puedeAsignarRol(#peticion.id_rol)")
     public ResponseEntity<UsuarioDTORespuesta> crearUsuario(@RequestBody @Valid UsuarioDTOPeticion peticion) {
-        try {
+        // Los errores de dominio y los argumentos inválidos llegan al manejador global; el resto, 500 genérico
+        return ErroresUsuario.alCrear(() -> {
             if (peticion == null) {
                 throw new IllegalArgumentException("La petición no puede ser nula");
             }
             
             Usuario usuario = new Usuario();
-            usuario.setNombre_completo(peticion.getNombre_completo());
+            usuario.setNombreCompleto(peticion.getNombre_completo());
             usuario.setCodigo(peticion.getCodigo());
             usuario.setCedula(peticion.getCedula());
             usuario.setCorreo(peticion.getCorreo());
             usuario.setPassword(peticion.getPassword());
-            usuario.setEstado_usuario(peticion.isEstado_usuario());
+            usuario.setEstadoUsuario(peticion.isEstado_usuario());
             
             // Crear objetos Rol y Programa con solo el ID
             if (peticion.getId_rol() == null) {
                 throw new IllegalArgumentException("El ID del rol es obligatorio");
             }
-            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol rol = 
-                new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol();
-            rol.setId_rol(peticion.getId_rol());
+            Rol rol = new Rol();
+            rol.setIdRol(peticion.getId_rol());
             usuario.setObjRol(rol);
             
             if (peticion.getId_programa() == null) {
                 throw new IllegalArgumentException("El ID del programa es obligatorio");
             }
-            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa programa = 
-                new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa();
-            programa.setId_programa(peticion.getId_programa());
+            Programa programa = new Programa();
+            programa.setIdPrograma(peticion.getId_programa());
             usuario.setObjPrograma(programa);
             
-            Usuario usuarioCreado = objUsuarioCUIntPort.crearUsuario(usuario);
+            Usuario usuarioCreado = usuarioCUIntPort.crearUsuario(usuario);
             
             if (usuarioCreado == null) {
                 throw new RuntimeException("Error al crear el usuario: el usuario creado es nulo");
@@ -109,40 +114,36 @@ public class UsuarioRestController {
                 throw new RuntimeException("Error: el usuario creado no tiene programa asignado");
             }
             
-            UsuarioDTORespuesta respuesta;
-            try {
-                respuesta = objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuarioCreado);
-            } catch (Exception e) {
-                if (e.getMessage() != null && e.getMessage().contains("source cannot be null")) {
-                    throw new RuntimeException("Error al mapear usuario a DTO: " + 
-                        "Rol: " + (usuarioCreado.getObjRol() != null ? "presente" : "null") + 
-                        ", Programa: " + (usuarioCreado.getObjPrograma() != null ? "presente" : "null"), e);
-                }
-                throw new RuntimeException("Error al mapear el usuario creado a DTO de respuesta: " + e.getMessage(), e);
-            }
+            UsuarioDTORespuesta respuesta = ErroresUsuario.alMapearCreado(
+                    () -> usuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuarioCreado),
+                    usuarioCreado);
             
             if (respuesta == null) {
                 throw new RuntimeException("Error al mapear el usuario creado a DTO de respuesta: resultado nulo");
             }
             
             return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Error al crear el usuario: " + e.getMessage(), e);
-        }
+        });
     }
     
-    @PutMapping("/actualizarUsuario")
-    @PreAuthorize("hasRole('Administrador') or hasRole('Coordinador')")
-    public ResponseEntity<UsuarioDTORespuesta> actualizarrUsuario(@RequestBody @Valid UsuarioDTOPeticion peticion) {
+    /**
+     * El id de la ruta manda sobre el del cuerpo. La autorización comprueba ese mismo id ({@code #id}): si mirara
+     * el del cuerpo, se podría pedir permiso para un usuario y modificar otro.
+     */
+    @PutMapping("/{id:\\d+}")
+    @PreAuthorize("(hasRole('Administrador') or hasRole('Coordinador'))"
+            + " and @autorizacion.puedeAsignarRol(#peticion.id_rol)"
+            + " and @autorizacion.puedeModificarUsuario(#id)")
+    public ResponseEntity<UsuarioDTORespuesta> actualizarrUsuario(@PathVariable Integer id,
+            @RequestBody @Valid UsuarioDTOPeticion peticion) {
+        peticion.setId_usuario(id);
         Usuario usuario = new Usuario();
-        usuario.setId_usuario(peticion.getId_usuario());
-        usuario.setNombre_completo(peticion.getNombre_completo());
+        usuario.setIdUsuario(peticion.getId_usuario());
+        usuario.setNombreCompleto(peticion.getNombre_completo());
         usuario.setCodigo(peticion.getCodigo());
         usuario.setCedula(peticion.getCedula());
         usuario.setCorreo(peticion.getCorreo());
-        usuario.setEstado_usuario(peticion.isEstado_usuario());
+        usuario.setEstadoUsuario(peticion.isEstado_usuario());
         
         // Solo actualizar password si se proporciona
         if (peticion.getPassword() != null && !peticion.getPassword().trim().isEmpty()) {
@@ -150,39 +151,35 @@ public class UsuarioRestController {
         }
         
         // Crear objetos Rol y Programa con solo el ID
-        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol rol = 
-            new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol();
-        rol.setId_rol(peticion.getId_rol());
+        Rol rol = new Rol();
+        rol.setIdRol(peticion.getId_rol());
         usuario.setObjRol(rol);
         
-        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa programa = 
-            new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa();
-        programa.setId_programa(peticion.getId_programa());
+        Programa programa = new Programa();
+        programa.setIdPrograma(peticion.getId_programa());
         usuario.setObjPrograma(programa);
         
-        Usuario usuarioActualizado = objUsuarioCUIntPort.actualizarUsuario(usuario);
+        Usuario usuarioActualizado = usuarioCUIntPort.actualizarUsuario(usuario);
         return new ResponseEntity<>(
-            objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuarioActualizado), 
+            usuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuarioActualizado),
             HttpStatus.ACCEPTED
         );
     }
 
-    @GetMapping("/buscarUsuarioPorId/{id}")
+    @GetMapping("/{id:\\d+}")
+    @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ") or @autorizacion.esUsuarioActual(#id)")
     public ResponseEntity<UsuarioDTORespuesta> buscarUsuarioPorId(@Min(value = 1) @PathVariable Integer id) {
-        Usuario usuario = objUsuarioCUIntPort.obtenerUsuarioPorId(id);
-        ResponseEntity<UsuarioDTORespuesta> objRespuesta = null;
+        Usuario usuario = usuarioCUIntPort.obtenerUsuarioPorId(id);
         if (usuario == null) {
-            objRespuesta = new ResponseEntity<UsuarioDTORespuesta>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        objRespuesta = new ResponseEntity<UsuarioDTORespuesta>(
-        objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuario), HttpStatus.OK);
-        return objRespuesta;
+        return new ResponseEntity<>(usuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuario), HttpStatus.OK);
     }
 
-    @DeleteMapping("/eliminarUsuario/{id}")
+    @DeleteMapping("/{id:\\d+}")
     @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<Boolean> eliminarUsuario(@Min(value = 1) @PathVariable Integer id) {
-        boolean respuesta = objUsuarioCUIntPort.eliminarUsuario(id);
+        boolean respuesta = usuarioCUIntPort.eliminarUsuario(id);
         ResponseEntity<Boolean> objRespuesta = null;
         if(respuesta){
             objRespuesta = new ResponseEntity<Boolean>(HttpStatus.OK);
@@ -193,27 +190,19 @@ public class UsuarioRestController {
         return objRespuesta;
     }
 
-    @GetMapping("/buscarPorPrograma/{id}")
-    public ResponseEntity<List<UsuarioDTORespuesta>> buscarUsuariosPorPrograma(@Min(value = 1) @PathVariable Integer id) {
-        List<Usuario> usuarios = objUsuarioCUIntPort.buscarUsuariosPorPrograma(id);
-        List<UsuarioDTORespuesta> respuesta = usuarios.stream()
-                .map(objUsuarioMapperDominio::mappearDeUsuarioAUsuarioDTORespuesta)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(respuesta);
-    }
-
-    @GetMapping("/listarUsuarios")
+    @GetMapping
+    @PreAuthorize("hasRole('Administrador') or hasRole('Coordinador')")
     public ResponseEntity<List<UsuarioDTORespuesta>> obtenerUsuarios() {
-        List<Usuario> usuarios = objUsuarioCUIntPort.listarUsuarios();
+        List<Usuario> usuarios = usuarioCUIntPort.listarUsuarios();
         List<UsuarioDTORespuesta> respuesta = usuarios.stream()
-                .map(objUsuarioMapperDominio::mappearDeUsuarioAUsuarioDTORespuesta)
+                .map(usuarioMapperDominio::mapearDeUsuarioAUsuarioDTORespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }
     
     @Operation(
         summary = "Cambiar estado de un usuario",
-        description = "Activa o desactiva un usuario. Si está activo lo desactiva y viceversa."
+        description = "Activa o desactiva un usuario. Si está activo lo desactiva y viceversa (sin cuerpo)."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Estado cambiado exitosamente",
@@ -221,21 +210,22 @@ public class UsuarioRestController {
         @ApiResponse(responseCode = "404", description = "Usuario no encontrado",
             content = @Content)
     })
-    @PutMapping("/cambiarEstado/{id}")
+    @PutMapping("/{id:\\d+}/estado")
+    @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<UsuarioDTORespuesta> cambiarEstadoUsuario(
             @Parameter(description = "ID del usuario", required = true)
             @Min(value = 1) @PathVariable Integer id) {
-        Usuario usuario = objUsuarioCUIntPort.obtenerUsuarioPorId(id);
+        Usuario usuario = usuarioCUIntPort.obtenerUsuarioPorId(id);
         if (usuario == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         
         // Cambiar el estado (toggle)
-        usuario.setEstado_usuario(!usuario.isEstado_usuario());
+        usuario.setEstadoUsuario(!usuario.isEstadoUsuario());
         
-        Usuario usuarioActualizado = objUsuarioCUIntPort.actualizarUsuario(usuario);
+        Usuario usuarioActualizado = usuarioCUIntPort.actualizarUsuario(usuario);
         return new ResponseEntity<>(
-            objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuarioActualizado), 
+            usuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuarioActualizado),
             HttpStatus.OK
         );
     }
@@ -275,8 +265,8 @@ public class UsuarioRestController {
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getCorreo());
             String token = jwtUtil.generarToken(userDetails.getUsername());
 
-            Usuario usuario = objUsuarioCUIntPort.buscarUsuarioPorCorreo(request.getCorreo());
-            UsuarioDTORespuesta usuarioDTO = objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuario);
+            Usuario usuario = usuarioCUIntPort.buscarUsuarioPorCorreo(request.getCorreo());
+            UsuarioDTORespuesta usuarioDTO = usuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuario);
 
             // Limpiar contadores por éxito
             loginRateLimiter.onSuccess(request.getCorreo(), ip);

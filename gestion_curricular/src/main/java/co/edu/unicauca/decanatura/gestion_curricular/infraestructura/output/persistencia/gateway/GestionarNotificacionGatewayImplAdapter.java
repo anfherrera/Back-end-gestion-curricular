@@ -4,20 +4,22 @@ import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarNotificacionGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Notificacion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.NotificacionEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.NotificacionRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.NotificacionEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.SolicitudMapperPersistencia;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.UsuarioMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.NotificacionRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 @Slf4j
 @Service
@@ -28,19 +30,16 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
     private final UsuarioRepositoryInt usuarioRepository;
     private final SolicitudRepositoryInt solicitudRepository;
     private final CursoOfertadoVeranoRepositoryInt cursoRepository;
-    private final ModelMapper mapper;
 
     public GestionarNotificacionGatewayImplAdapter(
             NotificacionRepositoryInt notificacionRepository,
             UsuarioRepositoryInt usuarioRepository,
             SolicitudRepositoryInt solicitudRepository,
-            CursoOfertadoVeranoRepositoryInt cursoRepository,
-            ModelMapper mapper) {
+            CursoOfertadoVeranoRepositoryInt cursoRepository) {
         this.notificacionRepository = notificacionRepository;
         this.usuarioRepository = usuarioRepository;
         this.solicitudRepository = solicitudRepository;
         this.cursoRepository = cursoRepository;
-        this.mapper = mapper;
     }
 
     @Override
@@ -61,26 +60,26 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
             entity.setUrlAccion(notificacion.getUrlAccion());
             
             // Mapear relaciones - cargar entidades desde la base de datos
-            if (notificacion.getObjUsuario() != null && notificacion.getObjUsuario().getId_usuario() != null) {
-                UsuarioEntity usuarioEntity = usuarioRepository.findById(notificacion.getObjUsuario().getId_usuario())
-                        .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + notificacion.getObjUsuario().getId_usuario()));
+            if (notificacion.getObjUsuario() != null && notificacion.getObjUsuario().getIdUsuario() != null) {
+                UsuarioEntity usuarioEntity = usuarioRepository.findById(notificacion.getObjUsuario().getIdUsuario())
+                        .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + notificacion.getObjUsuario().getIdUsuario()));
                 entity.setObjUsuario(usuarioEntity);
             }
             
-            if (notificacion.getObjSolicitud() != null && notificacion.getObjSolicitud().getId_solicitud() != null) {
-                SolicitudEntity solicitudEntity = solicitudRepository.findById(notificacion.getObjSolicitud().getId_solicitud())
+            if (notificacion.getObjSolicitud() != null && notificacion.getObjSolicitud().getIdSolicitud() != null) {
+                SolicitudEntity solicitudEntity = solicitudRepository.findById(notificacion.getObjSolicitud().getIdSolicitud())
                         .orElse(null); // Puede ser null si la solicitud no existe
                 entity.setObjSolicitud(solicitudEntity);
             }
             
-            if (notificacion.getObjCurso() != null && notificacion.getObjCurso().getId_curso() != null) {
-                CursoOfertadoVeranoEntity cursoEntity = cursoRepository.findById(notificacion.getObjCurso().getId_curso())
+            if (notificacion.getObjCurso() != null && notificacion.getObjCurso().getIdCurso() != null) {
+                CursoOfertadoVeranoEntity cursoEntity = cursoRepository.findById(notificacion.getObjCurso().getIdCurso())
                         .orElse(null); // Puede ser null si el curso no existe
                 entity.setObjCurso(cursoEntity);
             }
             
             NotificacionEntity saved = notificacionRepository.save(entity);
-            return mapper.map(saved, Notificacion.class);
+            return SolicitudMapperPersistencia.aDominio(saved);
         } catch (Exception e) {
             log.error("Error al guardar notificación en BD: {}", e.getMessage(), e);
             throw e;
@@ -91,7 +90,7 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
     @Transactional(readOnly = true)
     public Notificacion obtenerNotificacionPorId(Integer idNotificacion) {
         return notificacionRepository.findById(idNotificacion)
-                .map(entity -> mapper.map(entity, Notificacion.class))
+                .map(entity -> SolicitudMapperPersistencia.aDominio(entity))
                 .orElse(null);
     }
 
@@ -103,7 +102,7 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
         List<Notificacion> result = entities.stream()
                 .map(entity -> {
                     Notificacion notificacion = new Notificacion();
-                    notificacion.setId_notificacion(entity.getId_notificacion());
+                    notificacion.setIdNotificacion(entity.getId_notificacion());
                     notificacion.setTipoSolicitud(entity.getTipoSolicitud());
                     notificacion.setTipoNotificacion(entity.getTipoNotificacion());
                     notificacion.setTitulo(entity.getTitulo());
@@ -116,15 +115,15 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
                     
                     // Mapear usuario (ya está cargado con JOIN FETCH)
                     if (entity.getObjUsuario() != null) {
-                        notificacion.setObjUsuario(mapper.map(entity.getObjUsuario(), co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario.class));
+                        notificacion.setObjUsuario(UsuarioMapperPersistencia.aDominio(entity.getObjUsuario()));
                     }
                     
                     if (entity.getObjSolicitud() != null && Hibernate.isInitialized(entity.getObjSolicitud())) {
-                        notificacion.setObjSolicitud(mapper.map(entity.getObjSolicitud(), co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud.class));
+                        notificacion.setObjSolicitud(SolicitudMapperPersistencia.aDominio(entity.getObjSolicitud(), Solicitud.class));
                     }
                     
                     if (entity.getObjCurso() != null && Hibernate.isInitialized(entity.getObjCurso())) {
-                        notificacion.setObjCurso(mapper.map(entity.getObjCurso(), co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano.class));
+                        notificacion.setObjCurso(SolicitudMapperPersistencia.aDominio(entity.getObjCurso()));
                     }
                     
                     return notificacion;
@@ -141,7 +140,7 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
         List<Notificacion> result = entities.stream()
                 .map(entity -> {
                     Notificacion notificacion = new Notificacion();
-                    notificacion.setId_notificacion(entity.getId_notificacion());
+                    notificacion.setIdNotificacion(entity.getId_notificacion());
                     notificacion.setTipoSolicitud(entity.getTipoSolicitud());
                     notificacion.setTipoNotificacion(entity.getTipoNotificacion());
                     notificacion.setTitulo(entity.getTitulo());
@@ -154,15 +153,15 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
                     
                     // Mapear usuario (ya está cargado con JOIN FETCH)
                     if (entity.getObjUsuario() != null) {
-                        notificacion.setObjUsuario(mapper.map(entity.getObjUsuario(), co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario.class));
+                        notificacion.setObjUsuario(UsuarioMapperPersistencia.aDominio(entity.getObjUsuario()));
                     }
                     
                     if (entity.getObjSolicitud() != null && Hibernate.isInitialized(entity.getObjSolicitud())) {
-                        notificacion.setObjSolicitud(mapper.map(entity.getObjSolicitud(), co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud.class));
+                        notificacion.setObjSolicitud(SolicitudMapperPersistencia.aDominio(entity.getObjSolicitud(), Solicitud.class));
                     }
                     
                     if (entity.getObjCurso() != null && Hibernate.isInitialized(entity.getObjCurso())) {
-                        notificacion.setObjCurso(mapper.map(entity.getObjCurso(), co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano.class));
+                        notificacion.setObjCurso(SolicitudMapperPersistencia.aDominio(entity.getObjCurso()));
                     }
                     
                     return notificacion;
@@ -176,7 +175,7 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
     public List<Notificacion> buscarUrgentesPorUsuario(Integer idUsuario) {
         List<NotificacionEntity> entities = notificacionRepository.buscarUrgentesPorUsuario(idUsuario);
         return entities.stream()
-                .map(entity -> mapper.map(entity, Notificacion.class))
+                .map(entity -> SolicitudMapperPersistencia.aDominio(entity))
                 .toList();
     }
 
@@ -185,7 +184,7 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
     public List<Notificacion> buscarPorTipoSolicitud(String tipoSolicitud) {
         List<NotificacionEntity> entities = notificacionRepository.buscarPorTipoSolicitud(tipoSolicitud);
         return entities.stream()
-                .map(entity -> mapper.map(entity, Notificacion.class))
+                .map(entity -> SolicitudMapperPersistencia.aDominio(entity))
                 .toList();
     }
 
@@ -194,7 +193,7 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
     public List<Notificacion> buscarPorSolicitud(Integer idSolicitud) {
         List<NotificacionEntity> entities = notificacionRepository.buscarPorSolicitud(idSolicitud);
         return entities.stream()
-                .map(entity -> mapper.map(entity, Notificacion.class))
+                .map(entity -> SolicitudMapperPersistencia.aDominio(entity))
                 .toList();
     }
 
@@ -216,10 +215,5 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
         notificacionRepository.marcarComoLeida(idNotificacion);
     }
 
-    @Override
-    @Transactional
-    public void eliminarAntiguas(java.util.Date fechaLimite) {
-        notificacionRepository.eliminarAntiguas(fechaLimite);
-    }
 }
 

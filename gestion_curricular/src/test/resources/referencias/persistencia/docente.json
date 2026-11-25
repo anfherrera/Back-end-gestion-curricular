@@ -1,0 +1,92 @@
+{
+  "obtenerDocentePorId 1" : {
+    "@tipo" : "Docente",
+    "codigo_docente" : "D01",
+    "id_docente" : 1,
+    "nombre_docente" : "Ana Pérez"
+  },
+  "obtenerDocentePorId 2" : {
+    "@tipo" : "Docente",
+    "codigo_docente" : null,
+    "id_docente" : null,
+    "nombre_docente" : null
+  },
+  "obtenerDocentePorId 3" : null,
+  "obtenerDocentePorCodigo" : {
+    "@tipo" : "Docente",
+    "codigo_docente" : "D01",
+    "id_docente" : 1,
+    "nombre_docente" : "Ana Pérez"
+  },
+  "buscarPorNombreParcial" : [ {
+    "@tipo" : "Docente",
+    "codigo_docente" : "D01",
+    "id_docente" : 1,
+    "nombre_docente" : "Ana Pérez"
+  }, {
+    "@tipo" : "Docente",
+    "codigo_docente" : null,
+    "id_docente" : null,
+    "nombre_docente" : null
+  } ],
+  "listarDocentes" : [ {
+    "@tipo" : "Docente",
+    "codigo_docente" : null,
+    "id_docente" : null,
+    "nombre_docente" : null
+  }, {
+    "@tipo" : "Docente",
+    "codigo_docente" : "D01",
+    "id_docente" : 1,
+    "nombre_docente" : "Ana Pérez"
+  } ],
+  "guardarDocente completo" : {
+    "resultado" : {
+      "@tipo" : "Docente",
+      "codigo_docente" : "D09",
+      "id_docente" : 9,
+      "nombre_docente" : "Luis"
+    },
+    "guardados" : [ {
+      "@tipo" : "DocenteEntity",
+      "codigo_docente" : "D09",
+      "id_docente" : 9,
+      "nombre_docente" : "Luis"
+    } ]
+  },
+  "guardarDocente nulos" : {
+    "resultado" : {
+      "@tipo" : "Docente",
+      "codigo_docente" : null,
+      "id_docente" : null,
+      "nombre_docente" : null
+    },
+    "guardados" : [ {
+      "@tipo" : "DocenteEntity",
+      "codigo_docente" : null,
+      "id_docente" : null,
+      "nombre_docente" : null
+    } ]
+  },
+  "actualizarDocente" : {
+    "resultado" : {
+      "@tipo" : "Docente",
+      "codigo_docente" : null,
+      "id_docente" : 1,
+      "nombre_docente" : "Ana"
+    },
+    "guardados" : [ {
+      "@tipo" : "DocenteEntity",
+      "codigo_docente" : null,
+      "id_docente" : 1,
+      "nombre_docente" : "Ana"
+    } ]
+  },
+  "actualizarDocente inexistente" : {
+    "resultado" : {
+      "excepcion" : "java.lang.RuntimeException",
+      "mensaje" : "Docente no encontrado con ID: 3"
+    },
+    "guardados" : [ ]
+  }
+}

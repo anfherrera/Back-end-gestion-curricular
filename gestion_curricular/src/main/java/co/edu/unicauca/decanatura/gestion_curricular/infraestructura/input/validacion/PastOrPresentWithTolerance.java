@@ -1,13 +1,13 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion;
 
-import jakarta.validation.Constraint;
-import jakarta.validation.Payload;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
 /**
  * Valida que una fecha sea pasada o actual, permitiendo una tolerancia en segundos

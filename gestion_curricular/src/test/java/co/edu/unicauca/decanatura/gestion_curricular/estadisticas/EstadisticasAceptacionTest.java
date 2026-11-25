@@ -1,17 +1,17 @@
 package co.edu.unicauca.decanatura.gestion_curricular.estadisticas;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * ============================================================
@@ -85,7 +85,7 @@ class EstadisticasAceptacionTest {
          *       AND debe calcular tiempos promedio si aplica
          */
         
-        mockMvc.perform(get("/api/estadisticas/proceso/PAZ_Y_SALVO"))
+        mockMvc.perform(get("/api/estadisticas/estadisticas-por-proceso"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -104,7 +104,7 @@ class EstadisticasAceptacionTest {
          *       AND debe ayudar a priorizar trabajo
          */
         
-        mockMvc.perform(get("/api/estadisticas/estado/PENDIENTE"))
+        mockMvc.perform(get("/api/estadisticas/estado-solicitudes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -129,7 +129,7 @@ class EstadisticasAceptacionTest {
          *       AND debe sugerir nombre de archivo descriptivo
          */
         
-        mockMvc.perform(get("/api/estadisticas/export/pdf"))
+        mockMvc.perform(get("/api/estadisticas/reportes").param("formato", "pdf"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
     }
@@ -153,7 +153,7 @@ class EstadisticasAceptacionTest {
          *       AND debe permitir análisis posterior con fórmulas/pivotes
          */
         
-        mockMvc.perform(get("/api/estadisticas/export/excel"))
+        mockMvc.perform(get("/api/estadisticas/reportes").param("formato", "excel"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(
                     MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")));
@@ -197,7 +197,7 @@ class EstadisticasAceptacionTest {
          *       AND debe mostrar fortalezas y áreas de mejora
          */
         
-        mockMvc.perform(get("/api/estadisticas/programa/1"))
+        mockMvc.perform(get("/api/estadisticas/por-programa"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -218,7 +218,7 @@ class EstadisticasAceptacionTest {
          *       AND debe proporcionar insights para planificación
          */
         
-        mockMvc.perform(get("/api/estadisticas/tendencias"))
+        mockMvc.perform(get("/api/estadisticas/tendencias-comparativas"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -312,19 +312,19 @@ class EstadisticasAceptacionTest {
                 .andExpect(status().isOk());
 
         // Paso 2: Programa específico
-        mockMvc.perform(get("/api/estadisticas/programa/1"))
+        mockMvc.perform(get("/api/estadisticas/por-programa"))
                 .andExpect(status().isOk());
 
         // Paso 3: Proceso con más solicitudes
-        mockMvc.perform(get("/api/estadisticas/proceso/PAZ_Y_SALVO"))
+        mockMvc.perform(get("/api/estadisticas/estadisticas-por-proceso"))
                 .andExpect(status().isOk());
 
         // Paso 4: Tendencias
-        mockMvc.perform(get("/api/estadisticas/tendencias"))
+        mockMvc.perform(get("/api/estadisticas/tendencias-comparativas"))
                 .andExpect(status().isOk());
 
         // Paso 5: Exportar reporte
-        mockMvc.perform(get("/api/estadisticas/export/pdf"))
+        mockMvc.perform(get("/api/estadisticas/reportes").param("formato", "pdf"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
     }

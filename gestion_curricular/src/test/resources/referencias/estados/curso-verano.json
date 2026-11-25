@@ -1,0 +1,1026 @@
+{
+  "sin lista" : {
+    "dominio" : {
+      "estadoActual" : "Sin_Estado",
+      "validar" : {
+        "Borrador" : "permitido",
+        "Abierto" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Sin Estado' solo se puede cambiar a 'Borrador'"
+        },
+        "Publicado" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Sin Estado' solo se puede cambiar a 'Borrador'"
+        },
+        "Preinscripcion" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Sin Estado' solo se puede cambiar a 'Borrador'"
+        },
+        "Inscripcion" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Sin Estado' solo se puede cambiar a 'Borrador'"
+        },
+        "Cerrado" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Sin Estado' solo se puede cambiar a 'Borrador'"
+        }
+      }
+    },
+    "casosDeUso" : {
+      "listarVisibles" : 0,
+      "periodosConCursosVisibles" : [ ],
+      "crearPreinscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo preinscripciones (estado actual: sin estado, se requiere: Preinscripcion)"
+      },
+      "crearInscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo inscripciones (estado actual: sin estado, se requiere: Inscripcion)"
+      }
+    },
+    "http" : {
+      "cursosPreinscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "cursosInscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "dashboard" : {
+        "status" : 200,
+        "body" : {
+          "cursosActivos" : 0,
+          "totalCursos" : 1,
+          "totalPreinscripciones" : 0,
+          "cursosGestionados" : 0,
+          "totalInscripciones" : 0,
+          "porcentajeProgreso" : 0
+        }
+      },
+      "seguimientoPreinscripciones" : [ {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Enviado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 7,
+        "curso" : "Curso no disponible",
+        "estadoCurso" : "No disponible",
+        "id" : 40,
+        "cursoId" : 5
+      } ]
+    }
+  },
+  "[]" : {
+    "dominio" : {
+      "estadoActual" : "Sin_Estado",
+      "validar" : {
+        "Borrador" : "permitido",
+        "Abierto" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Sin Estado' solo se puede cambiar a 'Borrador'"
+        },
+        "Publicado" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Sin Estado' solo se puede cambiar a 'Borrador'"
+        },
+        "Preinscripcion" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Sin Estado' solo se puede cambiar a 'Borrador'"
+        },
+        "Inscripcion" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Sin Estado' solo se puede cambiar a 'Borrador'"
+        },
+        "Cerrado" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Sin Estado' solo se puede cambiar a 'Borrador'"
+        }
+      }
+    },
+    "casosDeUso" : {
+      "listarVisibles" : 0,
+      "periodosConCursosVisibles" : [ ],
+      "crearPreinscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo preinscripciones (estado actual: sin estado, se requiere: Preinscripcion)"
+      },
+      "crearInscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo inscripciones (estado actual: sin estado, se requiere: Inscripcion)"
+      }
+    },
+    "http" : {
+      "cursosPreinscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "cursosInscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "dashboard" : {
+        "status" : 200,
+        "body" : {
+          "cursosActivos" : 0,
+          "totalCursos" : 1,
+          "totalPreinscripciones" : 0,
+          "cursosGestionados" : 0,
+          "totalInscripciones" : 0,
+          "porcentajeProgreso" : 0
+        }
+      },
+      "seguimientoPreinscripciones" : [ {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Enviado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 7,
+        "curso" : "Curso no disponible",
+        "estadoCurso" : "No disponible",
+        "id" : 40,
+        "cursoId" : 5
+      } ]
+    }
+  },
+  "[null]" : {
+    "dominio" : {
+      "estadoActual" : null,
+      "validar" : {
+        "Borrador" : {
+          "excepcion" : "NullPointerException",
+          "mensaje" : "Cannot invoke \"String.equals(Object)\" because \"actual\" is null"
+        },
+        "Abierto" : {
+          "excepcion" : "NullPointerException",
+          "mensaje" : "Cannot invoke \"String.equals(Object)\" because \"actual\" is null"
+        },
+        "Publicado" : {
+          "excepcion" : "NullPointerException",
+          "mensaje" : "Cannot invoke \"String.equals(Object)\" because \"actual\" is null"
+        },
+        "Preinscripcion" : {
+          "excepcion" : "NullPointerException",
+          "mensaje" : "Cannot invoke \"String.equals(Object)\" because \"actual\" is null"
+        },
+        "Inscripcion" : {
+          "excepcion" : "NullPointerException",
+          "mensaje" : "Cannot invoke \"String.equals(Object)\" because \"actual\" is null"
+        },
+        "Cerrado" : {
+          "excepcion" : "NullPointerException",
+          "mensaje" : "Cannot invoke \"String.equals(Object)\" because \"actual\" is null"
+        }
+      }
+    },
+    "casosDeUso" : {
+      "listarVisibles" : 0,
+      "periodosConCursosVisibles" : [ ],
+      "crearPreinscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo preinscripciones (estado actual: sin estado, se requiere: Preinscripcion)"
+      },
+      "crearInscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo inscripciones (estado actual: sin estado, se requiere: Inscripcion)"
+      }
+    },
+    "http" : {
+      "cursosPreinscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "cursosInscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "dashboard" : {
+        "status" : 200,
+        "body" : {
+          "cursosActivos" : 0,
+          "totalCursos" : 1,
+          "totalPreinscripciones" : 0,
+          "cursosGestionados" : 1,
+          "totalInscripciones" : 0,
+          "porcentajeProgreso" : 100
+        }
+      },
+      "seguimientoPreinscripciones" : [ {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Enviado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 7,
+        "curso" : "Curso no disponible",
+        "estadoCurso" : null,
+        "id" : 40,
+        "cursoId" : 5
+      } ]
+    }
+  },
+  "[Borrador]" : {
+    "dominio" : {
+      "estadoActual" : "Borrador",
+      "validar" : {
+        "Borrador" : "permitido",
+        "Abierto" : "permitido",
+        "Publicado" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Borrador' solo se puede cambiar a 'Abierto'"
+        },
+        "Preinscripcion" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Borrador' solo se puede cambiar a 'Abierto'"
+        },
+        "Inscripcion" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Borrador' solo se puede cambiar a 'Abierto'"
+        },
+        "Cerrado" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Borrador' solo se puede cambiar a 'Abierto'"
+        }
+      }
+    },
+    "casosDeUso" : {
+      "listarVisibles" : 0,
+      "periodosConCursosVisibles" : [ ],
+      "crearPreinscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo preinscripciones (estado actual: Borrador, se requiere: Preinscripcion)"
+      },
+      "crearInscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo inscripciones (estado actual: Borrador, se requiere: Inscripcion)"
+      }
+    },
+    "http" : {
+      "cursosPreinscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "cursosInscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "dashboard" : {
+        "status" : 200,
+        "body" : {
+          "cursosActivos" : 0,
+          "totalCursos" : 1,
+          "totalPreinscripciones" : 0,
+          "cursosGestionados" : 1,
+          "totalInscripciones" : 0,
+          "porcentajeProgreso" : 100
+        }
+      },
+      "seguimientoPreinscripciones" : [ {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Enviado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 7,
+        "curso" : "Curso no disponible",
+        "estadoCurso" : "Borrador",
+        "id" : 40,
+        "cursoId" : 5
+      } ]
+    }
+  },
+  "[Abierto]" : {
+    "dominio" : {
+      "estadoActual" : "Abierto",
+      "validar" : {
+        "Borrador" : "permitido",
+        "Abierto" : "permitido",
+        "Publicado" : "permitido",
+        "Preinscripcion" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Abierto' solo se puede cambiar a 'Publicado' o retroceder a 'Borrador'"
+        },
+        "Inscripcion" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Abierto' solo se puede cambiar a 'Publicado' o retroceder a 'Borrador'"
+        },
+        "Cerrado" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Abierto' solo se puede cambiar a 'Publicado' o retroceder a 'Borrador'"
+        }
+      }
+    },
+    "casosDeUso" : {
+      "listarVisibles" : 0,
+      "periodosConCursosVisibles" : [ ],
+      "crearPreinscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo preinscripciones (estado actual: Abierto, se requiere: Preinscripcion)"
+      },
+      "crearInscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo inscripciones (estado actual: Abierto, se requiere: Inscripcion)"
+      }
+    },
+    "http" : {
+      "cursosPreinscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "cursosInscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "dashboard" : {
+        "status" : 200,
+        "body" : {
+          "cursosActivos" : 0,
+          "totalCursos" : 1,
+          "totalPreinscripciones" : 0,
+          "cursosGestionados" : 1,
+          "totalInscripciones" : 0,
+          "porcentajeProgreso" : 100
+        }
+      },
+      "seguimientoPreinscripciones" : [ {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Enviado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 7,
+        "curso" : "Curso no disponible",
+        "estadoCurso" : "Abierto",
+        "id" : 40,
+        "cursoId" : 5
+      } ]
+    }
+  },
+  "[Publicado]" : {
+    "dominio" : {
+      "estadoActual" : "Publicado",
+      "validar" : {
+        "Borrador" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Publicado' solo se puede cambiar a 'Preinscripcion' o retroceder a 'Abierto'"
+        },
+        "Abierto" : "permitido",
+        "Publicado" : "permitido",
+        "Preinscripcion" : "permitido",
+        "Inscripcion" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Publicado' solo se puede cambiar a 'Preinscripcion' o retroceder a 'Abierto'"
+        },
+        "Cerrado" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Publicado' solo se puede cambiar a 'Preinscripcion' o retroceder a 'Abierto'"
+        }
+      }
+    },
+    "casosDeUso" : {
+      "listarVisibles" : 1,
+      "periodosConCursosVisibles" : [ "2025-1" ],
+      "crearPreinscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo preinscripciones (estado actual: Publicado, se requiere: Preinscripcion)"
+      },
+      "crearInscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo inscripciones (estado actual: Publicado, se requiere: Inscripcion)"
+      }
+    },
+    "http" : {
+      "cursosPreinscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "cursosInscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "dashboard" : {
+        "status" : 200,
+        "body" : {
+          "cursosActivos" : 1,
+          "totalCursos" : 1,
+          "totalPreinscripciones" : 0,
+          "cursosGestionados" : 1,
+          "totalInscripciones" : 0,
+          "porcentajeProgreso" : 100
+        }
+      },
+      "seguimientoPreinscripciones" : [ {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Enviado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 7,
+        "curso" : "Curso no disponible",
+        "estadoCurso" : "Publicado",
+        "id" : 40,
+        "cursoId" : 5
+      } ]
+    }
+  },
+  "[Preinscripcion]" : {
+    "dominio" : {
+      "estadoActual" : "Preinscripcion",
+      "validar" : {
+        "Borrador" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Preinscripcion' solo se puede cambiar a 'Inscripcion', 'Cerrado' o retroceder a 'Publicado'"
+        },
+        "Abierto" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Preinscripcion' solo se puede cambiar a 'Inscripcion', 'Cerrado' o retroceder a 'Publicado'"
+        },
+        "Publicado" : "permitido",
+        "Preinscripcion" : "permitido",
+        "Inscripcion" : "permitido",
+        "Cerrado" : "permitido"
+      }
+    },
+    "casosDeUso" : {
+      "listarVisibles" : 1,
+      "periodosConCursosVisibles" : [ "2025-1" ],
+      "crearPreinscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "Debe seleccionar una condición de solicitud válida"
+      },
+      "crearInscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo inscripciones (estado actual: Preinscripcion, se requiere: Inscripcion)"
+      }
+    },
+    "http" : {
+      "cursosPreinscripcion" : {
+        "status" : 200,
+        "ids" : [ 5 ]
+      },
+      "cursosInscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "dashboard" : {
+        "status" : 200,
+        "body" : {
+          "cursosActivos" : 1,
+          "totalCursos" : 1,
+          "totalPreinscripciones" : 0,
+          "cursosGestionados" : 1,
+          "totalInscripciones" : 0,
+          "porcentajeProgreso" : 100
+        }
+      },
+      "seguimientoPreinscripciones" : [ {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Enviado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 7,
+        "curso" : "Curso no disponible",
+        "estadoCurso" : "Preinscripcion",
+        "id" : 40,
+        "cursoId" : 5
+      } ]
+    }
+  },
+  "[Inscripcion]" : {
+    "dominio" : {
+      "estadoActual" : "Inscripcion",
+      "validar" : {
+        "Borrador" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Inscripcion' solo se puede cambiar a 'Cerrado' o retroceder a 'Preinscripcion'"
+        },
+        "Abierto" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Inscripcion' solo se puede cambiar a 'Cerrado' o retroceder a 'Preinscripcion'"
+        },
+        "Publicado" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Inscripcion' solo se puede cambiar a 'Cerrado' o retroceder a 'Preinscripcion'"
+        },
+        "Preinscripcion" : "permitido",
+        "Inscripcion" : "permitido",
+        "Cerrado" : "permitido"
+      }
+    },
+    "casosDeUso" : {
+      "listarVisibles" : 1,
+      "periodosConCursosVisibles" : [ "2025-1" ],
+      "crearPreinscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo preinscripciones (estado actual: Inscripcion, se requiere: Preinscripcion)"
+      },
+      "crearInscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "Debe seleccionar una condición de solicitud válida"
+      }
+    },
+    "http" : {
+      "cursosPreinscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "cursosInscripcion" : {
+        "status" : 200,
+        "ids" : [ 5 ]
+      },
+      "dashboard" : {
+        "status" : 200,
+        "body" : {
+          "cursosActivos" : 1,
+          "totalCursos" : 1,
+          "totalPreinscripciones" : 0,
+          "cursosGestionados" : 1,
+          "totalInscripciones" : 0,
+          "porcentajeProgreso" : 100
+        }
+      },
+      "seguimientoPreinscripciones" : [ {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Enviado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 7,
+        "curso" : "Curso no disponible",
+        "estadoCurso" : "Inscripcion",
+        "id" : 40,
+        "cursoId" : 5
+      } ]
+    }
+  },
+  "[Cerrado]" : {
+    "dominio" : {
+      "estadoActual" : "Cerrado",
+      "validar" : {
+        "Borrador" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "El curso esta cerrado y no se puede cambiar su estado"
+        },
+        "Abierto" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "El curso esta cerrado y no se puede cambiar su estado"
+        },
+        "Publicado" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "El curso esta cerrado y no se puede cambiar su estado"
+        },
+        "Preinscripcion" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "El curso esta cerrado y no se puede cambiar su estado"
+        },
+        "Inscripcion" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "El curso esta cerrado y no se puede cambiar su estado"
+        },
+        "Cerrado" : "permitido"
+      }
+    },
+    "casosDeUso" : {
+      "listarVisibles" : 0,
+      "periodosConCursosVisibles" : [ ],
+      "crearPreinscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo preinscripciones (estado actual: Cerrado, se requiere: Preinscripcion)"
+      },
+      "crearInscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo inscripciones (estado actual: Cerrado, se requiere: Inscripcion)"
+      }
+    },
+    "http" : {
+      "cursosPreinscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "cursosInscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "dashboard" : {
+        "status" : 200,
+        "body" : {
+          "cursosActivos" : 0,
+          "totalCursos" : 1,
+          "totalPreinscripciones" : 0,
+          "cursosGestionados" : 1,
+          "totalInscripciones" : 0,
+          "porcentajeProgreso" : 100
+        }
+      },
+      "seguimientoPreinscripciones" : [ {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Enviado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 7,
+        "curso" : "Curso no disponible",
+        "estadoCurso" : "Cerrado",
+        "id" : 40,
+        "cursoId" : 5
+      } ]
+    }
+  },
+  "[preinscripcion]" : {
+    "dominio" : {
+      "estadoActual" : "preinscripcion",
+      "validar" : {
+        "Borrador" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Estado actual 'preinscripcion' no reconocido"
+        },
+        "Abierto" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Estado actual 'preinscripcion' no reconocido"
+        },
+        "Publicado" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Estado actual 'preinscripcion' no reconocido"
+        },
+        "Preinscripcion" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Estado actual 'preinscripcion' no reconocido"
+        },
+        "Inscripcion" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Estado actual 'preinscripcion' no reconocido"
+        },
+        "Cerrado" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Estado actual 'preinscripcion' no reconocido"
+        }
+      }
+    },
+    "casosDeUso" : {
+      "listarVisibles" : 0,
+      "periodosConCursosVisibles" : [ ],
+      "crearPreinscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo preinscripciones (estado actual: preinscripcion, se requiere: Preinscripcion)"
+      },
+      "crearInscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo inscripciones (estado actual: preinscripcion, se requiere: Inscripcion)"
+      }
+    },
+    "http" : {
+      "cursosPreinscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "cursosInscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "dashboard" : {
+        "status" : 200,
+        "body" : {
+          "cursosActivos" : 0,
+          "totalCursos" : 1,
+          "totalPreinscripciones" : 0,
+          "cursosGestionados" : 1,
+          "totalInscripciones" : 0,
+          "porcentajeProgreso" : 100
+        }
+      },
+      "seguimientoPreinscripciones" : [ {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Enviado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 7,
+        "curso" : "Curso no disponible",
+        "estadoCurso" : "preinscripcion",
+        "id" : 40,
+        "cursoId" : 5
+      } ]
+    }
+  },
+  "[Preinscripcion, Inscripcion]" : {
+    "dominio" : {
+      "estadoActual" : "Inscripcion",
+      "validar" : {
+        "Borrador" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Inscripcion' solo se puede cambiar a 'Cerrado' o retroceder a 'Preinscripcion'"
+        },
+        "Abierto" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Inscripcion' solo se puede cambiar a 'Cerrado' o retroceder a 'Preinscripcion'"
+        },
+        "Publicado" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Inscripcion' solo se puede cambiar a 'Cerrado' o retroceder a 'Preinscripcion'"
+        },
+        "Preinscripcion" : "permitido",
+        "Inscripcion" : "permitido",
+        "Cerrado" : "permitido"
+      }
+    },
+    "casosDeUso" : {
+      "listarVisibles" : 1,
+      "periodosConCursosVisibles" : [ "2025-1" ],
+      "crearPreinscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo preinscripciones (estado actual: Inscripcion, se requiere: Preinscripcion)"
+      },
+      "crearInscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "Debe seleccionar una condición de solicitud válida"
+      }
+    },
+    "http" : {
+      "cursosPreinscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "cursosInscripcion" : {
+        "status" : 200,
+        "ids" : [ 5 ]
+      },
+      "dashboard" : {
+        "status" : 200,
+        "body" : {
+          "cursosActivos" : 1,
+          "totalCursos" : 1,
+          "totalPreinscripciones" : 0,
+          "cursosGestionados" : 1,
+          "totalInscripciones" : 0,
+          "porcentajeProgreso" : 100
+        }
+      },
+      "seguimientoPreinscripciones" : [ {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Enviado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 7,
+        "curso" : "Curso no disponible",
+        "estadoCurso" : "Inscripcion",
+        "id" : 40,
+        "cursoId" : 5
+      } ]
+    }
+  },
+  "[Inscripcion, Preinscripcion]" : {
+    "dominio" : {
+      "estadoActual" : "Preinscripcion",
+      "validar" : {
+        "Borrador" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Preinscripcion' solo se puede cambiar a 'Inscripcion', 'Cerrado' o retroceder a 'Publicado'"
+        },
+        "Abierto" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Preinscripcion' solo se puede cambiar a 'Inscripcion', 'Cerrado' o retroceder a 'Publicado'"
+        },
+        "Publicado" : "permitido",
+        "Preinscripcion" : "permitido",
+        "Inscripcion" : "permitido",
+        "Cerrado" : "permitido"
+      }
+    },
+    "casosDeUso" : {
+      "listarVisibles" : 1,
+      "periodosConCursosVisibles" : [ "2025-1" ],
+      "crearPreinscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "Debe seleccionar una condición de solicitud válida"
+      },
+      "crearInscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo inscripciones (estado actual: Preinscripcion, se requiere: Inscripcion)"
+      }
+    },
+    "http" : {
+      "cursosPreinscripcion" : {
+        "status" : 200,
+        "ids" : [ 5 ]
+      },
+      "cursosInscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "dashboard" : {
+        "status" : 200,
+        "body" : {
+          "cursosActivos" : 1,
+          "totalCursos" : 1,
+          "totalPreinscripciones" : 0,
+          "cursosGestionados" : 1,
+          "totalInscripciones" : 0,
+          "porcentajeProgreso" : 100
+        }
+      },
+      "seguimientoPreinscripciones" : [ {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Enviado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 7,
+        "curso" : "Curso no disponible",
+        "estadoCurso" : "Preinscripcion",
+        "id" : 40,
+        "cursoId" : 5
+      } ]
+    }
+  },
+  "[Publicado, null]" : {
+    "dominio" : {
+      "estadoActual" : null,
+      "validar" : {
+        "Borrador" : {
+          "excepcion" : "NullPointerException",
+          "mensaje" : "Cannot invoke \"String.equals(Object)\" because \"actual\" is null"
+        },
+        "Abierto" : {
+          "excepcion" : "NullPointerException",
+          "mensaje" : "Cannot invoke \"String.equals(Object)\" because \"actual\" is null"
+        },
+        "Publicado" : {
+          "excepcion" : "NullPointerException",
+          "mensaje" : "Cannot invoke \"String.equals(Object)\" because \"actual\" is null"
+        },
+        "Preinscripcion" : {
+          "excepcion" : "NullPointerException",
+          "mensaje" : "Cannot invoke \"String.equals(Object)\" because \"actual\" is null"
+        },
+        "Inscripcion" : {
+          "excepcion" : "NullPointerException",
+          "mensaje" : "Cannot invoke \"String.equals(Object)\" because \"actual\" is null"
+        },
+        "Cerrado" : {
+          "excepcion" : "NullPointerException",
+          "mensaje" : "Cannot invoke \"String.equals(Object)\" because \"actual\" is null"
+        }
+      }
+    },
+    "casosDeUso" : {
+      "listarVisibles" : 0,
+      "periodosConCursosVisibles" : [ ],
+      "crearPreinscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo preinscripciones (estado actual: sin estado, se requiere: Preinscripcion)"
+      },
+      "crearInscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo inscripciones (estado actual: sin estado, se requiere: Inscripcion)"
+      }
+    },
+    "http" : {
+      "cursosPreinscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "cursosInscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "dashboard" : {
+        "status" : 200,
+        "body" : {
+          "cursosActivos" : 0,
+          "totalCursos" : 1,
+          "totalPreinscripciones" : 0,
+          "cursosGestionados" : 1,
+          "totalInscripciones" : 0,
+          "porcentajeProgreso" : 100
+        }
+      },
+      "seguimientoPreinscripciones" : [ {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Enviado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 7,
+        "curso" : "Curso no disponible",
+        "estadoCurso" : null,
+        "id" : 40,
+        "cursoId" : 5
+      } ]
+    }
+  },
+  "[null, Publicado]" : {
+    "dominio" : {
+      "estadoActual" : "Publicado",
+      "validar" : {
+        "Borrador" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Publicado' solo se puede cambiar a 'Preinscripcion' o retroceder a 'Abierto'"
+        },
+        "Abierto" : "permitido",
+        "Publicado" : "permitido",
+        "Preinscripcion" : "permitido",
+        "Inscripcion" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Publicado' solo se puede cambiar a 'Preinscripcion' o retroceder a 'Abierto'"
+        },
+        "Cerrado" : {
+          "excepcion" : "TransicionInvalidaException",
+          "mensaje" : "Desde 'Publicado' solo se puede cambiar a 'Preinscripcion' o retroceder a 'Abierto'"
+        }
+      }
+    },
+    "casosDeUso" : {
+      "listarVisibles" : 1,
+      "periodosConCursosVisibles" : [ "2025-1" ],
+      "crearPreinscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo preinscripciones (estado actual: Publicado, se requiere: Preinscripcion)"
+      },
+      "crearInscripcion" : {
+        "excepcion" : "ReglaNegocioExcepcion",
+        "mensaje" : "El curso no está recibiendo inscripciones (estado actual: Publicado, se requiere: Inscripcion)"
+      }
+    },
+    "http" : {
+      "cursosPreinscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "cursosInscripcion" : {
+        "status" : 200,
+        "ids" : [ ]
+      },
+      "dashboard" : {
+        "status" : 200,
+        "body" : {
+          "cursosActivos" : 1,
+          "totalCursos" : 1,
+          "totalPreinscripciones" : 0,
+          "cursosGestionados" : 1,
+          "totalInscripciones" : 0,
+          "porcentajeProgreso" : 100
+        }
+      },
+      "seguimientoPreinscripciones" : [ {
+        "accionesDisponibles" : [ ],
+        "fecha" : null,
+        "estado" : "Enviado",
+        "tipo" : "Preinscripcion",
+        "estudianteId" : 7,
+        "curso" : "Curso no disponible",
+        "estadoCurso" : "Publicado",
+        "id" : 40,
+        "cursoId" : 5
+      } ]
+    }
+  },
+  "estaCompleto" : [ {
+    "variante" : "[true, true, 5, 221]",
+    "estaCompleto" : true,
+    "aAbiertoDesdeBorrador" : "permitido"
+  }, {
+    "variante" : "[false, true, 5, 221]",
+    "estaCompleto" : false,
+    "aAbiertoDesdeBorrador" : {
+      "excepcion" : "TransicionInvalidaException",
+      "mensaje" : "El curso debe tener materia, docente y cupo estimado para pasar a 'Abierto'"
+    }
+  }, {
+    "variante" : "[true, false, 5, 221]",
+    "estaCompleto" : false,
+    "aAbiertoDesdeBorrador" : {
+      "excepcion" : "TransicionInvalidaException",
+      "mensaje" : "El curso debe tener materia, docente y cupo estimado para pasar a 'Abierto'"
+    }
+  }, {
+    "variante" : "[true, true, null, 221]",
+    "estaCompleto" : false,
+    "aAbiertoDesdeBorrador" : {
+      "excepcion" : "TransicionInvalidaException",
+      "mensaje" : "El curso debe tener materia, docente y cupo estimado para pasar a 'Abierto'"
+    }
+  }, {
+    "variante" : "[true, true, 0, 221]",
+    "estaCompleto" : false,
+    "aAbiertoDesdeBorrador" : {
+      "excepcion" : "TransicionInvalidaException",
+      "mensaje" : "El curso debe tener materia, docente y cupo estimado para pasar a 'Abierto'"
+    }
+  }, {
+    "variante" : "[true, true, -1, 221]",
+    "estaCompleto" : false,
+    "aAbiertoDesdeBorrador" : {
+      "excepcion" : "TransicionInvalidaException",
+      "mensaje" : "El curso debe tener materia, docente y cupo estimado para pasar a 'Abierto'"
+    }
+  }, {
+    "variante" : "[true, true, 5, null]",
+    "estaCompleto" : false,
+    "aAbiertoDesdeBorrador" : {
+      "excepcion" : "TransicionInvalidaException",
+      "mensaje" : "El curso debe tener materia, docente y cupo estimado para pasar a 'Abierto'"
+    }
+  }, {
+    "variante" : "[true, true, 5,   ]",
+    "estaCompleto" : false,
+    "aAbiertoDesdeBorrador" : {
+      "excepcion" : "TransicionInvalidaException",
+      "mensaje" : "El curso debe tener materia, docente y cupo estimado para pasar a 'Abierto'"
+    }
+  }, {
+    "variante" : "[true, true, 1,  a ]",
+    "estaCompleto" : true,
+    "aAbiertoDesdeBorrador" : "permitido"
+  } ]
+}

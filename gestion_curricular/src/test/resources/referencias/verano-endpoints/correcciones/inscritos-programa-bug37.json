@@ -1,0 +1,17 @@
+{
+  "/listarPorFiltros idPrograma=1" : [
+    4
+  ],
+  "/inscrito rol" : {
+    "@tipo" : "Rol",
+    "id_rol" : 1,
+    "nombre" : "ESTUDIANTE",
+    "usuarios" : null
+  },
+  "/inscrito programa" : {
+    "@tipo" : "Programa",
+    "codigo" : "SIS",
+    "id_programa" : 1,
+    "nombre_programa" : "Ingeniería de Sistemas"
+  }
+}

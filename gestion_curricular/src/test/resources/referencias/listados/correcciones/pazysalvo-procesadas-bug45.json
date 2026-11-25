@@ -1,0 +1,79 @@
+{
+  "GET /api/solicitudes-pazysalvo [staff.sin.programa]": [
+    "HTTP 400"
+  ],
+  "GET /api/solicitudes-pazysalvo?bandeja=procesadas [staff.sin.programa]": [
+    "HTTP 400"
+  ],
+  "GET /api/solicitudes-pazysalvo?rol=coordinador&bandeja=procesadas [coord.listados]": [
+    "A/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "A/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA"
+  ],
+  "GET /api/solicitudes-pazysalvo?rol=coordinador&bandeja=procesadas&periodoAcademico=2090-1 [coord.listados]": [
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA"
+  ],
+  "GET /api/solicitudes-pazysalvo?rol=coordinador&bandeja=procesadas&periodoAcademico=2090-1 [staff.sin.programa]": [
+    "A/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "A/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA",
+    "B/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA",
+    "B/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR"
+  ],
+  "GET /api/solicitudes-pazysalvo?rol=funcionario [staff.sin.programa]": [
+    "HTTP 400"
+  ],
+  "GET /api/solicitudes-pazysalvo?rol=funcionario&bandeja=otra [staff.sin.programa]": [
+    "HTTP 400"
+  ],
+  "GET /api/solicitudes-pazysalvo?rol=funcionario&bandeja=procesadas [staff.sin.programa]": [
+    "A/actual: Enviada>APROBADA_FUNCIONARIO",
+    "A/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "A/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA",
+    "A/actual: Enviada>APROBADA_FUNCIONARIO>RECHAZADA",
+    "B/actual: Enviada>APROBADA_FUNCIONARIO",
+    "B/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA",
+    "B/2090-1: Enviada>APROBADA_FUNCIONARIO",
+    "B/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR"
+  ],
+  "GET /api/solicitudes-pazysalvo?rol=funcionario&bandeja=procesadas&periodoAcademico=2090-1 [staff.sin.programa]": [
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA",
+    "B/2090-1: Enviada>APROBADA_FUNCIONARIO",
+    "B/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR"
+  ],
+  "GET /api/solicitudes-pazysalvo?rol=funcionario&bandeja=procesadas&periodoAcademico=todos [staff.sin.programa]": [
+    "A/actual: Enviada>APROBADA_FUNCIONARIO",
+    "A/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "A/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA",
+    "A/actual: Enviada>APROBADA_FUNCIONARIO>RECHAZADA",
+    "B/actual: Enviada>APROBADA_FUNCIONARIO",
+    "B/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA",
+    "B/2090-1: Enviada>APROBADA_FUNCIONARIO",
+    "B/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR"
+  ],
+  "GET /api/solicitudes-pazysalvo?rol=otro&bandeja=procesadas [staff.sin.programa]": [
+    "HTTP 400"
+  ],
+  "GET /api/solicitudes-pazysalvo?rol=secretaria&bandeja=procesadas [staff.sin.programa]": [
+    "A/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA"
+  ],
+  "GET /api/solicitudes-pazysalvo?rol=secretaria&bandeja=procesadas&periodoAcademico=2090-1 [staff.sin.programa]": [
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA"
+  ],
+  "GET /api/solicitudes-pazysalvo?rol=secretaria&bandeja=procesadas&periodoAcademico=todos [staff.sin.programa]": [
+    "A/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA",
+    "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA"
+  ]
+}
