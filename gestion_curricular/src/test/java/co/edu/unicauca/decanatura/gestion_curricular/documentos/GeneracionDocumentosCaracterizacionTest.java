@@ -40,6 +40,10 @@ import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 class GeneracionDocumentosCaracterizacionTest {
     private static final ObjectMapper JSON = new ObjectMapper();
     private static final Path REFERENCIA = Path.of("src/test/resources/referencias/documentos/generacion.json");
+    private static final String[] DIAS_EN_LETRAS = { "", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete",
+            "ocho", "nueve", "diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete",
+            "dieciocho", "diecinueve", "veinte", "veintiún", "veintidós", "veintitrés", "veinticuatro",
+            "veinticinco", "veintiséis", "veintisiete", "veintiocho", "veintinueve", "treinta", "treinta y un" };
     @Autowired MockMvc mvc;
     @MockBean GestionarSolicitudHomologacionCUIntPort homologacion;
     @MockBean GestionarSolicitudReingresoCUIntPort reingreso;
@@ -98,8 +102,10 @@ class GeneracionDocumentosCaracterizacionTest {
             Files.writeString(REFERENCIA, JSON.writerWithDefaultPrettyPrinter().writeValueAsString(respuestas));
         }
         assertThat(normalizarFechasPartidas(respuestas, LocalDate.now()))
-                .isEqualTo(normalizarFechasPartidas(Correcciones.aplicar(JSON.readTree(Files.readString(REFERENCIA)),
-                        "documentos/correcciones/generacion-est7.json"),
+                .isEqualTo(normalizarFechasPartidas(Correcciones.aplicar(Correcciones.aplicar(
+                        JSON.readTree(Files.readString(REFERENCIA)), "documentos/correcciones/generacion-est7.json"),
+                        // El periodo de la resolución de reingreso y el día de firma en letras
+                        "documentos/correcciones/generacion-oficios.json"),
                         LocalDate.of(2026, 11, 13))); // Fecha en que se obtuvo la referencia previa al refactor.
     }
 
@@ -107,9 +113,19 @@ class GeneracionDocumentosCaracterizacionTest {
         ObjectNode copia = datos.deepCopy();
         String diaMes = fechaGeneracion.getDayOfMonth() + " de "
                 + fechaGeneracion.format(DateTimeFormatter.ofPattern("MMMM", new Locale("es", "ES")));
+        // El día de firma en letras, solo delante de la fecha de generación completa
+        String firma = "a los " + DIAS_EN_LETRAS[fechaGeneracion.getDayOfMonth()] + " ("
+                + fechaGeneracion.getDayOfMonth() + ") días del mes de "
+                + fechaGeneracion.format(DateTimeFormatter.ofPattern("MMMM", new Locale("es", "ES")));
+        String firmaNormalizada = "a los <día-letras> (" + fechaGeneracion.getDayOfMonth() + ") días del mes de "
+                + fechaGeneracion.format(DateTimeFormatter.ofPattern("MMMM", new Locale("es", "ES")));
         copia.elements().forEachRemaining(valor -> {
             if (valor.has("texto")) {
                 String texto = valor.get("texto").asText()
+                        .replace(firma + " de " + fechaGeneracion.getYear(),
+                                firmaNormalizada + " de " + fechaGeneracion.getYear())
+                        .replace(firma + " del año " + fechaGeneracion.getYear(),
+                                firmaNormalizada + " del año " + fechaGeneracion.getYear())
                         .replace("día " + diaMes + " del año en curso", "día <fecha-generacion> del año en curso")
                         .replace("del " + fechaGeneracion.getYear() + ", se notificó", "del <año-generacion>, se notificó")
                         .replace("(" + fechaGeneracion.getDayOfMonth() + ") días del mes de "

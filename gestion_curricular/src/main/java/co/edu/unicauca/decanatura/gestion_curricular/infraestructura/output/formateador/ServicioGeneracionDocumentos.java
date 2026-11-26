@@ -131,286 +131,171 @@ public class ServicioGeneracionDocumentos implements GenerarDocumentosIntPort {
         }
     }
 
+    /** Campos que siempre van en negrilla, aunque en la plantilla no lo estén. */
+    private static final Set<String> CAMPOS_EN_NEGRILLA = Set.of("CODIGO_ESTUDIANTE", "CEDULA_ESTUDIANTE",
+            "NOMBRE_ESTUDIANTE", "TITULO_PROFESIONAL", "TITULO_TRABAJO_GRADO", "DIRECTOR_TRABAJO_GRADO");
+
+    /** Un trozo de texto que va en su propio run, con o sin negrilla forzada. */
+    private record Trozo(String texto, boolean negrilla) {}
+
+    /**
+     * Reemplaza los campos [CLAVE] del párrafo sin tocar el resto: cada valor queda en el run donde estaba el
+     * campo y hereda su formato (letra, tamaño, negrilla, color). Un campo partido en varios runs se junta en el
+     * primero. Los campos de {@link #CAMPOS_EN_NEGRILLA} y las partes destacadas de TEXTO_TRABAJO_GRADO van en
+     * runs propios con negrilla; el texto que los rodea conserva el formato de la plantilla.
+     */
     private void reemplazarEnParrafo(XWPFParagraph paragraph, Map<String, String> replacements) {
-        String texto = paragraph.getText();
-        if (texto == null) {
-            texto = "";
-        }
-        
-        // Verificar si el párrafo contiene placeholders
-        boolean tienePlaceholders = false;
-        for (String key : replacements.keySet()) {
-            if (texto.contains("[" + key + "]")) {
-                tienePlaceholders = true;
-                break;
-            }
-        }
-        
-        if (!tienePlaceholders) {
-            return; // No hay placeholders que reemplazar
-        }
-        
-        // Preservar el formato original del párrafo
-        ParagraphAlignment alignment = paragraph.getAlignment();
-        
-        // Preservar formato de cada run individualmente
-        List<RunFormat> runFormats = new ArrayList<>();
-        for (XWPFRun run : paragraph.getRuns()) {
-            RunFormat format = new RunFormat();
-            format.isBold = run.isBold();
-            format.isItalic = run.isItalic();
-            format.fontFamily = run.getFontFamily() != null ? run.getFontFamily() : "Arial";
-            try {
-                Double fs = run.getFontSizeAsDouble();
-                if (fs != null && fs.intValue() > 0) {
-                    format.fontSize = fs.intValue();
-                } else {
-                    format.fontSize = 11;
+        int desde = 0;
+        while (true) {
+            String texto = textoDeRuns(paragraph);
+            String clave = null;
+            int inicio = -1;
+            for (String candidata : replacements.keySet()) {
+                int posicion = texto.indexOf("[" + candidata + "]", desde);
+                if (posicion >= 0 && (inicio < 0 || posicion < inicio)) {
+                    inicio = posicion;
+                    clave = candidata;
                 }
-            } catch (Exception e) {
-                format.fontSize = 11;
             }
-            format.text = run.getText(0);
-            runFormats.add(format);
-        }
-        
-        // Si no hay runs, crear uno por defecto sin negrilla
-        if (runFormats.isEmpty()) {
-            RunFormat defaultFormat = new RunFormat();
-            defaultFormat.isBold = false;
-            defaultFormat.isItalic = false;
-            defaultFormat.fontFamily = "Arial";
-            defaultFormat.fontSize = 11;
-            defaultFormat.text = texto;
-            runFormats.add(defaultFormat);
-        }
-        
-        // Reemplazar placeholders en el texto completo (usar replaceAll para todas las ocurrencias)
-        String textoCompleto = texto;
-        for (Map.Entry<String, String> entry : replacements.entrySet()) {
-            String placeholder = "[" + entry.getKey() + "]";
-            // Escapar caracteres especiales para regex si es necesario, pero como usamos replace simple, está bien
-            textoCompleto = textoCompleto.replace(placeholder, entry.getValue() != null ? entry.getValue() : "");
-        }
-        
-        // Limpiar todos los runs existentes
-        while (!paragraph.getRuns().isEmpty()) {
-            paragraph.removeRun(0);
-        }
-        
-        // Reconstruir el párrafo preservando el formato original
-        // Reemplazar solo los placeholders manteniendo el formato del texto alrededor
-        if (textoCompleto.equals(texto)) {
-            // Si no hubo cambios, mantener formato original
-            for (RunFormat format : runFormats) {
-                XWPFRun newRun = paragraph.createRun();
-                newRun.setText(format.text != null ? format.text : "");
-                newRun.setBold(format.isBold);
-                newRun.setItalic(format.isItalic);
-                newRun.setFontFamily(format.fontFamily);
-                newRun.setFontSize(format.fontSize);
+            if (clave == null) {
+                return;
             }
-        } else {
-            // Si hubo cambios, reconstruir preservando formato original
-            // Identificar qué placeholders estaban en negrilla y solo aplicar negrilla a esos valores
-            Map<String, Boolean> placeholderEnNegrilla = new HashMap<>();
-            for (RunFormat format : runFormats) {
-                if (format.isBold && format.text != null) {
-                    for (String key : replacements.keySet()) {
-                        String placeholder = "[" + key + "]";
-                        if (format.text.contains(placeholder)) {
-                            placeholderEnNegrilla.put(key, true);
+            String valor = replacements.get(clave) != null ? replacements.get(clave) : "";
+            reemplazarCampo(paragraph, inicio, ("[" + clave + "]").length(), trozos(clave, valor, replacements));
+            desde = inicio + valor.length();
+        }
+    }
+
+    /** Cómo se escribe el valor de un campo: un solo trozo, o varios con partes en negrilla. */
+    private static List<Trozo> trozos(String clave, String valor, Map<String, String> replacements) {
+        if ("TEXTO_TRABAJO_GRADO".equals(clave) && !valor.isEmpty()) {
+            // Solo el título (entre comillas) y el director van en negrilla
+            String titulo = "\"" + replacements.getOrDefault("TITULO_TRABAJO_GRADO", "") + "\"";
+            String director = replacements.getOrDefault("DIRECTOR_TRABAJO_GRADO", "");
+            int posTitulo = valor.indexOf(titulo);
+            int posDirector = posTitulo < 0 || director.isEmpty() ? -1
+                    : valor.indexOf(director, posTitulo + titulo.length());
+            if (posTitulo >= 0 && posDirector >= 0) {
+                return List.of(new Trozo(valor.substring(0, posTitulo), false),
+                        new Trozo(titulo, true),
+                        new Trozo(valor.substring(posTitulo + titulo.length(), posDirector), false),
+                        new Trozo(director, true),
+                        new Trozo(valor.substring(posDirector + director.length()), false));
+            }
+            return List.of(new Trozo(valor, false));
+        }
+        return List.of(new Trozo(valor, CAMPOS_EN_NEGRILLA.contains(clave)));
+    }
+
+    /** Pone los trozos en lugar de los {@code largo} caracteres que empiezan en {@code inicio}. */
+    private static void reemplazarCampo(XWPFParagraph paragraph, int inicio, int largo, List<Trozo> trozos) {
+        List<XWPFRun> runs = paragraph.getRuns();
+        int fin = inicio + largo;
+        int acumulado = 0;
+        int primero = -1;
+        int offsetPrimero = 0;
+        for (int i = 0; i < runs.size(); i++) {
+            String textoRun = textoDeRun(runs.get(i));
+            int finRun = acumulado + textoRun.length();
+            if (primero < 0 && inicio < finRun) {
+                primero = i;
+                offsetPrimero = inicio - acumulado;
+            }
+            if (primero >= 0) {
+                // Lo que el campo ocupa de este run se quita; el primero se queda con el campo entero
+                int desdeAqui = Math.max(inicio, acumulado) - acumulado;
+                int hastaAqui = Math.min(fin, finRun) - acumulado;
+                if (i == primero) {
+                    String campo = textoRun.substring(desdeAqui, hastaAqui);
+                    // Las partes del campo que siguen en otros runs se agregan aquí
+                    int resto = fin - finRun;
+                    String despues = textoRun.substring(hastaAqui);
+                    if (resto > 0) {
+                        StringBuilder completo = new StringBuilder(campo);
+                        int a = finRun;
+                        for (int j = i + 1; j < runs.size() && a < fin; j++) {
+                            String t = textoDeRun(runs.get(j));
+                            int toma = Math.min(t.length(), fin - a);
+                            completo.append(t, 0, toma);
+                            ponerTexto(runs.get(j), t.substring(toma));
+                            a += t.length();
                         }
+                        campo = completo.toString();
                     }
-                }
-            }
-            
-            // Forzar negrilla en campos específicos que siempre deben estar en negrilla
-            // Estos son campos clave que deben destacarse en el documento
-            placeholderEnNegrilla.put("CODIGO_ESTUDIANTE", true);
-            placeholderEnNegrilla.put("CEDULA_ESTUDIANTE", true);
-            placeholderEnNegrilla.put("NOMBRE_ESTUDIANTE", true);
-            placeholderEnNegrilla.put("TITULO_PROFESIONAL", true);
-            placeholderEnNegrilla.put("TITULO_TRABAJO_GRADO", true);
-            placeholderEnNegrilla.put("DIRECTOR_TRABAJO_GRADO", true);
-            // TEXTO_TRABAJO_GRADO NO debe estar en negrilla, solo las partes individuales (título y director)
-            
-            // Obtener formato base (del primer run sin negrilla o del primero disponible)
-            RunFormat formatoBase = null;
-            for (RunFormat format : runFormats) {
-                if (!format.isBold) {
-                    formatoBase = format;
+                    ponerTexto(runs.get(i), textoRun.substring(0, desdeAqui) + campo + despues);
                     break;
                 }
             }
-            if (formatoBase == null && !runFormats.isEmpty()) {
-                formatoBase = runFormats.get(0);
+            acumulado = finRun;
+        }
+        if (primero < 0) {
+            return;
+        }
+
+        // Ahora el campo entero está en el run "primero", desde offsetPrimero
+        XWPFRun run = paragraph.getRuns().get(primero);
+        String textoRun = textoDeRun(run);
+        String antes = textoRun.substring(0, offsetPrimero);
+        String despues = textoRun.substring(offsetPrimero + largo);
+        boolean hayNegrillaForzada = trozos.stream().anyMatch(Trozo::negrilla);
+        if (!hayNegrillaForzada) {
+            StringBuilder valor = new StringBuilder();
+            trozos.forEach(t -> valor.append(t.texto()));
+            ponerTexto(run, antes + valor + despues);
+            return;
+        }
+        // El valor va en runs propios con el formato del run original
+        ponerTexto(run, antes);
+        int posicion = primero + 1;
+        for (Trozo trozo : trozos) {
+            if (trozo.texto().isEmpty()) {
+                continue;
             }
-            if (formatoBase == null) {
-                formatoBase = new RunFormat();
-                formatoBase.isBold = false;
-                formatoBase.isItalic = false;
-                formatoBase.fontFamily = "Arial";
-                formatoBase.fontSize = 11;
-            }
-            
-            // Usar expresión regular para encontrar todos los placeholders
-            // y reconstruir el texto segmento por segmento
-            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\[([A-Z_]+)\\]");
-            java.util.regex.Matcher matcher = pattern.matcher(texto);
-            
-            int ultimaPosicionTextoCompleto = 0;
-            
-            while (matcher.find()) {
-                String placeholderCompleto = matcher.group(0); // Ej: [NOMBRE_ESTUDIANTE]
-                String key = matcher.group(1); // Ej: NOMBRE_ESTUDIANTE
-                int inicioPlaceholder = matcher.start();
-                
-                // Calcular offset acumulado hasta este placeholder
-                int offset = 0;
-                java.util.regex.Matcher matcherOffset = pattern.matcher(texto);
-                while (matcherOffset.find() && matcherOffset.start() < inicioPlaceholder) {
-                    String keyAnterior = matcherOffset.group(1);
-                    String valorAnterior = replacements.getOrDefault(keyAnterior, matcherOffset.group(0));
-                    offset += valorAnterior.length() - matcherOffset.group(0).length();
-                }
-                
-                // Posición en el texto completo
-                int posicionEnCompleto = inicioPlaceholder + offset;
-                
-                // Agregar texto antes del placeholder (sin negrilla)
-                if (posicionEnCompleto > ultimaPosicionTextoCompleto) {
-                    String antes = textoCompleto.substring(ultimaPosicionTextoCompleto, posicionEnCompleto);
-                    if (!antes.isEmpty()) {
-                        XWPFRun run = paragraph.createRun();
-                        run.setText(antes);
-                        run.setBold(false);
-                        run.setItalic(formatoBase.isItalic);
-                        run.setFontFamily(formatoBase.fontFamily);
-                        run.setFontSize(formatoBase.fontSize);
-                    }
-                }
-                
-                // Agregar el valor reemplazado (con negrilla solo si el placeholder original la tenía)
-                String valor = replacements.getOrDefault(key, placeholderCompleto);
-                
-                // Manejo especial para TEXTO_TRABAJO_GRADO: dividir en partes con y sin negrilla
-                if ("TEXTO_TRABAJO_GRADO".equals(key)) {
-                    // Extraer título y director del texto completo
-                    String tituloTrabajo = replacements.getOrDefault("TITULO_TRABAJO_GRADO", "").toString();
-                    String directorTrabajo = replacements.getOrDefault("DIRECTOR_TRABAJO_GRADO", "").toString();
-                    
-                    // Dividir el texto en partes
-                    String[] partes = valor.split(java.util.regex.Pattern.quote("\"" + tituloTrabajo + "\""), 2);
-                    if (partes.length == 2) {
-                        // Parte antes del título (sin negrilla)
-                        if (!partes[0].isEmpty()) {
-                            XWPFRun runAntes = paragraph.createRun();
-                            runAntes.setText(partes[0]);
-                            runAntes.setBold(false);
-                            runAntes.setItalic(formatoBase.isItalic);
-                            runAntes.setFontFamily(formatoBase.fontFamily);
-                            runAntes.setFontSize(formatoBase.fontSize);
-                        }
-                        
-                        // Título entre comillas (en negrilla)
-                        XWPFRun runTitulo = paragraph.createRun();
-                        runTitulo.setText("\"" + tituloTrabajo + "\"");
-                        runTitulo.setBold(true);
-                        runTitulo.setItalic(formatoBase.isItalic);
-                        runTitulo.setFontFamily(formatoBase.fontFamily);
-                        runTitulo.setFontSize(formatoBase.fontSize);
-                        
-                        // Parte después del título
-                        String parteDespues = partes[1];
-                        String[] partes2 = parteDespues.split(java.util.regex.Pattern.quote(directorTrabajo), 2);
-                        if (partes2.length == 2) {
-                            // Parte antes del director (sin negrilla)
-                            if (!partes2[0].isEmpty()) {
-                                XWPFRun runAntesDirector = paragraph.createRun();
-                                runAntesDirector.setText(partes2[0]);
-                                runAntesDirector.setBold(false);
-                                runAntesDirector.setItalic(formatoBase.isItalic);
-                                runAntesDirector.setFontFamily(formatoBase.fontFamily);
-                                runAntesDirector.setFontSize(formatoBase.fontSize);
-                            }
-                            
-                            // Director (en negrilla)
-                            XWPFRun runDirector = paragraph.createRun();
-                            runDirector.setText(directorTrabajo);
-                            runDirector.setBold(true);
-                            runDirector.setItalic(formatoBase.isItalic);
-                            runDirector.setFontFamily(formatoBase.fontFamily);
-                            runDirector.setFontSize(formatoBase.fontSize);
-                            
-                            // Parte después del director (sin negrilla)
-                            if (!partes2[1].isEmpty()) {
-                                XWPFRun runDespues = paragraph.createRun();
-                                runDespues.setText(partes2[1]);
-                                runDespues.setBold(false);
-                                runDespues.setItalic(formatoBase.isItalic);
-                                runDespues.setFontFamily(formatoBase.fontFamily);
-                                runDespues.setFontSize(formatoBase.fontSize);
-                            }
-                        } else {
-                            // Si no se encuentra el director, poner todo sin negrilla
-                            XWPFRun runResto = paragraph.createRun();
-                            runResto.setText(parteDespues);
-                            runResto.setBold(false);
-                            runResto.setItalic(formatoBase.isItalic);
-                            runResto.setFontFamily(formatoBase.fontFamily);
-                            runResto.setFontSize(formatoBase.fontSize);
-                        }
-                    } else {
-                        // Si no se encuentra el patrón, usar el valor completo sin negrilla
-                        XWPFRun runValor = paragraph.createRun();
-                        runValor.setText(valor);
-                        runValor.setBold(false);
-                        runValor.setItalic(formatoBase.isItalic);
-                        runValor.setFontFamily(formatoBase.fontFamily);
-                        runValor.setFontSize(formatoBase.fontSize);
-                    }
-                } else {
-                    // Para otros placeholders, usar la lógica normal
-                    XWPFRun runValor = paragraph.createRun();
-                    runValor.setText(valor);
-                    runValor.setBold(placeholderEnNegrilla.getOrDefault(key, false));
-                    runValor.setItalic(formatoBase.isItalic);
-                    runValor.setFontFamily(formatoBase.fontFamily);
-                    runValor.setFontSize(formatoBase.fontSize);
-                }
-                
-                ultimaPosicionTextoCompleto = posicionEnCompleto + valor.length();
-            }
-            
-            // Agregar texto restante (sin negrilla)
-            if (ultimaPosicionTextoCompleto < textoCompleto.length()) {
-                String restante = textoCompleto.substring(ultimaPosicionTextoCompleto);
-                if (!restante.isEmpty()) {
-                    XWPFRun run = paragraph.createRun();
-                    run.setText(restante);
-                    run.setBold(false);
-                    run.setItalic(formatoBase.isItalic);
-                    run.setFontFamily(formatoBase.fontFamily);
-                    run.setFontSize(formatoBase.fontSize);
-                }
+            XWPFRun nuevo = copiarFormato(paragraph, run, posicion++);
+            ponerTexto(nuevo, trozo.texto());
+            if (trozo.negrilla()) {
+                nuevo.setBold(true);
             }
         }
-        
-        // Restaurar alineación del párrafo
-        if (alignment != null) {
-            paragraph.setAlignment(alignment);
+        if (!despues.isEmpty()) {
+            ponerTexto(copiarFormato(paragraph, run, posicion), despues);
         }
     }
-    
-    // Clase auxiliar para preservar formato de runs
-    private static class RunFormat {
-        boolean isBold;
-        boolean isItalic;
-        String fontFamily;
-        int fontSize;
-        String text;
+
+    private static XWPFRun copiarFormato(XWPFParagraph paragraph, XWPFRun modelo, int posicion) {
+        XWPFRun nuevo = paragraph.insertNewRun(posicion);
+        if (modelo.getCTR().isSetRPr()) {
+            nuevo.getCTR().setRPr((org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr)
+                    modelo.getCTR().getRPr().copy());
+        }
+        return nuevo;
     }
+
+    /** El texto de los runs del párrafo (solo los w:t, que es lo que se reemplaza). */
+    private static String textoDeRuns(XWPFParagraph paragraph) {
+        StringBuilder texto = new StringBuilder();
+        for (XWPFRun run : paragraph.getRuns()) {
+            texto.append(textoDeRun(run));
+        }
+        return texto.toString();
+    }
+
+    private static String textoDeRun(XWPFRun run) {
+        StringBuilder texto = new StringBuilder();
+        for (var t : run.getCTR().getTList()) {
+            texto.append(t.getStringValue());
+        }
+        return texto.toString();
+    }
+
+    /** Deja el texto del run en un solo w:t, conservando los espacios de los extremos. */
+    private static void ponerTexto(XWPFRun run, String texto) {
+        while (run.getCTR().sizeOfTArray() > 1) {
+            run.getCTR().removeT(run.getCTR().sizeOfTArray() - 1);
+        }
+        run.setText(texto, 0);
+    }
+
     private Map<String, String> crearMapaReemplazos(DatosGeneracionDocumento request) {
         Map<String, String> replacements = new HashMap<>();
         
@@ -477,7 +362,7 @@ public class ServicioGeneracionDocumentos implements GenerarDocumentosIntPort {
             
             // Fecha de firma (formateada)
             LocalDate fechaFirma = LocalDate.now();
-            replacements.put("DIA_FIRMA", formatearFechaCompleta(fechaFirma));
+            replacements.put("DIA_FIRMA", diaEnLetras(fechaFirma.getDayOfMonth()));
             replacements.put("DIA_NUMERO", String.valueOf(fechaFirma.getDayOfMonth()));
             replacements.put("MES_FIRMA", formatearMes(fechaFirma.getMonthValue()));
             replacements.put("AÑO_FIRMA", formatearAño(fechaFirma.getYear()));
@@ -597,11 +482,11 @@ public class ServicioGeneracionDocumentos implements GenerarDocumentosIntPort {
             replacements.put("FECHA_ACTUAL", formatearFechaCompleta(fechaActual));
             
             // Fecha de firma (formateada)
-            replacements.put("DIA_FIRMA", formatearFechaCompleta(fechaActual));
+            replacements.put("DIA_FIRMA", diaEnLetras(fechaActual.getDayOfMonth()));
             replacements.put("DIA_NUMERO", String.valueOf(fechaActual.getDayOfMonth()));
             replacements.put("MES_FIRMA", formatearMes(fechaActual.getMonthValue()));
             replacements.put("AÑO_FIRMA", formatearAño(fechaActual.getYear()));
-            
+
             // Fecha del documento (extraída de FECHA_DOCUMENTO)
             Object fechaDocumentoPazSalvo = datosDocumento.get("fechaDocumento");
             LocalDate fechaDocPazSalvo = null;
@@ -672,8 +557,8 @@ public class ServicioGeneracionDocumentos implements GenerarDocumentosIntPort {
             
             // Fechas de firma: extraer día, mes y año de fecha_registro_solicitud
             if (fechaRegistroLocal != null) {
-                // Día de firma (formato completo: "23 de enero de 2025")
-                replacements.put("DIA_FIRMA", formatearFechaCompleta(fechaRegistroLocal));
+                // Día de firma en letras: la plantilla dice "a los [DIA_FIRMA] ([DIA_NUMERO]) días"
+                replacements.put("DIA_FIRMA", diaEnLetras(fechaRegistroLocal.getDayOfMonth()));
                 
                 // Día numérico (solo el número del día)
                 replacements.put("DIA_NUMERO", String.valueOf(fechaRegistroLocal.getDayOfMonth()));
@@ -686,7 +571,7 @@ public class ServicioGeneracionDocumentos implements GenerarDocumentosIntPort {
             } else {
                 // Fallback: usar fecha actual si no se puede obtener de la solicitud
                 LocalDate fechaActual = LocalDate.now();
-                replacements.put("DIA_FIRMA", formatearFechaCompleta(fechaActual));
+                replacements.put("DIA_FIRMA", diaEnLetras(fechaActual.getDayOfMonth()));
                 replacements.put("DIA_NUMERO", String.valueOf(fechaActual.getDayOfMonth()));
                 replacements.put("MES_FIRMA", formatearMes(fechaActual.getMonthValue()));
                 replacements.put("AÑO_FIRMA", formatearAño(fechaActual.getYear()));
@@ -774,6 +659,18 @@ public class ServicioGeneracionDocumentos implements GenerarDocumentosIntPort {
         return meses[mes];
     }
     
+    private static final String[] DIAS_EN_LETRAS = {
+        "", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez",
+        "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve", "veinte",
+        "veintiún", "veintidós", "veintitrés", "veinticuatro", "veinticinco", "veintiséis", "veintisiete",
+        "veintiocho", "veintinueve", "treinta", "treinta y un"
+    };
+
+    /** El día del mes en letras, como en "a los veintiséis (26) días del mes de...". */
+    private static String diaEnLetras(int dia) {
+        return DIAS_EN_LETRAS[dia];
+    }
+
     private String formatearAño(int año) {
         return String.valueOf(año);
     }
