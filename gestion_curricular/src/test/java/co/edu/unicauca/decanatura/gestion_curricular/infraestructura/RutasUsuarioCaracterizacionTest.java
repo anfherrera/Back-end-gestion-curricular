@@ -32,6 +32,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.JwtUtil;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.LoginRateLimiter;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.SecurityAuditService;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.VerificadorCuentaGoogle;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.GrafoObjetos;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 
@@ -66,8 +67,9 @@ class RutasUsuarioCaracterizacionTest {
         ReflectionTestUtils.setField(mapper, "rolMapperDominio", new RolMapperDominioImpl());
         MockMvc mvc = SoporteMvc.standaloneSetup(new UsuarioRestController(cu, mapper, autenticacion,
                         // Clases reales: Mockito no simula clases concretas en JDK 25 aquí; el login fallido no usa el JWT
-                        new JwtUtil(), mock(UserDetailsService.class), new SecurityAuditService(),
-                        new LoginRateLimiter(5, 900, 900)))
+                        new JwtUtil("clave_de_prueba_de_al_menos_32_bytes!", 3600000), mock(UserDetailsService.class),
+                        new SecurityAuditService(), new LoginRateLimiter(5, 900, 900),
+                        new VerificadorCuentaGoogle("", "unicauca.edu.co")))
                 .setControllerAdvice(new RestApiExceptionHandler()).build();
 
         String b = "/api/usuarios";

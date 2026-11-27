@@ -1,8 +1,10 @@
 package co.edu.unicauca.decanatura.gestion_curricular.seguridad;
 
 import java.util.Arrays;
+import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -37,7 +39,7 @@ public class SeguridadConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable()) // Deshabilitado porque usamos JWT stateless
-            .cors(cors -> {}) // Habilitar CORS usando WebConfig
+            .cors(cors -> {}) // Usa el bean corsConfigurationSource
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless porque usamos JWT
             )
@@ -76,8 +78,8 @@ public class SeguridadConfig {
                     "/swagger-resources/**",
                     "/webjars/**"
                 ).permitAll()
-                // Permitir acceso a login sin autenticación
-                .requestMatchers("/api/usuarios/login").permitAll()
+                // Inicio de sesión con contraseña o con la cuenta institucional de Google
+                .requestMatchers(HttpMethod.POST, "/api/usuarios/login", "/api/usuarios/login/google").permitAll()
                 // Estadísticas: solo consultas y reportes (EST-7, paso 9), para los roles administrativos
                 .requestMatchers("/api/estadisticas/**")
                     .hasAnyRole("Administrador", "Funcionario", "Coordinador", "Secretario", "Decano")
@@ -99,16 +101,22 @@ public class SeguridadConfig {
         return http.build();
     }
 
+    /**
+     * Orígenes del frontend, separados por comas ({@code app.cors.allowed-origins}, variable
+     * {@code CORS_ALLOWED_ORIGINS} en producción). Admite patrones como {@code https://*.vercel.app}.
+     * Sin credenciales: la sesión viaja en el encabezado {@code Authorization}, no en cookies.
+     */
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource(
+            @Value("${app.cors.allowed-origins:http://localhost:4200}") String origenesPermitidos) {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList(
-            "http://localhost:4200",
-            "https://front-end-gestion-curricular.vercel.app"
-        ));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowedOriginPatterns(Arrays.stream(origenesPermitidos.split(","))
+                .map(String::trim)
+                .filter(origen -> !origen.isEmpty())
+                .toList());
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

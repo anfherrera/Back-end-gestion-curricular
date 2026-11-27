@@ -13,7 +13,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorSemestre;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Globales;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
@@ -169,14 +168,6 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
             throw new ReglaNegocioExcepcion("El año de inicio no puede ser mayor al año de fin.");
         }
         return historial.historial(anioInicio, anioFin);
-    }
-
-    @Override
-    public EstadisticasPorSemestre obtenerEstadisticasPorPeriodoAcademico(String periodoAcademico) {
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            throw new ReglaNegocioExcepcion("El período académico no puede estar vacío.");
-        }
-        return historial.porPeriodoAcademico(periodoAcademico.trim());
     }
 
     @Override

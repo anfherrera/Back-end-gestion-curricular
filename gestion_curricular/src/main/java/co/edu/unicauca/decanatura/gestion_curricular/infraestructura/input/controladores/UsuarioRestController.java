@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,9 +21,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,17 +42,19 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.LoginDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.LoginGoogleDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.UsuarioDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.LoginDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.UsuarioDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.ErroresUsuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.UsuarioMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.InicioSesionRechazadoException;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.JwtUtil;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.LoginRateLimiter;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.SecurityAuditService;
-
-
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.SecurityAuditService.SecurityEventType;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.VerificadorCuentaGoogle;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -62,6 +69,7 @@ public class UsuarioRestController {
     private final UserDetailsService userDetailsService;
     private final SecurityAuditService securityAuditService;
     private final LoginRateLimiter loginRateLimiter;
+    private final VerificadorCuentaGoogle verificadorCuentaGoogle;
 
 
     /**
@@ -238,66 +246,87 @@ public class UsuarioRestController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Login exitoso",
             content = @Content(schema = @Schema(implementation = LoginDTORespuesta.class))),
-        @ApiResponse(responseCode = "401", description = "Credenciales incorrectas",
-            content = @Content)
+        @ApiResponse(responseCode = "401", description = "Credenciales incorrectas", content = @Content),
+        @ApiResponse(responseCode = "403", description = "Cuenta desactivada", content = @Content),
+        @ApiResponse(responseCode = "429", description = "Demasiados intentos fallidos", content = @Content)
     })
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDTOPeticion request, HttpServletRequest httpRequest) {
-        try {
-            // Rate limiting por correo e IP
-            String ip = httpRequest.getHeader("X-Forwarded-For");
-            if (ip == null || ip.isBlank()) {
-                ip = httpRequest.getRemoteAddr();
-            }
-            var lockedUntil = loginRateLimiter.checkAllowed(request.getCorreo(), ip);
-            if (lockedUntil != null) {
-                // 429 Too Many Requests con Retry-After aproximado
-                long retryAfterSeconds = Math.max(1, java.time.Duration.between(java.time.Instant.now(), lockedUntil).getSeconds());
-                return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                    .header("Retry-After", String.valueOf(retryAfterSeconds))
-                    .body("Demasiados intentos fallidos. Intenta nuevamente en " + retryAfterSeconds + " segundos.");
-            }
+    public ResponseEntity<?> login(@RequestBody @Valid LoginDTOPeticion request, HttpServletRequest httpRequest) {
+        // Con server.forward-headers-strategy, getRemoteAddr ya es la IP del cliente aunque haya un proxy
+        String ip = httpRequest.getRemoteAddr();
+        String correo = request.getCorreo();
 
-            authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getCorreo(), request.getPassword())
-            );
-
-            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getCorreo());
-            String token = jwtUtil.generarToken(userDetails.getUsername());
-
-            Usuario usuario = usuarioCUIntPort.buscarUsuarioPorCorreo(request.getCorreo());
-            UsuarioDTORespuesta usuarioDTO = usuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuario);
-
-            // Limpiar contadores por éxito
-            loginRateLimiter.onSuccess(request.getCorreo(), ip);
-
-            // Registrar login exitoso en auditoría de seguridad
-            securityAuditService.logSecurityEvent(
-                SecurityAuditService.SecurityEventType.LOGIN_SUCCESS,
-                "Login exitoso",
-                request.getCorreo(),
-                httpRequest
-            );
-
-            return ResponseEntity.ok(new LoginDTORespuesta(token, usuarioDTO));
-
-        } catch (BadCredentialsException ex) {
-            // Registrar intento fallido en limitador
-            String ip = httpRequest.getHeader("X-Forwarded-For");
-            if (ip == null || ip.isBlank()) {
-                ip = httpRequest.getRemoteAddr();
-            }
-            loginRateLimiter.onFailure(request.getCorreo(), ip);
-
-            // Registrar intento de login fallido en auditoría de seguridad
-            securityAuditService.logSecurityEvent(
-                SecurityAuditService.SecurityEventType.LOGIN_FAILED,
-                "Credenciales incorrectas para: " + request.getCorreo(),
-                null,
-                httpRequest
-            );
-            
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
+        Instant bloqueadoHasta = loginRateLimiter.checkAllowed(correo, ip);
+        if (bloqueadoHasta != null) {
+            long segundos = Math.max(1, Duration.between(Instant.now(), bloqueadoHasta).getSeconds());
+            securityAuditService.logSecurityEvent(SecurityEventType.RATE_LIMIT_EXCEEDED,
+                    "Login bloqueado temporalmente", correo, httpRequest);
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .header("Retry-After", String.valueOf(segundos))
+                .body("Demasiados intentos fallidos. Intenta nuevamente en " + segundos + " segundos.");
         }
+
+        Authentication autenticacion;
+        try {
+            autenticacion = authManager.authenticate(new UsernamePasswordAuthenticationToken(correo, request.getPassword()));
+        } catch (BadCredentialsException ex) {
+            loginRateLimiter.onFailure(correo, ip);
+            securityAuditService.logSecurityEvent(SecurityEventType.LOGIN_FAILED, "Credenciales incorrectas",
+                    correo, httpRequest);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
+        } catch (DisabledException ex) {
+            // El manejador global responde 403
+            securityAuditService.logSecurityEvent(SecurityEventType.ACCOUNT_DISABLED, "Login de una cuenta desactivada",
+                    correo, httpRequest);
+            throw ex;
+        }
+
+        loginRateLimiter.onSuccess(correo, ip);
+        return ResponseEntity.ok(emitirSesion((UserDetails) autenticacion.getPrincipal(), "Login con contraseña", httpRequest));
+    }
+
+    @Operation(
+        summary = "Iniciar sesión con Google",
+        description = "Recibe el ID token de Google Identity Services, verifica que sea una cuenta institucional "
+            + "(@unicauca.edu.co) registrada y activa, y devuelve el mismo token JWT que el login con contraseña",
+        security = {}
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login exitoso",
+            content = @Content(schema = @Schema(implementation = LoginDTORespuesta.class))),
+        @ApiResponse(responseCode = "401", description = "Token de Google inválido o vencido", content = @Content),
+        @ApiResponse(responseCode = "403", description = "Cuenta de otro dominio, sin registro o desactivada",
+            content = @Content),
+        @ApiResponse(responseCode = "503", description = "Inicio con Google sin configurar o Google no responde",
+            content = @Content)
+    })
+    @PostMapping("/login/google")
+    public ResponseEntity<LoginDTORespuesta> loginGoogle(@RequestBody @Valid LoginGoogleDTOPeticion request,
+            HttpServletRequest httpRequest) {
+        String correo = verificadorCuentaGoogle.correoVerificado(request.getCredencial());
+
+        UserDetails cuenta;
+        try {
+            cuenta = userDetailsService.loadUserByUsername(correo);
+        } catch (UsernameNotFoundException ex) {
+            securityAuditService.logSecurityEvent(SecurityEventType.LOGIN_FAILED, "Cuenta de Google sin registro",
+                    correo, httpRequest);
+            throw new InicioSesionRechazadoException(HttpStatus.FORBIDDEN, "La cuenta " + correo
+                    + " no está registrada en el sistema. Contacte al coordinador de su programa para que la registre.");
+        }
+        if (!cuenta.isEnabled()) {
+            securityAuditService.logSecurityEvent(SecurityEventType.ACCOUNT_DISABLED,
+                    "Login con Google de una cuenta desactivada", correo, httpRequest);
+            throw new DisabledException("Cuenta desactivada");
+        }
+        return ResponseEntity.ok(emitirSesion(cuenta, "Login con Google", httpRequest));
+    }
+
+    /** Token de sesión y datos del usuario, iguales para los dos tipos de inicio de sesión. */
+    private LoginDTORespuesta emitirSesion(UserDetails cuenta, String detalle, HttpServletRequest httpRequest) {
+        Usuario usuario = usuarioCUIntPort.buscarUsuarioPorCorreo(cuenta.getUsername());
+        UsuarioDTORespuesta usuarioDTO = usuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuario);
+        securityAuditService.logSecurityEvent(SecurityEventType.LOGIN_SUCCESS, detalle, cuenta.getUsername(), httpRequest);
+        return new LoginDTORespuesta(jwtUtil.generarToken(cuenta.getUsername()), usuarioDTO);
     }
 }

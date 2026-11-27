@@ -324,7 +324,6 @@ class ErroresCasosDeUsoCaracterizacionTest {
     // ---------------------------------------------------------------- documentos y usuarios
 
     private void documentosYUsuarios() {
-        caso("documentos registrar nulo", () -> documentos(mock(GestionarDocumentosGatewayIntPort.class)).registrarDocumento(null));
         caso("documentos buscar sin id", () -> documentos(mock(GestionarDocumentosGatewayIntPort.class)).buscarDocumentoId(null));
         caso("documentos buscar inexistente", () -> documentos(mock(GestionarDocumentosGatewayIntPort.class)).buscarDocumentoId(9));
         caso("documentos comentar sin id", () -> {
@@ -474,8 +473,6 @@ class ErroresCasosDeUsoCaracterizacionTest {
             .obtenerHistorialEstadisticas(null, 2031));
         caso("estadisticas historial invertido", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class))
             .obtenerHistorialEstadisticas(2025, 2024));
-        caso("estadisticas periodo academico vacio", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class))
-            .obtenerEstadisticasPorPeriodoAcademico(" "));
     }
 
     // ---------------------------------------------------------------- ECAES, homologación, reingreso y paz y salvo

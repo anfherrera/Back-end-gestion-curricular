@@ -9,8 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginDTOPeticion {
+    /** Mismo límite que el correo al crear el usuario. */
     @NotBlank(message = "{Login.correo.empty}")
-    @Size(min = 5, max = 30, message = "{Login.correo.length}")
+    @Size(min = 5, max = 50, message = "{Login.correo.length}")
     private String correo;
+    @NotBlank(message = "{Login.password.empty}")
     private String password;
 }

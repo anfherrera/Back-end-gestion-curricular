@@ -66,14 +66,6 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
         documento.setObjSolicitud(solicitud);
         documento.setIdUsuarioSubio(idUsuario);
         documento.setComentario(comentario);
-        return registrarDocumento(documento);
-    }
-
-    @Override
-    public Documento registrarDocumento(Documento documento) {
-        if (documento == null) {
-            throw new ReglaNegocioExcepcion("El documento no puede ser nulo.");
-        }
         return gestionarDocumentosGateway.crearDocumento(documento);
     }
 

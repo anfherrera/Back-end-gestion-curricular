@@ -53,7 +53,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * Fija la respuesta de cada consulta de estadísticas para un conjunto de datos fijo. Pasa por el caso de uso
@@ -72,10 +71,6 @@ class EstadisticasCaracterizacionTest {
 
     private static final Path CARPETA = Path.of("src/test/resources/referencias/estadisticas");
     private static final Set<String> FECHAS_DE_CONSULTA = Set.of("fechaConsulta", "fechaGeneracion", "fechaPrediccion");
-    /** Correcciones que se superponen a la referencia de un caso (ver {@link Correcciones}). */
-    private static final Map<String, String> CORRECCIONES = Map.of(
-            // BUG-43: la referencia fija el aviso {error}; la corrección, la ReglaNegocioExcepcion
-            "por-periodo-academico-invalido", "estadisticas/correcciones/por-periodo-academico-invalido-bug43.json");
     private static final ObjectMapper JSON = new ObjectMapper()
             .enable(SerializationFeature.INDENT_OUTPUT)
             .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
@@ -120,10 +115,7 @@ class EstadisticasCaracterizacionTest {
                 caso("tendencias-y-comparativas-filtrado", g -> g.obtenerTendenciasYComparativas("2025-2", 2)),
                 caso("cursos-verano-filtrado", g -> g.obtenerEstadisticasCursosVerano("2025-2", 1)),
                 caso("tendencias-temporales-cursos-verano", g -> g.obtenerTendenciasTemporalesCursosVerano(null, null)),
-                caso("historial", g -> g.obtenerHistorialEstadisticas(2024, 2025)),
-                caso("por-periodo-academico", g -> g.obtenerEstadisticasPorPeriodoAcademico("2025-1")),
-                caso("por-periodo-academico-invalido", g -> g.obtenerEstadisticasPorPeriodoAcademico("2025-3")),
-                caso("por-periodo-academico-con-ceros", g -> g.obtenerEstadisticasPorPeriodoAcademico("0025-1")));
+                caso("historial", g -> g.obtenerHistorialEstadisticas(2024, 2025)));
     }
 
     @ParameterizedTest(name = "{0}")
@@ -148,11 +140,6 @@ class EstadisticasCaracterizacionTest {
             Files.writeString(referencia, obtenido, StandardCharsets.UTF_8);
         }
         String esperado = Files.readString(referencia, StandardCharsets.UTF_8).replace("\r\n", "\n");
-        String correccion = CORRECCIONES.get(nombre);
-        if (correccion != null) {
-            esperado = JSON.writeValueAsString(Correcciones.aplicar(JSON.readTree(esperado), correccion))
-                    .replace("\r\n", "\n");
-        }
         assertThat(obtenido).isEqualTo(esperado);
     }
 

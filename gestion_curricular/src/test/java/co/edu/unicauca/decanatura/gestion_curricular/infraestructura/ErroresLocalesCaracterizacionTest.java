@@ -30,10 +30,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
@@ -58,6 +56,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.JwtUtil;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.LoginRateLimiter;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.SecurityAuditService;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.VerificadorCuentaGoogle;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
@@ -209,7 +208,8 @@ class ErroresLocalesCaracterizacionTest {
                 new InscripcionesVeranoRestController(m.curso(), m.solicitud()),
                 // El login no se ejecuta en estos casos: sus dependencias quedan sin crear
                 new UsuarioRestController(m.usuario(), m.usuarioMapper(), (AuthenticationManager) null, (JwtUtil) null,
-                    (UserDetailsService) null, (SecurityAuditService) null, (LoginRateLimiter) null))
+                    (UserDetailsService) null, (SecurityAuditService) null, (LoginRateLimiter) null,
+                    (VerificadorCuentaGoogle) null))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
 
         var respuesta = mvc.perform(peticion.get()).andReturn().getResponse();

@@ -1,6 +1,0 @@
-{
-  "" : {
-    "excepcion" : "ReglaNegocioExcepcion",
-    "mensaje" : "Formato de período académico inválido. Use formato: YYYY-P (ej: 2024-2)"
-  }
-}

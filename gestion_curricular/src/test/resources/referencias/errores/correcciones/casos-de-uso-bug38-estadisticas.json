@@ -109,17 +109,6 @@
     "estado" : 400,
     "excepcion" : "ReglaNegocioExcepcion"
   },
-  "/estadisticas periodo academico vacio" : {
-    "cuerpo" : {
-      "codigoError" : "GC-0004",
-      "codigoHttp" : 400,
-      "mensaje" : "GC-0004 - Violación a regla de negocio: El período académico no puede estar vacío.",
-      "metodo" : "GET",
-      "url" : "http://localhost/caso"
-    },
-    "estado" : 400,
-    "excepcion" : "ReglaNegocioExcepcion"
-  },
   "/estadisticas periodo estado programa incompleta" : {
     "cuerpo" : {
       "codigoError" : "GC-0004",

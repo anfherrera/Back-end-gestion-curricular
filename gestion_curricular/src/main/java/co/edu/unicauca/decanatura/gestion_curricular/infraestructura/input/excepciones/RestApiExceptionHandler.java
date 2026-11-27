@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -35,6 +36,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.Entidad
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.estructuraExcepciones.Error;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.estructuraExcepciones.ErrorUtils;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.InicioSesionRechazadoException;
 
 /**
  * Único manejador global de excepciones. Todas las respuestas de error tienen la forma
@@ -165,6 +167,19 @@ public class RestApiExceptionHandler {
         public ResponseEntity<Error> handleCredencialesInvalidas(HttpServletRequest req, BadCredentialsException ex) {
                 return responder(req, HttpStatus.UNAUTHORIZED, CodigoError.CREDENCIALES_INVALIDAS.getCodigo(),
                                 CodigoError.CREDENCIALES_INVALIDAS.getLlaveMensaje());
+        }
+
+        /** Cuenta desactivada por el administrador: 403, que el frontend muestra como cuenta deshabilitada. */
+        @ExceptionHandler(DisabledException.class)
+        public ResponseEntity<Error> handleCuentaDesactivada(HttpServletRequest req, DisabledException ex) {
+                return responder(req, HttpStatus.FORBIDDEN, CodigoError.USUARIO_DESHABILITADO.getCodigo(),
+                                CodigoError.USUARIO_DESHABILITADO.getLlaveMensaje());
+        }
+
+        @ExceptionHandler(InicioSesionRechazadoException.class)
+        public ResponseEntity<Error> handleInicioSesionRechazado(HttpServletRequest req,
+                        InicioSesionRechazadoException ex) {
+                return responder(req, ex.getEstado(), CodigoError.INICIO_SESION_RECHAZADO.getCodigo(), ex.getMessage());
         }
 
         @ExceptionHandler(AuthenticationException.class)
