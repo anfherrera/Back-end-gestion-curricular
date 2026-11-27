@@ -1,0 +1,9 @@
+# El Dockerfile solo necesita gestion_curricular/pom.xml y gestion_curricular/src
+.git
+.github
+.claude
+.vscode
+**/target
+**/Archivos
+**/*.log
+.env
