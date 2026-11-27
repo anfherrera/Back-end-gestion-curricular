@@ -1,2 +1,9 @@
-# Auto detect text files and perform LF normalization
+# Texto con fin de línea LF en el repositorio; cada sistema lo convierte al suyo al hacer checkout
 * text=auto
+
+# Los scripts del Maven Wrapper deben conservar el fin de línea de su sistema
+gestion_curricular/mvnw text eol=lf
+*.cmd text eol=crlf
+
+# Plantillas de Word: binarias, nunca se mezclan
+*.docx binary

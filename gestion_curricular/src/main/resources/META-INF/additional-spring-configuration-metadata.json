@@ -22,6 +22,12 @@
       "description": "Contraseña inicial de la cuenta de administrador. Solo se usa al crearla; reiniciar no la cambia."
     },
     {
+      "name": "app.archivos.ruta",
+      "type": "java.lang.String",
+      "description": "Carpeta donde se guardan los PDF subidos. En un hosting con disco efímero (Render) debe apuntar a un disco persistente.",
+      "defaultValue": "Archivos"
+    },
+    {
       "name": "app.cors.allowed-origins",
       "type": "java.lang.String",
       "description": "Orígenes del frontend separados por comas; admite patrones como https://*.vercel.app.",

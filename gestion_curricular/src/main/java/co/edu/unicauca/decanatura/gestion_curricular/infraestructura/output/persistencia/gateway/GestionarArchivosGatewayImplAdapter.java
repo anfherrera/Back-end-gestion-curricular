@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarArchivosGatewayIntPort;
@@ -16,10 +17,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ArchivoSubi
 public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGatewayIntPort {
 
     private final Path rootLocation;
-    
-    private static String rutaRaiz = "Archivos";
 
-    public GestionarArchivosGatewayImplAdapter() throws IOException{
+    /**
+     * @param rutaRaiz carpeta donde se guardan los archivos subidos ({@code app.archivos.ruta}, variable
+     *        {@code ARCHIVOS_RUTA}). En un hosting con disco efímero debe apuntar a un disco persistente.
+     */
+    public GestionarArchivosGatewayImplAdapter(@Value("${app.archivos.ruta:Archivos}") String rutaRaiz) throws IOException {
         this.rootLocation = Paths.get(rutaRaiz).toAbsolutePath().normalize();
         if(!Files.exists(rootLocation)){
             Files.createDirectories(rootLocation);

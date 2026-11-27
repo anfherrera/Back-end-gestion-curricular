@@ -169,11 +169,21 @@ Producción corre en **Render** con el `Dockerfile` de la raíz: compila con Mav
 | `JWT_EXPIRATION` | No | Duración del token en milisegundos (por defecto `3600000`, una hora) |
 | `CORS_ALLOWED_ORIGINS` | No | Orígenes del frontend separados por comas. Por defecto `http://localhost:4200,https://front-end-gestion-curricular.vercel.app`. Si se define, debe incluir la URL del frontend en producción |
 | `GOOGLE_CLIENT_ID` | No | Activa el [inicio de sesión con Google](#inicio-de-sesión-con-google) |
+| `ARCHIVOS_RUTA` | Sí, en Render | Carpeta de los PDF subidos (por defecto `Archivos`). Ver [Archivos subidos](#archivos-subidos) |
 | `ADMIN_CEDULA` / `ADMIN_PASSWORD` | No | Crean la cuenta `admin@unicauca.edu.co` si no existe; reiniciar no cambia su contraseña |
 | `DDL_AUTO` / `SHOW_SQL` | No | `validate` y `false` por defecto |
 | `PORT` | No | Lo asigna Render |
 
 `gestion_curricular/env.example` tiene un ejemplo completo.
+
+### Archivos subidos
+
+Los PDF que suben los usuarios se guardan en disco, en la carpeta de `ARCHIVOS_RUTA`; la base de datos solo guarda su ruta. **El disco de un contenedor de Render se borra en cada despliegue y en cada reinicio**, así que sin un disco persistente los documentos se pierden y la base queda apuntando a archivos que ya no existen:
+
+1. En el servicio de Render, **Disks → Add Disk** (requiere un plan de pago), con *Mount Path* `/var/data`.
+2. Definir `ARCHIVOS_RUTA=/var/data/archivos`.
+
+En local se usa la carpeta `gestion_curricular/Archivos/`, que Git ignora. Las pruebas escriben en `target/archivos-prueba/`.
 
 ### Comprobar el despliegue
 
