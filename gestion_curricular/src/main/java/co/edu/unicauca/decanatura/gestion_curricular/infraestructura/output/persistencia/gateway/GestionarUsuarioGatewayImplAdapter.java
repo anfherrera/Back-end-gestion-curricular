@@ -1,10 +1,10 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -186,20 +186,16 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
         UsuarioEntity usuario = usuarioRepository.buscarPorCorreo(correo)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con correo: " + correo));
 
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-
         if (usuario.getObjRol() == null || usuario.getObjRol().getNombre() == null) {
             throw new UsernameNotFoundException("El usuario no tiene un rol asignado: " + correo);
         }
 
-        String rolNombre = usuario.getObjRol().getNombre().trim();
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + rolNombre));
-
-        return new org.springframework.security.core.userdetails.User(
-                usuario.getCorreo(),
-                usuario.getPassword() != null ? usuario.getPassword() : "",
-                authorities
-        );
+        // Un usuario desactivado no entra ni sigue usando un token que ya tenía
+        return User.withUsername(usuario.getCorreo())
+                .password(usuario.getPassword() != null ? usuario.getPassword() : "")
+                .authorities(new SimpleGrantedAuthority("ROLE_" + usuario.getObjRol().getNombre().trim()))
+                .disabled(!usuario.isEstado_usuario())
+                .build();
     }
 
     @Override

@@ -86,12 +86,21 @@ gestion_curricular/
 
 ## Seguridad
 
-- Autenticación JWT
+- Autenticación JWT, con correo y contraseña o con la cuenta institucional de Google (`POST /api/usuarios/login/google`)
+- Solo entran cuentas registradas y activas: desactivar un usuario corta también la sesión que tenía abierta
 - Rate limiting en login
 - Password hashing con BCrypt
 - Headers de seguridad HTTP
 - CORS configurado
-- Auditoría de seguridad
+- Auditoría de seguridad (logger `SecurityAuditService`)
+
+### Inicio de sesión con Google
+
+1. En [Google Cloud Console](https://console.cloud.google.com/apis/credentials), crear un **ID de cliente de OAuth** de tipo *Aplicación web*.
+2. En **Orígenes de JavaScript autorizados**, agregar `http://localhost:4200` y la URL del frontend en producción. No hace falta URI de redirección.
+3. Poner el Client ID en `GOOGLE_CLIENT_ID` (backend) y en `googleClientId` de los `environment` del frontend.
+
+El backend verifica la firma del token con las llaves públicas de Google y acepta solo correos verificados del Google Workspace `@unicauca.edu.co` (claim `hd`). Una cuenta institucional sin registro en el sistema recibe 403: el Administrador o el Coordinador debe crearla primero. Sin `GOOGLE_CLIENT_ID`, el endpoint responde 503 y el botón no aparece.
 
 ## Despliegue
 
@@ -107,7 +116,8 @@ gestion_curricular/
 | `SHOW_SQL` | `false` en producción |
 | `JWT_SECRET` | Clave secreta del token JWT (mínimo 256 bits) |
 | `JWT_EXPIRATION` | Tiempo de expiración del token en milisegundos (ej. `3600000`) |
-| `CORS_ALLOWED_ORIGINS` | Orígenes permitidos para CORS (ej. `https://tu-dominio.com`) |
+| `CORS_ALLOWED_ORIGINS` | Orígenes del frontend separados por comas (por defecto `http://localhost:4200,https://front-end-gestion-curricular.vercel.app`) |
+| `GOOGLE_CLIENT_ID` | Client ID de Google para el inicio de sesión con la cuenta institucional (opcional) |
 | `PORT` | Puerto que asigna la plataforma (Railway/Render) |
 
 Consulta `gestion_curricular/env.example` para un ejemplo completo.
