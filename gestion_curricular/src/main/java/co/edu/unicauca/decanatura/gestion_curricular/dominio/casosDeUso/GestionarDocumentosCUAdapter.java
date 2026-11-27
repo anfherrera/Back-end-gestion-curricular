@@ -12,20 +12,17 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNe
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ArchivoSubido;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.AsociadorDocumentosPendientes;
 
 public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPort {
 
     private static final DateTimeFormatter FECHA_COMENTARIO = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private final GestionarDocumentosGatewayIntPort gestionarDocumentosGateway;
-    private final AsociadorDocumentosPendientes asociadorDocumentos;
     private final GestionarArchivosCUIntPort archivos;
 
     public GestionarDocumentosCUAdapter(GestionarDocumentosGatewayIntPort gestionarDocumentosGateway,
                                         GestionarArchivosCUIntPort gestionarArchivos) {
         this.gestionarDocumentosGateway = gestionarDocumentosGateway;
-        this.asociadorDocumentos = new AsociadorDocumentosPendientes(gestionarDocumentosGateway, gestionarArchivos);
         this.archivos = gestionarArchivos;
     }
 

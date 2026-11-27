@@ -34,7 +34,6 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
 
     private final GestionarSolicitudPazYSalvoGatewayIntPort solicitudGateway;
     private final GestionarUsuarioGatewayIntPort usuarioGateway;
-    private final GestionarDocumentosGatewayIntPort documentosGateway;
     private final GestionarEstadoSolicitudGatewayIntPort estadoSolicitudGateway;
     private final AsociadorDocumentosPendientes asociadorDocumentos;
     private final ListadorSolicitudes<SolicitudPazYSalvo> listador;
@@ -49,7 +48,6 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
             GestionarNotificacionCUIntPort gestionarNotificacionCU) {
         this.solicitudGateway = solicitudGateway;
         this.usuarioGateway = usuarioGateway;
-        this.documentosGateway = documentosGateway;
         this.estadoSolicitudGateway = estadoSolicitudGateway;
         this.asociadorDocumentos = new AsociadorDocumentosPendientes(documentosGateway, gestionarArchivos);
         this.listador = new ListadorSolicitudes<>(FlujoEstadosSolicitud.TRES_APROBACIONES, solicitudGateway);

@@ -30,9 +30,9 @@ public class LoginRateLimiter {
     private final Duration lockDuration;
 
     public LoginRateLimiter(
-            @Value("${security.login.maxAttempts:5}") int maxAttempts,
-            @Value("${security.login.windowSeconds:900}") long windowSeconds,        // 15 min
-            @Value("${security.login.lockSeconds:900}") long lockSeconds            // 15 min
+            @Value("${security.login.max-attempts:5}") int maxAttempts,
+            @Value("${security.login.window-seconds:900}") long windowSeconds,        // 15 min
+            @Value("${security.login.lock-seconds:900}") long lockSeconds            // 15 min
     ) {
         this.maxAttempts = Math.max(1, maxAttempts);
         this.window = Duration.ofSeconds(Math.max(60, windowSeconds));

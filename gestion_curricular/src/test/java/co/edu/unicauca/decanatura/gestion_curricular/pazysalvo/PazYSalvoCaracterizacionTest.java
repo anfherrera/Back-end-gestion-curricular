@@ -349,7 +349,7 @@ class PazYSalvoCaracterizacionTest {
         if (valor.isObject()) {
             ObjectNode ordenado = JSON.createObjectNode();
             Map<String, JsonNode> campos = new TreeMap<>();
-            for (Iterator<Map.Entry<String, JsonNode>> it = valor.fields(); it.hasNext();) {
+            for (Iterator<Map.Entry<String, JsonNode>> it = valor.properties().iterator(); it.hasNext();) {
                 Map.Entry<String, JsonNode> e = it.next();
                 campos.put(e.getKey(), normalizar(e.getKey(), e.getValue()));
             }

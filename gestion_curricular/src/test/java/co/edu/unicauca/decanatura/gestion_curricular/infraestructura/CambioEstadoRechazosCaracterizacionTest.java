@@ -144,7 +144,7 @@ class CambioEstadoRechazosCaracterizacionTest {
     /** Ordena el contenido de cada lista "[A, B]" de los textos. */
     private JsonNode normalizar(JsonNode body) {
         if (body instanceof ObjectNode objeto) {
-            objeto.fields().forEachRemaining(campo -> {
+            objeto.properties().forEach(campo -> {
                 if (campo.getValue().isTextual()) {
                     Matcher m = LISTA.matcher(campo.getValue().asText());
                     StringBuilder ordenado = new StringBuilder();

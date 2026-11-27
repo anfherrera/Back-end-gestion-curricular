@@ -580,23 +580,12 @@ class ErroresCasosDeUsoCaracterizacionTest {
     /** Gateways simulados del caso de uso de cursos ofertados. */
     private static final class Curso {
         final GestionarCursoOfertadoVeranoGatewayIntPort cursos = mock(GestionarCursoOfertadoVeranoGatewayIntPort.class);
-        final GestionarSolicitudGatewayIntPort solicitudes = mock(GestionarSolicitudGatewayIntPort.class);
-        final GestionarUsuarioGatewayIntPort usuarios = mock(GestionarUsuarioGatewayIntPort.class);
         final GestionarMateriasIntPort materias = mock(GestionarMateriasIntPort.class);
         final GestionarDocenteGatewayIntPort docentes = mock(GestionarDocenteGatewayIntPort.class);
         final GestionarSalonesIntPort salones = mock(GestionarSalonesIntPort.class);
 
-        Curso conCurso(String primerEstado) {
-            var curso = cursoConId(3);
-            curso.setCupoEstimado(5);
-            curso.getEstadosCursoOfertados().add(estadoCurso(1, primerEstado));
-            when(cursos.obtenerCursoPorId(3)).thenReturn(curso);
-            return this;
-        }
-
         GestionarCursoOfertadoVeranoCUAdapter cu() {
-            return new GestionarCursoOfertadoVeranoCUAdapter(cursos, solicitudes, usuarios, materias, docentes, salones,
-                mock(GestionarNotificacionCUIntPort.class));
+            return new GestionarCursoOfertadoVeranoCUAdapter(cursos, materias, docentes, salones);
         }
     }
 
@@ -801,7 +790,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
     }
 
     private static GestionarSolicitudCUAdapter solicitud(GestionarSolicitudGatewayIntPort g) {
-        return new GestionarSolicitudCUAdapter(g, mock(GestionarUsuarioGatewayIntPort.class));
+        return new GestionarSolicitudCUAdapter(g);
     }
 
     private static GestionarArchivosCUAdapter archivos(GestionarArchivosGatewayIntPort g) {

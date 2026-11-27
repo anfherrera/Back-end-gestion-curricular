@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -73,15 +73,15 @@ class RutasCatalogosReportesVeranoCaracterizacionTest {
     private final ArrayNode llamadas = json.createArrayNode();
 
     @Autowired MockMvc mvc;
-    @MockBean GestionarMateriasCUIntPort materiaCU;
-    @MockBean GestionarDocentesCUIntPort docenteCU;
-    @MockBean GestionarSalonesCUIntPort salonCU;
-    @MockBean GestionarCursoOfertadoVeranoCUIntPort cursoCU;
-    @MockBean GestionarSolicitudCursoVeranoCUIntPort solicitudCU;
-    @MockBean GenerarReportesCursosVeranoCUIntPort generadorExcel;
-    @MockBean GestionarUsuarioGatewayIntPort usuarioGateway;
+    @MockitoBean GestionarMateriasCUIntPort materiaCU;
+    @MockitoBean GestionarDocentesCUIntPort docenteCU;
+    @MockitoBean GestionarSalonesCUIntPort salonCU;
+    @MockitoBean GestionarCursoOfertadoVeranoCUIntPort cursoCU;
+    @MockitoBean GestionarSolicitudCursoVeranoCUIntPort solicitudCU;
+    @MockitoBean GenerarReportesCursosVeranoCUIntPort generadorExcel;
+    @MockitoBean GestionarUsuarioGatewayIntPort usuarioGateway;
     /** El adaptador del gateway también es el UserDetailsService; al simular el gateway hay que darlo aparte. */
-    @MockBean UserDetailsService userDetailsService;
+    @MockitoBean UserDetailsService userDetailsService;
 
     @BeforeEach
     void preparar() {

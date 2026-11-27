@@ -154,7 +154,7 @@ class EstadisticasCaracterizacionTest {
     private static JsonNode normalizado(JsonNode valor) {
         if (valor.isObject()) {
             Map<String, JsonNode> campos = new TreeMap<>();
-            valor.fields().forEachRemaining(campo -> {
+            valor.properties().forEach(campo -> {
                 if (!FECHAS_DE_CONSULTA.contains(campo.getKey())) {
                     campos.put(campo.getKey(), normalizado(campo.getValue()));
                 }

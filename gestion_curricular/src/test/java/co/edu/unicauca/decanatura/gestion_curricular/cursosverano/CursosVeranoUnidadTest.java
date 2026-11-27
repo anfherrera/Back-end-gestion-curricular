@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarCursoOfertadoVeranoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
@@ -53,12 +52,6 @@ class CursosVeranoUnidadTest {
     private GestionarCursoOfertadoVeranoGatewayIntPort cursoVeranoGateway;
 
     @Mock
-    private GestionarSolicitudGatewayIntPort solicitudGateway;
-
-    @Mock
-    private GestionarUsuarioGatewayIntPort usuarioGateway;
-
-    @Mock
     private GestionarMateriasIntPort materiasGateway;
 
     @Mock
@@ -66,9 +59,6 @@ class CursosVeranoUnidadTest {
 
     @Mock
     private GestionarSalonesIntPort salonesGateway;
-
-    @Mock
-    private GestionarNotificacionCUIntPort notificacionCU;
 
     private GestionarCursoOfertadoVeranoCUIntPort cursosVeranoCU;
 
@@ -79,12 +69,9 @@ class CursosVeranoUnidadTest {
         // Crear el CU Adapter con TODAS las dependencias mockeadas
         cursosVeranoCU = new GestionarCursoOfertadoVeranoCUAdapter(
                 cursoVeranoGateway,
-                solicitudGateway,
-                usuarioGateway,
                 materiasGateway,
                 docenteGateway,
-                salonesGateway,
-                notificacionCU
+                salonesGateway
         );
 
         // Crear curso de ejemplo

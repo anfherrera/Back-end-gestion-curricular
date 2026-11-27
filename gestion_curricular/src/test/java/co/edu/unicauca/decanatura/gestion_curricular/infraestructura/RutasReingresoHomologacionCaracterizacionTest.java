@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -78,14 +78,14 @@ class RutasReingresoHomologacionCaracterizacionTest {
     private final ArrayNode llamadas = json.createArrayNode();
 
     @Autowired MockMvc mvc;
-    @MockBean GestionarSolicitudReingresoCUIntPort reingreso;
-    @MockBean GestionarSolicitudHomologacionCUIntPort homologacion;
-    @MockBean GestionarArchivosCUIntPort archivos;
-    @MockBean GestionarDocumentosCUIntPort documentos;
-    @MockBean GestionarSolicitudGatewayIntPort solicitudGateway;
-    @MockBean GestionarUsuarioGatewayIntPort usuarioGateway;
+    @MockitoBean GestionarSolicitudReingresoCUIntPort reingreso;
+    @MockitoBean GestionarSolicitudHomologacionCUIntPort homologacion;
+    @MockitoBean GestionarArchivosCUIntPort archivos;
+    @MockitoBean GestionarDocumentosCUIntPort documentos;
+    @MockitoBean GestionarSolicitudGatewayIntPort solicitudGateway;
+    @MockitoBean GestionarUsuarioGatewayIntPort usuarioGateway;
     /** El adaptador del gateway también es el UserDetailsService; al simular el gateway hay que darlo aparte. */
-    @MockBean UserDetailsService userDetailsService;
+    @MockitoBean UserDetailsService userDetailsService;
 
     @BeforeEach
     void preparar() throws Exception {

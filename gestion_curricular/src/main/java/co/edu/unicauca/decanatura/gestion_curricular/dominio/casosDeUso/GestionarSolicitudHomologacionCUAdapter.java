@@ -26,7 +26,6 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
 
     private final GestionarSolicitudHomologacionGatewayIntPort gestionarSolicitudHomologacionGateway;
     private final GestionarUsuarioGatewayIntPort gestionarUsuarioGateway;
-    private final GestionarDocumentosGatewayIntPort gestionarDocumentosGateway;
     private final GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway;
     private final GestionarNotificacionCUIntPort gestionarNotificacionCU;
     private final AsociadorDocumentosPendientes asociadorDocumentos;
@@ -37,7 +36,6 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     GestionarNotificacionCUIntPort gestionarNotificacionCU, GestionarArchivosCUIntPort gestionarArchivos) {
         this.gestionarSolicitudHomologacionGateway = gestionarSolicitudHomologacionGateway;
         this.gestionarUsuarioGateway = gestionarUsuarioGateway;
-        this.gestionarDocumentosGateway = gestionarDocumentosGateway;
         this.gestionarEstadoSolicitudGateway = gestionarEstadoSolicitudGateway;
         this.gestionarNotificacionCU = gestionarNotificacionCU;
         this.asociadorDocumentos = new AsociadorDocumentosPendientes(gestionarDocumentosGateway, gestionarArchivos);

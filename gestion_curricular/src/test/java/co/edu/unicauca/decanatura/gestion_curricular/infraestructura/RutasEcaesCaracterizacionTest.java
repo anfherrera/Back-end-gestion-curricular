@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -76,11 +76,11 @@ class RutasEcaesCaracterizacionTest {
     private final ArrayNode llamadas = json.createArrayNode();
 
     @Autowired MockMvc mvc;
-    @MockBean GestionarSolicitudEcaesCUIntPort ecaes;
-    @MockBean GestionarSolicitudGatewayIntPort solicitudGateway;
-    @MockBean GestionarUsuarioGatewayIntPort usuarioGateway;
+    @MockitoBean GestionarSolicitudEcaesCUIntPort ecaes;
+    @MockitoBean GestionarSolicitudGatewayIntPort solicitudGateway;
+    @MockitoBean GestionarUsuarioGatewayIntPort usuarioGateway;
     /** El adaptador del gateway también es el UserDetailsService; al simular el gateway hay que darlo aparte. */
-    @MockBean UserDetailsService userDetailsService;
+    @MockitoBean UserDetailsService userDetailsService;
 
     @BeforeEach
     void preparar() {

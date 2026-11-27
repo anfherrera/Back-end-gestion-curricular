@@ -1,0 +1,72 @@
+{
+  "properties": [
+    {
+      "name": "app.jwt.secret",
+      "type": "java.lang.String",
+      "description": "Clave para firmar los tokens de sesión (HS512). Mínimo 32 bytes; sin ella la aplicación no arranca. En producción: JWT_SECRET."
+    },
+    {
+      "name": "app.jwt.expiration",
+      "type": "java.lang.Long",
+      "description": "Duración del token de sesión, en milisegundos.",
+      "defaultValue": 3600000
+    },
+    {
+      "name": "app.bootstrap-admin.cedula",
+      "type": "java.lang.String",
+      "description": "Cédula de la cuenta admin@unicauca.edu.co que se crea al arrancar si no existe. Vacía: no se crea."
+    },
+    {
+      "name": "app.bootstrap-admin.password",
+      "type": "java.lang.String",
+      "description": "Contraseña inicial de la cuenta de administrador. Solo se usa al crearla; reiniciar no la cambia."
+    },
+    {
+      "name": "app.cors.allowed-origins",
+      "type": "java.lang.String",
+      "description": "Orígenes del frontend separados por comas; admite patrones como https://*.vercel.app.",
+      "defaultValue": "http://localhost:4200"
+    },
+    {
+      "name": "app.google.client-id",
+      "type": "java.lang.String",
+      "description": "Client ID de Google (Aplicación web) para iniciar sesión con la cuenta institucional. Vacío: el inicio con Google responde 503."
+    },
+    {
+      "name": "app.google.dominio",
+      "type": "java.lang.String",
+      "description": "Dominio de Google Workspace cuyas cuentas pueden iniciar sesión con Google.",
+      "defaultValue": "unicauca.edu.co"
+    },
+    {
+      "name": "app.openapi.dev-url",
+      "type": "java.lang.String",
+      "description": "URL del servidor de desarrollo que muestra Swagger.",
+      "defaultValue": "http://localhost:5000"
+    },
+    {
+      "name": "app.openapi.prod-url",
+      "type": "java.lang.String",
+      "description": "URL del servidor de producción que muestra Swagger.",
+      "defaultValue": "https://back-end-gestion-curricular.onrender.com"
+    },
+    {
+      "name": "security.login.max-attempts",
+      "type": "java.lang.Integer",
+      "description": "Intentos fallidos de inicio de sesión permitidos por correo e IP dentro de la ventana.",
+      "defaultValue": 5
+    },
+    {
+      "name": "security.login.window-seconds",
+      "type": "java.lang.Long",
+      "description": "Ventana, en segundos, en la que se cuentan los intentos fallidos.",
+      "defaultValue": 900
+    },
+    {
+      "name": "security.login.lock-seconds",
+      "type": "java.lang.Long",
+      "description": "Tiempo, en segundos, que dura el bloqueo al superar los intentos permitidos.",
+      "defaultValue": 900
+    }
+  ]
+}

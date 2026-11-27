@@ -12,12 +12,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocenteGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarMateriasIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSalonesIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarCursoOfertadoVeranoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
@@ -45,9 +42,8 @@ class InscritosProgramaCursoVeranoCaracterizacionTest {
                 repositorio, mock(UsuarioRepositoryInt.class), mock(EstadoCursoOfertadoRepositoryInt.class),
                 mock(DocenteRepositoryInt.class), mock(MateriaRepositoryInt.class));
         GestionarCursoOfertadoVeranoCUAdapter casoDeUso = new GestionarCursoOfertadoVeranoCUAdapter(gateway,
-                mock(GestionarSolicitudGatewayIntPort.class), mock(GestionarUsuarioGatewayIntPort.class),
                 mock(GestionarMateriasIntPort.class), mock(GestionarDocenteGatewayIntPort.class),
-                mock(GestionarSalonesIntPort.class), mock(GestionarNotificacionCUIntPort.class));
+                mock(GestionarSalonesIntPort.class));
 
         ObjectNode casos = JsonNodeFactory.instance.objectNode();
         for (Integer idPrograma : new Integer[] { null, 1, 2 }) {

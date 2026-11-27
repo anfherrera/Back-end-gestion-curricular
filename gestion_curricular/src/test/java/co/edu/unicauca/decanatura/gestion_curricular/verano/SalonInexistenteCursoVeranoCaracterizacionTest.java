@@ -19,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSalonesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
@@ -27,8 +26,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocenteGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarMateriasIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSalonesIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarCursoOfertadoVeranoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.CursosVeranoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
@@ -47,9 +44,8 @@ class SalonInexistenteCursoVeranoCaracterizacionTest {
     @Test
     void respondeAlSalonInexistente() throws Exception {
         var casoDeUso = new GestionarCursoOfertadoVeranoCUAdapter(mock(GestionarCursoOfertadoVeranoGatewayIntPort.class),
-            mock(GestionarSolicitudGatewayIntPort.class), mock(GestionarUsuarioGatewayIntPort.class),
             mock(GestionarMateriasIntPort.class), mock(GestionarDocenteGatewayIntPort.class),
-            mock(GestionarSalonesIntPort.class), mock(GestionarNotificacionCUIntPort.class));
+            mock(GestionarSalonesIntPort.class));
         MockMvc mvc = SoporteMvc.standaloneSetup(new CursosVeranoRestController(casoDeUso,
                 mock(GestionarSolicitudCursoVeranoCUIntPort.class), null, mock(GestionarSalonesCUIntPort.class), null))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
@@ -80,7 +76,7 @@ class SalonInexistenteCursoVeranoCaracterizacionTest {
         resultado.put("status", respuesta.getStatus());
         resultado.set("body", body);
         List<String> claves = new ArrayList<>();
-        body.fields().forEachRemaining(campo -> claves.add(campo.getKey() + ":" + campo.getValue().getNodeType()));
+        body.properties().forEach(campo -> claves.add(campo.getKey() + ":" + campo.getValue().getNodeType()));
         claves.sort(null);
         ArrayNode lista = resultado.putArray("claves");
         claves.forEach(lista::add);

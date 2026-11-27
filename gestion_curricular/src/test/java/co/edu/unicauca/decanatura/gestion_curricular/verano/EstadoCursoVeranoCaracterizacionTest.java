@@ -34,7 +34,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarMateriasIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSalonesIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarCursoOfertadoVeranoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudCursoVeranoCUAdapter;
@@ -129,10 +128,8 @@ class EstadoCursoVeranoCaracterizacionTest {
 
         var gatewayCursos = mock(GestionarCursoOfertadoVeranoGatewayIntPort.class);
         when(gatewayCursos.listarTodos()).thenAnswer(i -> new ArrayList<>(List.of(curso(historial))));
-        var cursos = new GestionarCursoOfertadoVeranoCUAdapter(gatewayCursos, mock(GestionarSolicitudGatewayIntPort.class),
-                mock(GestionarUsuarioGatewayIntPort.class), mock(GestionarMateriasIntPort.class),
-                mock(GestionarDocenteGatewayIntPort.class), mock(GestionarSalonesIntPort.class),
-                mock(GestionarNotificacionCUIntPort.class));
+        var cursos = new GestionarCursoOfertadoVeranoCUAdapter(gatewayCursos, mock(GestionarMateriasIntPort.class),
+                mock(GestionarDocenteGatewayIntPort.class), mock(GestionarSalonesIntPort.class));
         nodo.set("listarVisibles", resultado(() -> cursos.listarPorFiltros(null, null, true).size()));
         nodo.set("periodosConCursosVisibles", resultado(cursos::listarPeriodosConCursosVisibles));
 

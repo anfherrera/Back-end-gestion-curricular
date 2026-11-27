@@ -7,13 +7,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocenteGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarMateriasIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSalonesIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.DatosCursoInvalidosException.Motivo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.DatosCursoInvalidosException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
@@ -32,27 +29,18 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.Perio
 public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfertadoVeranoCUIntPort {
 
     private final GestionarCursoOfertadoVeranoGatewayIntPort gestionarCursoOfertadoVeranoGateway;
-    private final GestionarSolicitudGatewayIntPort gestionarSolicitudGateway;
-    private final GestionarUsuarioGatewayIntPort gestionarUsuarioGateway;
     private final GestionarMateriasIntPort gestionarMateriasGateway;
     private final GestionarDocenteGatewayIntPort gestionarDocenteGateway;
     private final GestionarSalonesIntPort salonesGateway;
-    private final GestionarNotificacionCUIntPort gestionarNotificacionCU;
 
     public GestionarCursoOfertadoVeranoCUAdapter(GestionarCursoOfertadoVeranoGatewayIntPort gestionarCursoOfertadoVeranoGateway,
-            GestionarSolicitudGatewayIntPort gestionarSolicitudGateway,
-            GestionarUsuarioGatewayIntPort gestionarUsuarioGateway,
             GestionarMateriasIntPort gestionarMateriasGateway,
             GestionarDocenteGatewayIntPort gestionarDocenteGateway,
-            GestionarSalonesIntPort salonesGateway,
-            GestionarNotificacionCUIntPort gestionarNotificacionCU) {
+            GestionarSalonesIntPort salonesGateway) {
         this.gestionarCursoOfertadoVeranoGateway = gestionarCursoOfertadoVeranoGateway;
-        this.gestionarSolicitudGateway = gestionarSolicitudGateway;
-        this.gestionarUsuarioGateway = gestionarUsuarioGateway;
         this.gestionarMateriasGateway = gestionarMateriasGateway;
         this.gestionarDocenteGateway = gestionarDocenteGateway;
         this.salonesGateway = salonesGateway;
-        this.gestionarNotificacionCU = gestionarNotificacionCU;
     }
 
 

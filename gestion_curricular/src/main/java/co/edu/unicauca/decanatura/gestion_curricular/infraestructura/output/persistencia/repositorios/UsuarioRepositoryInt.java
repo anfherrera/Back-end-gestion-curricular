@@ -7,11 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
 
-@Repository
 public interface UsuarioRepositoryInt extends JpaRepository<UsuarioEntity, Integer> {
 
     // Buscar usuario por código exacto (usado en obtener usuario o para encontrar ID)

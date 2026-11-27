@@ -100,7 +100,7 @@ class SubirPdfClavesCaracterizacionTest {
         JsonNode cuerpo = json.readTree(respuesta.getContentAsByteArray());
         List<String> claves = new ArrayList<>();
         claves.add("status:" + respuesta.getStatus());
-        cuerpo.fields().forEachRemaining(campo -> claves.add(campo.getKey() + ":" + campo.getValue().getNodeType()));
+        cuerpo.properties().forEach(campo -> claves.add(campo.getKey() + ":" + campo.getValue().getNodeType()));
         return claves;
     }
 }

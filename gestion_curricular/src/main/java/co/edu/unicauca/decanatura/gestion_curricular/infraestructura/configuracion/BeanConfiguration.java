@@ -24,7 +24,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocenteGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoCursoOfertadoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarMateriasIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarNotificacionGatewayIntPort;
@@ -85,17 +84,14 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public GestionarCursoOfertadoVeranoCUAdapter crearGestionarCursoOfertadoVeranoCUInt(GestionarCursoOfertadoVeranoGatewayIntPort objGestionarCursoOfertadoVeranoGateway,
-            GestionarSolicitudGatewayIntPort objGestionarSolicitudGateway, 
-            GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
+    public GestionarCursoOfertadoVeranoCUAdapter crearGestionarCursoOfertadoVeranoCUInt(
+            GestionarCursoOfertadoVeranoGatewayIntPort objGestionarCursoOfertadoVeranoGateway,
             GestionarMateriasIntPort objGestionarMateriasGateway,
             GestionarDocenteGatewayIntPort objGestionarDocenteGateway,
-            GestionarSalonesIntPort salonesGateway,
-            GestionarEstadoCursoOfertadoGatewayIntPort objGestionarEstadoCursoOfertadoGateway,
-            GestionarNotificacionCUIntPort objGestionarNotificacionCU){
-                return new GestionarCursoOfertadoVeranoCUAdapter(objGestionarCursoOfertadoVeranoGateway, objGestionarSolicitudGateway, objGestionarUsuarioGateway,
-                 objGestionarMateriasGateway, objGestionarDocenteGateway, salonesGateway, objGestionarNotificacionCU);
-            }
+            GestionarSalonesIntPort salonesGateway) {
+        return new GestionarCursoOfertadoVeranoCUAdapter(objGestionarCursoOfertadoVeranoGateway,
+                objGestionarMateriasGateway, objGestionarDocenteGateway, salonesGateway);
+    }
 
     // GestionarEstadisticasGatewayImplAdapter ya está definido como @Service, no necesita definición adicional
     
@@ -117,9 +113,8 @@ public class BeanConfiguration {
     
     
     @Bean
-    public GestionarSolicitudCUAdapter GestionarSolicitudCUInt (GestionarSolicitudGatewayIntPort objGestionarSolicitudGateway,
-    GestionarUsuarioGatewayIntPort objUsuario) {
-        return new GestionarSolicitudCUAdapter(objGestionarSolicitudGateway, objUsuario);
+    public GestionarSolicitudCUAdapter GestionarSolicitudCUInt(GestionarSolicitudGatewayIntPort objGestionarSolicitudGateway) {
+        return new GestionarSolicitudCUAdapter(objGestionarSolicitudGateway);
     }
 
     @Bean 

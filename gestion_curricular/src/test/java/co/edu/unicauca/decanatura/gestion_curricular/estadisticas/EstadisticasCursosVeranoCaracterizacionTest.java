@@ -2,7 +2,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.estadisticas;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -116,7 +115,7 @@ class EstadisticasCursosVeranoCaracterizacionTest {
     private static JsonNode normalizado(JsonNode valor) {
         if (valor.isObject()) {
             Map<String, JsonNode> campos = new TreeMap<>();
-            valor.fields().forEachRemaining(campo -> {
+            valor.properties().forEach(campo -> {
                 if (!FECHAS_DE_CONSULTA.contains(campo.getKey())) {
                     campos.put(campo.getKey(), normalizado(campo.getValue()));
                 }

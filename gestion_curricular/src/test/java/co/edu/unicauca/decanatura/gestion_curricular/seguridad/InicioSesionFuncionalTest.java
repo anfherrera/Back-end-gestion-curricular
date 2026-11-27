@@ -160,6 +160,14 @@ class InicioSesionFuncionalTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    @DisplayName("El chequeo de salud responde sin sesión, para el health check del hosting")
+    void healthSinSesion() throws Exception {
+        mockMvc.perform(get("/actuator/health"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("UP"));
+    }
+
     private ResultActions loginGoogle(String credencial) throws Exception {
         return mockMvc.perform(post("/api/usuarios/login/google")
                 .contentType(MediaType.APPLICATION_JSON)

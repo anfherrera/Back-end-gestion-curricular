@@ -25,7 +25,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.ListadorS
 public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaesCUIntPort {
 
     private final GestionarPreRegistroEcaesGatewayIntPort gestionarSolicitudEcaesGateway;
-    private final GestionarDocumentosGatewayIntPort documentosGateway;
     private final GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway;
     private final GestionarUsuarioGatewayIntPort gestionarUsuarioGateway;
     private final GestionarNotificacionCUIntPort gestionarNotificacionCU;
@@ -41,7 +40,6 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
             GestionarArchivosCUIntPort gestionarArchivos
             ) {
         this.gestionarSolicitudEcaesGateway = gestionarSolicitudEcaesGateway;
-        this.documentosGateway = documentosGateway;
         this.gestionarEstadoSolicitudGateway = gestionarEstadoSolicitudGateway;
         this.gestionarUsuarioGateway = gestionarUsuarioGateway;
         this.gestionarNotificacionCU = gestionarNotificacionCU;

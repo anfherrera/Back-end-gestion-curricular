@@ -1,6 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CodigoError;
 
 public class ReglaNegocioExcepcion extends GestionCurricularException {
 
