@@ -9,7 +9,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorSemestre;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Globales;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
@@ -170,14 +169,6 @@ public interface GestionarEstadisticasCUIntPort {
      * @return Lista de estadísticas por período ordenadas cronológicamente
      */
     List<EntradaHistorial> obtenerHistorialEstadisticas(Integer anioInicio, Integer anioFin);
-
-    /**
-     * Obtiene estadísticas por período académico usando formato YYYY-P.
-     * 
-     * @param periodoAcademico Período en formato "YYYY-P" (ej: "2024-2")
-     * @return estadísticas del período
-     */
-    EstadisticasPorSemestre obtenerEstadisticasPorPeriodoAcademico(String periodoAcademico);
 
 
     /**

@@ -790,17 +790,6 @@
       "metodo" : "GET"
     }
   },
-  "documentos registrar nulo" : {
-    "estado" : 400,
-    "excepcion" : "ReglaNegocioExcepcion",
-    "cuerpo" : {
-      "codigoError" : "GC-0004",
-      "mensaje" : "GC-0004 - Violación a regla de negocio: El documento no puede ser nulo.",
-      "codigoHttp" : 400,
-      "url" : "http://localhost/caso",
-      "metodo" : "GET"
-    }
-  },
   "documentos buscar sin id" : {
     "estado" : 409,
     "excepcion" : "EntidadYaExisteException",
@@ -1379,17 +1368,6 @@
     "cuerpo" : {
       "codigoError" : "GC-0002",
       "mensaje" : "ERROR ENTIDAD YA EXISTE, El año de inicio no puede ser mayor al año de fin.",
-      "codigoHttp" : 409,
-      "url" : "http://localhost/caso",
-      "metodo" : "GET"
-    }
-  },
-  "estadisticas periodo academico vacio" : {
-    "estado" : 409,
-    "excepcion" : "EntidadYaExisteException",
-    "cuerpo" : {
-      "codigoError" : "GC-0002",
-      "mensaje" : "ERROR ENTIDAD YA EXISTE, El período académico no puede estar vacío.",
       "codigoHttp" : 409,
       "url" : "http://localhost/caso",
       "metodo" : "GET"

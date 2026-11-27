@@ -8,9 +8,6 @@ public interface GestionarDocumentosCUIntPort {
 
     Documento buscarDocumentoId(Integer idDocumento);
 
-    /** Registra un documento ya guardado en disco (con o sin solicitud asociada). */
-    Documento registrarDocumento(Documento documento);
-
     /** Guarda un PDF sin solicitud y registra su autor y nombre original. */
     Documento subirDocumento(ArchivoSubido archivo, Integer idUsuario);
 
@@ -32,10 +29,5 @@ public interface GestionarDocumentosCUIntPort {
      * @param rolUsuario opcional, para prefijar "Rol - Nombre:"
      */
     void añadirComentario(Integer idDocumento, String comentario, String nombreUsuario, String rolUsuario);
-
-    /** Delegación a {@link #añadirComentario(Integer, String, String, String)} con usuario/rol null. */
-    default void añadirComentario(Integer idDocumento, String comentario) {
-        añadirComentario(idDocumento, comentario, null, null);
-    }
 
 }
