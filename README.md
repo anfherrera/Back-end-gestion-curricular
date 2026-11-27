@@ -1,195 +1,193 @@
 # Back-end-gestion-curricular
 
-Backend del sistema de atención a estudiantes de pregrado en los procesos relacionados con la gestión curricular (Propuesta 2) para el soporte administrativo en la FIET - Universidad del Cauca.
+API REST del **Sistema de Atención a Estudiantes de Pregrado** de la Decanatura de la FIET (Universidad del Cauca). Atiende las solicitudes de gestión curricular de los estudiantes y su revisión por parte de funcionarios, coordinadores, secretarios y el decano.
+
+El frontend (Angular) está en un repositorio aparte: `Front-end-gestion-curricular`.
+
+## Contenido
+
+- [Qué hace](#qué-hace)
+- [Tecnologías](#tecnologías)
+- [Ejecutar en local](#ejecutar-en-local)
+- [Arquitectura](#arquitectura)
+- [Seguridad e inicio de sesión](#seguridad-e-inicio-de-sesión)
+- [Inicio de sesión con Google](#inicio-de-sesión-con-google)
+- [Base de datos y migraciones](#base-de-datos-y-migraciones)
+- [Pruebas](#pruebas)
+- [Despliegue](#despliegue)
+
+## Qué hace
+
+| Módulo | Ruta base | Resumen |
+| --- | --- | --- |
+| Homologación de asignaturas | `/api/solicitudes-homologacion` | Solicitud, revisión por etapas y oficio de respuesta |
+| Reingreso | `/api/solicitudes-reingreso` | Solicitud, revisión por etapas y resolución |
+| Paz y salvo | `/api/solicitudes-pazysalvo` | Documentos del estudiante, revisión y certificado |
+| Pruebas ECAES (Saber Pro) | `/api/solicitudes-ecaes` | Fechas del periodo y preinscripción |
+| Cursos de verano | `/api/cursos-verano` | Oferta, preinscripciones, inscripciones y reportes |
+| Estadísticas | `/api/estadisticas` | Indicadores, tendencias y reportes en PDF y Excel |
+| Documentos | `/api/documentos`, `/api/archivos`, `/api/documentos-generados` | Archivos adjuntos y oficios generados desde plantillas Word |
+| Notificaciones | `/api/notificaciones` | Avisos de cambio de estado para cada rol |
+| Usuarios | `/api/usuarios` | Cuentas, roles y activación; los crean el Administrador y el Coordinador |
+| Catálogos | `/api/roles`, `/api/programas`, `/api/docentes`, `/api/periodos-academicos`, `/api/tipos-documento` | Datos maestros que cualquier usuario consulta; roles, programas y docentes solo los modifica el Administrador |
+
+**Flujo de las solicitudes de homologación, reingreso y paz y salvo.** En cada paso, el rol que decide puede aprobar o rechazar. El Administrador puede hacer cualquier paso válido, pero no saltarse ninguno.
+
+```
+ENVIADA ─(Funcionario)─▶ APROBADA_FUNCIONARIO ─(Coordinador)─▶ APROBADA_COORDINADOR ─(Secretario)─▶ APROBADA
+   └──────────────────────────────┴──────────────── RECHAZADA ◀───────────────┘
+```
+
+ECAES tiene un solo paso: `ENVIADA ─(Funcionario)─▶ PRE_REGISTRADO | RECHAZADA`.
+
+**Roles:** Administrador, Estudiante, Coordinador, Secretario, Funcionario, Docente y Decano.
+
+La documentación de cada endpoint está en Swagger: `http://localhost:5000/swagger-ui.html`.
 
 ## Tecnologías
 
-- **Java 17**
-- **Spring Boot 3.2.5**
-- **Spring Security** (JWT)
-- **Spring Data JPA / Hibernate**
-- **MySQL**
-- **Maven**
-- **Lombok**
-- **MapStruct**
-- **Swagger/OpenAPI**
+- Java 17 (producción) y Java 25 (también se prueba con ella)
+- Spring Boot 3.5: Web, Security, Data JPA, Validation, Actuator
+- JWT (jjwt) para la sesión y `spring-security-oauth2-jose` para verificar los tokens de Google
+- MySQL 8 con migraciones Flyway; H2 en memoria para las pruebas
+- MapStruct y Lombok
+- Apache POI (Word y Excel), iText (PDF) y Commons Math (proyecciones de demanda)
+- springdoc-openapi (Swagger UI)
 
-## Requisitos Previos
+## Ejecutar en local
 
-- Java 17 o superior
-- Maven 3.6+ (o Maven Wrapper incluido `./mvnw`)
-- MySQL 8.0+
-- Git
+**Requisitos:** Java 17 o superior y MySQL 8. No hace falta instalar Maven: el proyecto trae `mvnw`.
 
-## Configuración Local
+1. Crear la base de datos (vacía; Flyway crea las tablas al arrancar):
 
-### 1. Clonar el repositorio
-```bash
-git clone <url-del-repositorio>
-cd Back-end-gestion-curricular
-```
+   ```sql
+   CREATE DATABASE bdcurricular CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
 
-### 2. Configurar Base de Datos
+2. Arrancar con el perfil `dev`, que es el predeterminado:
 
-Crear una base de datos MySQL:
-```sql
-CREATE DATABASE bdcurricular CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
+   ```bash
+   cd gestion_curricular
+   ./mvnw spring-boot:run
+   ```
 
-### 3. Configurar Variables de Entorno
+   En Windows: `mvnw.cmd spring-boot:run`.
 
-Copiar el archivo de ejemplo y configurar:
-```bash
-cp gestion_curricular/env.example gestion_curricular/.env
-```
+3. Abrir `http://localhost:5000/swagger-ui.html`.
 
-Editar `.env` con tus credenciales:
-```properties
-SPRING_PROFILES_ACTIVE=dev
-DB_URL=jdbc:mysql://localhost:3306/bdcurricular?useSSL=false&serverTimezone=GMT
-DB_USERNAME=root
-DB_PASSWORD=tu_contraseña
-JWT_SECRET=clave_secreta_desarrollo
-```
+El perfil `dev` (`application-dev.properties`) usa MySQL en `localhost:3306` con el usuario `root` sin contraseña. Para cambiar cualquier valor sin editar el archivo, se define la variable de entorno equivalente, por ejemplo `SPRING_DATASOURCE_PASSWORD=mi_clave` o `SPRING_DATASOURCE_URL=...`.
 
-### 4. Ejecutar la Aplicación
-
-```bash
-cd gestion_curricular
-./mvnw spring-boot:run
-# o
-mvn spring-boot:run
-```
-
-La aplicación estará disponible en: `http://localhost:5000`
-
-## Documentación API
-
-Una vez iniciada la aplicación, accede a:
-- **Swagger UI**: `http://localhost:5000/swagger-ui.html`
-- **OpenAPI Docs**: `http://localhost:5000/api-docs`
+Al primer arranque se crea la cuenta `admin@unicauca.edu.co` con la contraseña `password123`, o la que indique `ADMIN_PASSWORD`. Para tener datos de ejemplo, se ejecuta una vez `gestion_curricular/scripts/datos_demo.sql` y se reinicia la aplicación.
 
 ## Arquitectura
 
-El proyecto sigue una **Arquitectura Hexagonal** (Ports & Adapters):
+El proyecto sigue la **arquitectura hexagonal** (puertos y adaptadores). Las dependencias apuntan siempre hacia el dominio: el dominio no conoce Spring, JPA ni los controladores.
 
 ```
-gestion_curricular/
-├── dominio/              # Lógica de negocio (casos de uso)
-├── aplicacion/           # Puertos (interfaces)
-│   ├── input/           # Casos de uso (puertos de entrada)
-│   └── output/          # Gateways (puertos de salida)
-└── infraestructura/      # Adaptadores
-    ├── input/           # Controladores REST
-    └── output/          # Persistencia, servicios externos
+co.edu.unicauca.decanatura.gestion_curricular
+├── dominio/                 Reglas de negocio, sin dependencias de frameworks
+│   ├── modelos/             Entidades del negocio y flujos de estado
+│   ├── casosDeUso/          Implementación de los puertos de entrada (*CUAdapter)
+│   ├── servicios/           Reglas compartidas (estadísticas, cupos, documentos)
+│   └── excepciones/         Errores de negocio y sus códigos (GC-XXXX)
+├── aplicacion/              Puertos (interfaces)
+│   ├── input/               Lo que ofrece el dominio (*CUIntPort)
+│   └── output/              Lo que el dominio necesita de afuera (*GatewayIntPort)
+├── infraestructura/         Adaptadores
+│   ├── input/               Controladores REST, DTO, validación y manejo global de errores
+│   ├── output/              Persistencia JPA, generación de PDF, Excel y Word
+│   └── configuracion/       Ensamblado de los casos de uso (BeanConfiguration)
+└── seguridad/               JWT, inicio con Google, permisos por rol, límite de intentos y auditoría
 ```
 
-## Seguridad
+Cómo viaja una petición: **controlador** → **puerto de entrada** → **caso de uso** (dominio) → **puerto de salida** → **gateway JPA**. Los errores de negocio llegan al manejador global (`RestApiExceptionHandler`), que siempre responde con la misma forma: `codigoError`, `mensaje`, `codigoHttp`, `url` y `metodo`.
 
-- Autenticación JWT, con correo y contraseña o con la cuenta institucional de Google (`POST /api/usuarios/login/google`)
-- Solo entran cuentas registradas y activas: desactivar un usuario corta también la sesión que tenía abierta
-- Rate limiting en login
-- Password hashing con BCrypt
-- Headers de seguridad HTTP
-- CORS configurado
-- Auditoría de seguridad (logger `SecurityAuditService`)
+## Seguridad e inicio de sesión
 
-### Inicio de sesión con Google
+- **Sesión con JWT**: `POST /api/usuarios/login` (correo y contraseña) o `POST /api/usuarios/login/google` devuelven un token que se envía en `Authorization: Bearer <token>`. Dura una hora por defecto (`JWT_EXPIRATION`).
+- **Solo cuentas activas**: un usuario desactivado no puede entrar (403) y el token que ya tenía deja de servir.
+- **Permisos por rol** en cada ruta (`@PreAuthorize` y `SeguridadConfig`).
+- **Límite de intentos**: 5 fallos en 15 minutos bloquean el par correo + IP durante 15 minutos (429).
+- Contraseñas con **BCrypt**, encabezados de seguridad HTTP y CORS limitado a los orígenes del frontend.
+- **Auditoría**: los ingresos fallidos, bloqueos y tokens inválidos quedan en el log (logger `SecurityAuditService`).
 
-1. En [Google Cloud Console](https://console.cloud.google.com/apis/credentials), crear un **ID de cliente de OAuth** de tipo *Aplicación web*.
-2. En **Orígenes de JavaScript autorizados**, agregar `http://localhost:4200` y la URL del frontend en producción. No hace falta URI de redirección.
-3. Poner el Client ID en `GOOGLE_CLIENT_ID` (backend) y en `googleClientId` de los `environment` del frontend.
+## Inicio de sesión con Google
 
-El backend verifica la firma del token con las llaves públicas de Google y acepta solo correos verificados del Google Workspace `@unicauca.edu.co` (claim `hd`). Una cuenta institucional sin registro en el sistema recibe 403: el Administrador o el Coordinador debe crearla primero. Sin `GOOGLE_CLIENT_ID`, el endpoint responde 503 y el botón no aparece.
+Permite entrar con el botón "Iniciar sesión con Google" usando la cuenta institucional **@unicauca.edu.co**. Es opcional: **mientras no se configure, el endpoint responde 503, el botón no aparece en el frontend y el resto del sistema funciona igual.**
+
+**Para activarlo:**
+
+1. En [Google Cloud Console → Credenciales](https://console.cloud.google.com/apis/credentials), crear un **ID de cliente de OAuth** de tipo **Aplicación web**. Si es la primera vez, Google pide configurar antes la *pantalla de consentimiento*.
+2. En **Orígenes de JavaScript autorizados**, agregar `http://localhost:4200` y la URL del frontend en producción (`https://front-end-gestion-curricular.vercel.app`). No hace falta URI de redirección.
+3. Copiar el Client ID (termina en `.apps.googleusercontent.com`) en:
+   - **Backend**: la variable de entorno `GOOGLE_CLIENT_ID` en Render. En local, la misma variable antes de `./mvnw spring-boot:run`.
+   - **Frontend**: `googleClientId` en `src/environments/environment.ts` y en `environment.production.ts`.
+4. Reiniciar el backend y volver a desplegar el frontend.
+
+**Quién puede entrar.** El backend verifica la firma del token con las llaves públicas de Google, que sea para esta aplicación, que no haya vencido, que Google haya verificado el correo y que la cuenta sea del Google Workspace `unicauca.edu.co`. Además, la cuenta debe estar **registrada y activa** en el sistema. Una cuenta institucional sin registro recibe 403 con un mensaje para que el Administrador o el Coordinador la cree primero.
+
+## Base de datos y migraciones
+
+| Perfil | Base de datos | Esquema |
+| --- | --- | --- |
+| `dev` | MySQL local | Flyway migra al arrancar y Hibernate valida |
+| `prod` | MySQL (variables de entorno) | Hibernate valida (`DDL_AUTO=validate`); los cambios se aplican a mano |
+| `test` | H2 en memoria | Hibernate lo crea y carga `src/test/resources/test-data.sql` |
+
+Las migraciones están en `gestion_curricular/src/main/resources/db/migration/`: `V1` crea el esquema y `V2` carga los roles y los programas. Para cambiar el esquema:
+
+1. Agregar un archivo nuevo, por ejemplo `V3__descripcion.sql`, y ajustar las entidades si corresponde.
+2. No modificar nunca un archivo ya aplicado.
+3. Probar el arranque con una base vacía y con una que ya tenga las versiones anteriores.
+
+Si tu base local viene de la época de `ddl-auto=create`, crea una base nueva para Flyway e indícala con `SPRING_DATASOURCE_URL`.
+
+## Pruebas
+
+```bash
+cd gestion_curricular
+./mvnw verify
+```
+
+- Más de 600 pruebas: unitarias, de integración con H2 y de caracterización.
+- GitHub Actions (`.github/workflows/pruebas.yml`) corre la suite con Java 17 y Java 25 en cada push y en cada pull request a `main`. También arranca el perfil `dev` dos veces contra un MySQL 8 vacío para comprobar que las migraciones funcionan y conservan los datos. No se debe fusionar un pull request con pruebas en rojo.
+- Las pruebas de caracterización comparan respuestas completas con archivos de `src/test/resources/referencias/`. Si un cambio en una respuesta es intencional, se regraban con `./mvnw test -Dtest='*CaracterizacionTest' -DgrabarReferencia=true` y se revisa el diff antes del commit.
 
 ## Despliegue
 
-### Variables de Entorno Requeridas
+Producción corre en **Render** con el `Dockerfile` de la raíz: compila con Maven y ejecuta el JAR en Java 17.
 
-| Variable | Descripción |
-| --- | --- |
-| `SPRING_PROFILES_ACTIVE` | Perfil a ejecutar (`prod` en despliegue) |
-| `SPRING_CONFIG_LOCATION` | Rutas de los archivos de configuración (usar `classpath:/application.properties,classpath:/application-prod.properties`) |
-| `DB_URL` | Cadena JDBC de la base de datos |
-| `DB_USERNAME` / `DB_PASSWORD` | Credenciales de la base de datos |
-| `DDL_AUTO` | Estrategia de Hibernate (`validate` en producción) |
-| `SHOW_SQL` | `false` en producción |
-| `JWT_SECRET` | Clave secreta del token JWT (mínimo 256 bits) |
-| `JWT_EXPIRATION` | Tiempo de expiración del token en milisegundos (ej. `3600000`) |
-| `CORS_ALLOWED_ORIGINS` | Orígenes del frontend separados por comas (por defecto `http://localhost:4200,https://front-end-gestion-curricular.vercel.app`) |
-| `GOOGLE_CLIENT_ID` | Client ID de Google para el inicio de sesión con la cuenta institucional (opcional) |
-| `PORT` | Puerto que asigna la plataforma (Railway/Render) |
+### Variables de entorno
 
-Consulta `gestion_curricular/env.example` para un ejemplo completo.
+| Variable | Obligatoria | Descripción |
+| --- | --- | --- |
+| `SPRING_PROFILES_ACTIVE` | Sí | `prod` |
+| `SPRING_CONFIG_LOCATION` | Sí | `classpath:/application.properties,classpath:/application-prod.properties` |
+| `DB_URL` | Sí | Cadena JDBC de MySQL |
+| `DB_USERNAME` / `DB_PASSWORD` | Sí | Credenciales de la base de datos |
+| `JWT_SECRET` | Sí | Clave para firmar los tokens: mínimo 32 caracteres; sin ella la aplicación no arranca |
+| `JWT_EXPIRATION` | No | Duración del token en milisegundos (por defecto `3600000`, una hora) |
+| `CORS_ALLOWED_ORIGINS` | No | Orígenes del frontend separados por comas. Por defecto `http://localhost:4200,https://front-end-gestion-curricular.vercel.app`. Si se define, debe incluir la URL del frontend en producción |
+| `GOOGLE_CLIENT_ID` | No | Activa el [inicio de sesión con Google](#inicio-de-sesión-con-google) |
+| `ADMIN_CEDULA` / `ADMIN_PASSWORD` | No | Crean la cuenta `admin@unicauca.edu.co` si no existe; reiniciar no cambia su contraseña |
+| `DDL_AUTO` / `SHOW_SQL` | No | `validate` y `false` por defecto |
+| `PORT` | No | Lo asigna Render |
 
-### Build para Producción
+`gestion_curricular/env.example` tiene un ejemplo completo.
+
+### Comprobar el despliegue
+
+- `GET /actuator/health` debe responder `{"status":"UP"}`.
+- La documentación queda en `/swagger-ui.html`.
+
+### Compilar el JAR a mano
 
 ```bash
 cd gestion_curricular
 ./mvnw -DskipTests package
-# o
-mvn clean package -DskipTests
+java -jar target/gestion_curricular-0.0.1-SNAPSHOT.jar
 ```
-
-El artefacto empaquetado queda en `gestion_curricular/target/gestion_curricular-0.0.1-SNAPSHOT.jar`.
-
-### Despliegue en Render
-
-1. Crear un servicio **Web Service** en [render.com](https://render.com) y conectar el repositorio.
-2. Seleccionar la rama `backend`.
-3. Configurar:
-   - **Build Command**: `./mvnw -DskipTests package`
-   - **Start Command**: `java -jar target/gestion_curricular-0.0.1-SNAPSHOT.jar`
-   - **Environment**: `Docker` / `Native` (cualquiera funciona)
-4. Definir las variables de entorno listadas arriba.
-5. Conectar la base de datos (MySQL externo o un servicio existente).
-6. Desplegar y verificar la URL pública (`/swagger-ui.html`).
-
-> También puedes usar Railway o Fly.io siguiendo la misma configuración de comandos y variables.
-
-### Health Checks
-
-- **Health**: `http://localhost:5000/actuator/health`
-- **Info**: `http://localhost:5000/actuator/info`
-
-## Perfiles
-
-- **dev**: Desarrollo local con MySQL. Flyway migra el esquema al arrancar y Hibernate lo valida.
-- **prod**: Producción (valida esquema, usa variables de entorno)
-- **test**: Pruebas con H2 en memoria. Hibernate crea el esquema y Spring carga los datos compartidos de `test-data.sql`.
-
-### Migraciones de desarrollo
-
-Empieza con una base MySQL vacía. V1 crea el esquema y V2 carga roles y programas. Flyway registra las versiones aplicadas en `flyway_schema_history` y conserva los datos entre arranques.
-
-Si tu base local viene de `ddl-auto=create`, conserva esa base y usa una nueva para empezar con Flyway. Puedes indicar su URL con `SPRING_DATASOURCE_URL`. Para poblar una base nueva con ejemplos, ejecuta una vez `gestion_curricular/scripts/datos_demo.sql` desde tu cliente MySQL después del primer arranque y reinicia la aplicación. El primer arranque crea la cuenta de administrador de desarrollo. El script agrega los demás datos de ejemplo.
-
-Agrega el siguiente cambio como `gestion_curricular/src/main/resources/db/migration/V3__descripcion.sql` y actualiza las entidades si corresponde. Usa una versión nueva para cada cambio y conserva intactos los archivos ya aplicados. Comprueba el arranque tanto con una base vacía como con una que ya tenga las versiones anteriores.
-
-El perfil `prod` mantiene la gestión manual del esquema.
-
-
-## Pruebas
-
-GitHub Actions también inicia el perfil dev dos veces contra un MySQL vacío y comprueba que Flyway conserva los datos.
-
-```bash
-cd gestion_curricular
-./mvnw test
-```
-
-Compila y pasa las pruebas con Java 17 (producción) y Java 25. GitHub Actions corre la suite con ambas versiones
-en cada push y en cada pull request a `main` (`.github/workflows/pruebas.yml`); un pull request con pruebas en rojo
-no debería fusionarse.
-
-Algunas pruebas comparan la respuesta completa de las estadísticas con archivos de referencia en
-`src/test/resources/referencias/`. Si un cambio en la respuesta es intencional, se regraban con
-`./mvnw test -Dtest='*CaracterizacionTest' -DgrabarReferencia=true` y se revisa el diff antes de hacer commit.
-
-## Autores
-
-Sistema de Gestión Curricular - FIET - Universidad del Cauca
 
 ## Licencia
 
-MIT License
+Apache License 2.0. Ver [LICENSE](LICENSE).

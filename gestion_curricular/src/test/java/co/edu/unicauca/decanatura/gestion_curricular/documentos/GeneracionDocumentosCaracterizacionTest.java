@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
@@ -45,9 +45,9 @@ class GeneracionDocumentosCaracterizacionTest {
             "dieciocho", "diecinueve", "veinte", "veintiún", "veintidós", "veintitrés", "veinticuatro",
             "veinticinco", "veintiséis", "veintisiete", "veintiocho", "veintinueve", "treinta", "treinta y un" };
     @Autowired MockMvc mvc;
-    @MockBean GestionarSolicitudHomologacionCUIntPort homologacion;
-    @MockBean GestionarSolicitudReingresoCUIntPort reingreso;
-    @MockBean GestionarSolicitudPazYSalvoCUIntPort paz;
+    @MockitoBean GestionarSolicitudHomologacionCUIntPort homologacion;
+    @MockitoBean GestionarSolicitudReingresoCUIntPort reingreso;
+    @MockitoBean GestionarSolicitudPazYSalvoCUIntPort paz;
 
     @Test void contenidoCabecerasYRespaldos() throws Exception {
         Usuario usuario = new Usuario();

@@ -152,7 +152,7 @@ public class RestApiExceptionHandler {
         public ResponseEntity<Error> handleValidacionDeMetodo(HttpServletRequest req,
                         HandlerMethodValidationException ex) {
                 String metodo = ex.getMethod().getName();
-                String mensaje = ex.getAllValidationResults().stream()
+                String mensaje = ex.getParameterValidationResults().stream()
                                 .flatMap(resultado -> resultado.getResolvableErrors().stream()
                                                 .map(error -> metodo + "."
                                                                 + resultado.getMethodParameter().getParameterName()

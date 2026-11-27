@@ -24,7 +24,7 @@ import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -58,11 +58,11 @@ class RutasEstadisticasCaracterizacionTest {
 
     @Autowired MockMvc mvc;
     /**
-     * {@code @MockBean} sustituye al bean del puerto. Se eligió frente a una {@code @TestConfiguration} cuando la
+     * {@code @MockitoBean} sustituye al bean del puerto. Se eligió frente a una {@code @TestConfiguration} cuando la
      * aplicación escaneaba sin el filtro de tipos de prueba (hasta OPC-4).
      */
-    @MockBean GestionarEstadisticasCUIntPort estadisticaCU;
-    @MockBean GenerarReportesEstadisticasCUIntPort reportesCU;
+    @MockitoBean GestionarEstadisticasCUIntPort estadisticaCU;
+    @MockitoBean GenerarReportesEstadisticasCUIntPort reportesCU;
 
     /** Cada método de los dos puertos anota la llamada; los reportes devuelven el nombre del método en ASCII. */
     @BeforeEach

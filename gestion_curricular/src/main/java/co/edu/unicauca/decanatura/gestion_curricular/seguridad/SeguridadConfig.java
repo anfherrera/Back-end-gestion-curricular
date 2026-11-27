@@ -32,7 +32,7 @@ public class SeguridadConfig {
 
     /** Catálogos que solo el Administrador puede modificar. */
     private static final String[] CATALOGOS = {
-        "/api/roles/**", "/api/programas/**", "/api/materias/**", "/api/docentes/**"
+        "/api/roles/**", "/api/programas/**", "/api/docentes/**"
     };
 
     @Bean
@@ -64,7 +64,7 @@ public class SeguridadConfig {
                 .referrerPolicy(referrer -> referrer
                     .policy(org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
                 )
-                .permissionsPolicy(permissions -> permissions
+                .permissionsPolicyHeader(permissions -> permissions
                     .policy("geolocation=(), microphone=(), camera=()")
                 )
             )
@@ -78,6 +78,8 @@ public class SeguridadConfig {
                     "/swagger-resources/**",
                     "/webjars/**"
                 ).permitAll()
+                // Chequeo de salud del hosting: solo {"status":"UP"}; los detalles exigen sesión
+                .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
                 // Inicio de sesión con contraseña o con la cuenta institucional de Google
                 .requestMatchers(HttpMethod.POST, "/api/usuarios/login", "/api/usuarios/login/google").permitAll()
                 // Estadísticas: solo consultas y reportes (EST-7, paso 9), para los roles administrativos
