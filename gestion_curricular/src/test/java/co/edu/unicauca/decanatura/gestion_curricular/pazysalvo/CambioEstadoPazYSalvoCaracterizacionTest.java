@@ -88,7 +88,7 @@ class CambioEstadoPazYSalvoCaracterizacionTest {
             resultado.put("status", respuesta.getStatus());
             resultado.set("body", body);
             ObjectNode claves = resultado.putObject("claves");
-            body.fields().forEachRemaining(campo -> claves.put(campo.getKey(), campo.getValue().getNodeType().name()));
+            body.properties().forEach(campo -> claves.put(campo.getKey(), campo.getValue().getNodeType().name()));
         }
 
         Path referencia = Path.of("src/test/resources/referencias/pazysalvo/cambio-estado-rechazos.json");
@@ -99,7 +99,7 @@ class CambioEstadoPazYSalvoCaracterizacionTest {
                 "pazysalvo/correcciones/cambio-estado-rechazos-est7.json");
         assertThat(resultados).isEqualTo(grabada);
         // ObjectNode no compara el orden de las claves: se comprueba aparte
-        resultados.fields().forEachRemaining(caso -> assertThat(nombres(caso.getValue().get("claves")))
+        resultados.properties().forEach(caso -> assertThat(nombres(caso.getValue().get("claves")))
             .as(caso.getKey()).isEqualTo(nombres(grabada.get(caso.getKey()).get("claves"))));
     }
 

@@ -27,7 +27,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway.GestionarRolGatewayImplAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway.GestionarUsuarioGatewayImplAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.GrafoObjetos;
 
@@ -149,7 +148,7 @@ class UsuarioRolPersistenciaCaracterizacionTest {
     }
 
     private static GestionarUsuarioGatewayImplAdapter usuarioGateway(UsuarioRepositoryInt repositorio) {
-        return new GestionarUsuarioGatewayImplAdapter(repositorio, mock(SolicitudRepositoryInt.class));
+        return new GestionarUsuarioGatewayImplAdapter(repositorio);
     }
 
     private static GestionarRolGatewayImplAdapter rolGateway(RolRepositoryInt repositorio) {

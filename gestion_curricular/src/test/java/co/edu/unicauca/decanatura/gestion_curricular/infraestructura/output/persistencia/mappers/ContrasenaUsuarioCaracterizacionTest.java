@@ -26,7 +26,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway.GestionarUsuarioGatewayImplAdapter;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.GrafoObjetos;
 
@@ -58,7 +57,7 @@ class ContrasenaUsuarioCaracterizacionTest {
         when(repositorio.findByIdWithRelations(50)).thenAnswer(inv -> Optional.of(usuarioGuardado(50)));
         when(repositorio.buscarPorCorreo("ana@unicauca.edu.co")).thenAnswer(inv -> Optional.of(usuarioGuardado(1)));
         GestionarUsuarioGatewayImplAdapter gateway =
-                new GestionarUsuarioGatewayImplAdapter(repositorio, mock(SolicitudRepositoryInt.class));
+                new GestionarUsuarioGatewayImplAdapter(repositorio);
         GestionarProgramaGatewayIntPort programas = mock(GestionarProgramaGatewayIntPort.class);
         when(programas.buscarPorIdPrograma(1)).thenReturn(new Programa(1, "SIS", "Ingeniería de Sistemas"));
         GestionarRolGatewayIntPort roles = mock(GestionarRolGatewayIntPort.class);

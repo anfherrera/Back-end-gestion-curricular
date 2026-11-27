@@ -39,7 +39,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     private final GestionarSolicitudCursoVeranoGatewayIntPort gestionarSolicitudGateway;
     private final GestionarCursoOfertadoVeranoGatewayIntPort cursoOfertado;
     private final GestionarUsuarioGatewayIntPort usuarioGateway;
-    private final GestionarDocumentosGatewayIntPort documentosGateway;
     private final AsociadorDocumentosPendientes asociadorDocumentos;
     private final GestionarNotificacionCUIntPort gestionarNotificacionCU;
 
@@ -54,7 +53,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         this.usuarioGateway = usuarioGateway;
         this.cursoOfertado = cursoOfertado;
         this.gestionarSolicitudGateway = gestionarSolicitudGateway;
-        this.documentosGateway = documentosGateway;
         this.asociadorDocumentos = new AsociadorDocumentosPendientes(documentosGateway, gestionarArchivos);
         this.gestionarNotificacionCU = gestionarNotificacionCU;
     }

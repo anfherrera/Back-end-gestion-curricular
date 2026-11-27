@@ -2,7 +2,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones;
 
 import lombok.Getter;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CodigoError;
 
 @Getter
 public abstract class GestionCurricularException extends RuntimeException {

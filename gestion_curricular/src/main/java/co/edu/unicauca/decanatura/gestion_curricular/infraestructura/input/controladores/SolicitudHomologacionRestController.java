@@ -318,7 +318,6 @@ public class SolicitudHomologacionRestController {
         if (rechazo != null) {
             return ResponseEntity.status(rechazo.estado()).body(Map.of("error", rechazo.mensaje()));
         }
-        String nombreOriginal = file.getOriginalFilename();
         Documento guardado = documentosCU.adjuntarASolicitud(ArchivoMultipart.de(file), solicitud,
                 "homologacion", MARCADOR_OFICIO_HOMOLOGACION + " Archivo subido por secretaría", true);
         return ResponseEntity.ok(new ResolucionSubida(true, "Resolución subida correctamente",

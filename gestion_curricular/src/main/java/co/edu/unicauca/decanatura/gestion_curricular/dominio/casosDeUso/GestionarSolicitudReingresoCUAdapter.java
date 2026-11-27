@@ -25,7 +25,6 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     private static final FlujoEstadosSolicitud FLUJO = FlujoEstadosSolicitud.TRES_APROBACIONES;
 
     private final GestionarUsuarioGatewayIntPort gestionarUsuarioGateway;
-    private final GestionarDocumentosGatewayIntPort gestionarDocumentosGateway;
     private final GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway;
     private final GestionarSolicitudReingresoGatewayIntPort gestionarSolicitudReingresoGateway;
     private final GestionarNotificacionCUIntPort gestionarNotificacionCU;
@@ -39,7 +38,6 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
             GestionarNotificacionCUIntPort gestionarNotificacionCU,
             GestionarArchivosCUIntPort gestionarArchivos) {
         this.gestionarUsuarioGateway = gestionarUsuarioGateway;
-        this.gestionarDocumentosGateway = gestionarDocumentosGateway;
         this.gestionarEstadoSolicitudGateway = gestionarEstadoSolicitudGateway;
         this.gestionarSolicitudReingresoGateway = gestionarSolicitudReingresoGateway;
         this.gestionarNotificacionCU = gestionarNotificacionCU;

@@ -64,7 +64,7 @@ public final class ProyeccionValores {
 
     public static JsonNode normalizarCasos(JsonNode casos) {
         ObjectNode resultado = NODOS.objectNode();
-        Iterator<Map.Entry<String, JsonNode>> campos = casos.fields();
+        Iterator<Map.Entry<String, JsonNode>> campos = casos.properties().iterator();
         while (campos.hasNext()) {
             Map.Entry<String, JsonNode> caso = campos.next();
             resultado.set(caso.getKey(), normalizarCaso(caso.getValue()));
@@ -99,7 +99,7 @@ public final class ProyeccionValores {
         }
         String tipo = nodo.has("@tipo") ? nodo.get("@tipo").asText().replaceFirst("Entity$", "") : "";
         ObjectNode objeto = NODOS.objectNode();
-        Iterator<Map.Entry<String, JsonNode>> campos = nodo.fields();
+        Iterator<Map.Entry<String, JsonNode>> campos = nodo.properties().iterator();
         while (campos.hasNext()) {
             Map.Entry<String, JsonNode> campo = campos.next();
             String nombre = campo.getKey();

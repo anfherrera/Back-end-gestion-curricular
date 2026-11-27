@@ -123,8 +123,7 @@ class CatalogosPersistenciaCaracterizacionTest {
         when(repositorio.findById(2)).thenReturn(Optional.of(vacia));
         when(repositorio.findById(3)).thenReturn(Optional.empty());
         when(repositorio.findAll()).thenReturn(List.of(completa, vacia));
-        GestionarMateriasGatewayImplAdapter gateway = new GestionarMateriasGatewayImplAdapter(
-                repositorio, mock(CursoOfertadoVeranoRepositoryInt.class));
+        GestionarMateriasGatewayImplAdapter gateway = new GestionarMateriasGatewayImplAdapter(repositorio);
 
         ObjectNode casos = JsonNodeFactory.instance.objectNode();
         casos.set("obtenerMateriaPorId 1", GrafoObjetos.resultado(() -> gateway.obtenerMateriaPorId(1)));

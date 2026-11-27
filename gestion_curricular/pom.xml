@@ -207,6 +207,13 @@
 							<artifactId>lombok-mapstruct-binding</artifactId>
 							<version>0.2.0</version>
 						</path>
+						<!-- Une META-INF/additional-spring-configuration-metadata.json a los metadatos del JAR:
+						     así el IDE reconoce y describe las propiedades propias (app.*, security.login.*) -->
+						<path>
+							<groupId>org.springframework.boot</groupId>
+							<artifactId>spring-boot-configuration-processor</artifactId>
+							<version>${project.parent.version}</version>
+						</path>
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>

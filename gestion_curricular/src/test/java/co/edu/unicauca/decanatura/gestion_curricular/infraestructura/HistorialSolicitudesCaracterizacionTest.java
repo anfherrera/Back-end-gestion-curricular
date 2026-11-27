@@ -80,7 +80,7 @@ class HistorialSolicitudesCaracterizacionTest {
             resultado.put("status", respuesta.getStatus());
             resultado.set("body", body);
             ObjectNode claves = resultado.putObject("claves");
-            body.fields().forEachRemaining(c -> claves.put(c.getKey(), c.getValue().getNodeType().name()));
+            body.properties().forEach(c -> claves.put(c.getKey(), c.getValue().getNodeType().name()));
         }
 
         ObjectNode pdf = resultados.putObject("pdf");
@@ -113,7 +113,7 @@ class HistorialSolicitudesCaracterizacionTest {
             "listados/correcciones/historial-bug29.json"), "listados/correcciones/historial-bug18.json");
         assertThat(resultados).isEqualTo(grabada);
         // ObjectNode no compara el orden de las claves: se comprueba aparte
-        historial.fields().forEachRemaining(caso -> assertThat(nombres(caso.getValue().get("claves")))
+        historial.properties().forEach(caso -> assertThat(nombres(caso.getValue().get("claves")))
             .as(caso.getKey()).isEqualTo(nombres(grabada.get("historial").get(caso.getKey()).get("claves"))));
     }
 

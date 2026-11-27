@@ -10,7 +10,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.MateriaEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.CatalogosMapperPersistencia;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.MateriaRepositoryInt;
 
 
@@ -19,12 +18,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 public class GestionarMateriasGatewayImplAdapter implements GestionarMateriasIntPort {
 
     private final MateriaRepositoryInt materiaRepository;
-    private final CursoOfertadoVeranoRepositoryInt cursoOfertadoRepository;
 
-    public GestionarMateriasGatewayImplAdapter(MateriaRepositoryInt materiaRepository, 
-                                                CursoOfertadoVeranoRepositoryInt cursoOfertadoRepository) {
+    public GestionarMateriasGatewayImplAdapter(MateriaRepositoryInt materiaRepository) {
         this.materiaRepository = materiaRepository;
-        this.cursoOfertadoRepository = cursoOfertadoRepository;
     }
     
 

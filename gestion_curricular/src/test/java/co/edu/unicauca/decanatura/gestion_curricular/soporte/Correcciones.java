@@ -43,7 +43,7 @@ public final class Correcciones {
             return ((ObjectNode) correccion.get("")).deepCopy();
         }
         ObjectNode resultado = ((ObjectNode) referencia).deepCopy();
-        Iterator<Map.Entry<String, JsonNode>> entradas = correccion.fields();
+        Iterator<Map.Entry<String, JsonNode>> entradas = correccion.properties().iterator();
         while (entradas.hasNext()) {
             Map.Entry<String, JsonNode> entrada = entradas.next();
             if (QUITAR.equals(entrada.getKey())) {

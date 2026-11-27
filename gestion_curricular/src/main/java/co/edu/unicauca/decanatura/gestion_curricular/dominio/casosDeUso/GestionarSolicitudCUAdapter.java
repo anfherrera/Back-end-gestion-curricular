@@ -4,7 +4,6 @@ import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
@@ -12,14 +11,10 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort {
 
     private final GestionarSolicitudGatewayIntPort gestionarSolicitudGateway;
-    private final GestionarUsuarioGatewayIntPort usuario;
 
-    public GestionarSolicitudCUAdapter(GestionarSolicitudGatewayIntPort gestionarSolicitudGateway,
-    GestionarUsuarioGatewayIntPort usuario){
-        this.usuario = usuario;
+    public GestionarSolicitudCUAdapter(GestionarSolicitudGatewayIntPort gestionarSolicitudGateway) {
         this.gestionarSolicitudGateway = gestionarSolicitudGateway;
     }
-
 
 
     @Override

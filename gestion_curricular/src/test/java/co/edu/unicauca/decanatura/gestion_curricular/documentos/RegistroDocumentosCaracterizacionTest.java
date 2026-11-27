@@ -88,7 +88,7 @@ class RegistroDocumentosCaracterizacionTest {
         var corregidos = json.readTree(Files.readString(
             Path.of("src/test/resources/referencias/documentos/registro-bug21.json")));
         assertThat(corregidos.size()).isEqualTo(2);
-        corregidos.fields().forEachRemaining(e -> {
+        corregidos.properties().forEach(e -> {
             assertThat(esperado.has(e.getKey())).as(e.getKey()).isTrue();
             var anterior = (ObjectNode) esperado.get(e.getKey()).deepCopy();
             anterior.set("eventos", e.getValue().get("eventos"));

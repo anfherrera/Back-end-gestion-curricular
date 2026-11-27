@@ -244,7 +244,7 @@ class InscripcionesVeranoRespuestasCaracterizacionTest {
                 campos = new TreeMap<>();
             }
             Map<String, JsonNode> destino = campos;
-            nodo.fields().forEachRemaining(campo -> destino.put(campo.getKey(), campo.getValue()));
+            nodo.properties().forEach(campo -> destino.put(campo.getKey(), campo.getValue()));
             destino.forEach((clave, valor) -> {
                 String hija = ruta + "." + clave;
                 claves.add(hija + ":" + valor.getNodeType());

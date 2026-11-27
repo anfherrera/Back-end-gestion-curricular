@@ -15,7 +15,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.UsuarioMapperPersistencia;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 @Service
@@ -23,11 +22,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatewayIntPort, UserDetailsService {
 
     private final UsuarioRepositoryInt usuarioRepository;
-    private final SolicitudRepositoryInt solicitudRepository;
 
-    public GestionarUsuarioGatewayImplAdapter(UsuarioRepositoryInt usuarioRepository, SolicitudRepositoryInt solicitudRepository) {
+    public GestionarUsuarioGatewayImplAdapter(UsuarioRepositoryInt usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
-        this.solicitudRepository = solicitudRepository;
     }
 
     @Override

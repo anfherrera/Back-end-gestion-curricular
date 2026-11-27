@@ -22,9 +22,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudPazYSalvoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.SolicitudMapperPersistencia;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadoSolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 
 @Service
@@ -39,15 +37,9 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     }
 
     private final SolicitudRepositoryInt solicitudRepository;
-    private final UsuarioRepositoryInt usuarioRepository;
-    private final EstadoSolicitudRepositoryInt estadoSolicitudRepository;
 
-    public GestionarSolicitudGatewayImplAdapter(SolicitudRepositoryInt solicitudRepository,
-                                                UsuarioRepositoryInt usuarioRepository,
-                                                EstadoSolicitudRepositoryInt estadoSolicitudRepository) {
+    public GestionarSolicitudGatewayImplAdapter(SolicitudRepositoryInt solicitudRepository) {
         this.solicitudRepository = solicitudRepository;
-        this.usuarioRepository = usuarioRepository;
-        this.estadoSolicitudRepository = estadoSolicitudRepository;
     }
 
     @Override

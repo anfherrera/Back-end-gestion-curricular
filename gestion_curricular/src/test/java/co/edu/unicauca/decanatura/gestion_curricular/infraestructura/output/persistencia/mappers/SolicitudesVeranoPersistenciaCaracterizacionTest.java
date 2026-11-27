@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.CondicionSolicitudVerano;
@@ -33,7 +32,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadoSolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.GrafoObjetos;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.GrafosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.ProyeccionValores;
@@ -52,9 +50,7 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
     @Test
     void solicitud() throws Exception {
         SolicitudRepositoryInt repositorio = mock(SolicitudRepositoryInt.class);
-        EstadoSolicitudRepositoryInt estados = mock(EstadoSolicitudRepositoryInt.class);
         when(repositorio.save(any())).thenAnswer(inv -> guardar(inv.getArgument(0)));
-        when(estados.save(any())).thenAnswer(inv -> guardar(inv.getArgument(0)));
         for (int id = 1; id <= 7; id++) {
             int n = id;
             when(repositorio.findById(id)).thenAnswer(inv -> Optional.of(entidad(n)));
@@ -63,8 +59,7 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
         when(repositorio.findAllWithJoins()).thenAnswer(inv -> todas());
         when(repositorio.buscarHistorialConFiltros("2025-1", 1, null)).thenAnswer(inv -> todas());
         when(repositorio.buscarPorNombre("Solicitud de prueba")).thenAnswer(inv -> todas());
-        GestionarSolicitudGatewayImplAdapter gateway = new GestionarSolicitudGatewayImplAdapter(repositorio,
-                mock(UsuarioRepositoryInt.class), estados);
+        GestionarSolicitudGatewayImplAdapter gateway = new GestionarSolicitudGatewayImplAdapter(repositorio);
 
         ObjectNode casos = JsonNodeFactory.instance.objectNode();
         for (int id : new int[] {1, 2, 3, 4, 5, 6, 7, 9}) {

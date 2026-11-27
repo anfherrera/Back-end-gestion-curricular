@@ -555,8 +555,6 @@ public class SolicitudPazYSalvoRestController {
             return ResponseEntity.status(rechazo.estado()).build();
         }
 
-        String nombreOriginal = file.getOriginalFilename();
-
         // Validar que la solicitud exista
         SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
         if (solicitud == null) {

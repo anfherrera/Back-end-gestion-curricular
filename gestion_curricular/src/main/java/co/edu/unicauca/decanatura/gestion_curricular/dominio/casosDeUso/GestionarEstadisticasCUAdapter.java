@@ -40,7 +40,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisti
 
 public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIntPort {
 
-    private final GestionarEstadisticasGatewayIntPort estadisticasGateway;
     private final EstadisticasGlobales globales;
     private final ConsultasEstadisticas consultas;
     private final HistorialEstadisticas historial;
@@ -55,7 +54,6 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
 
     public GestionarEstadisticasCUAdapter(
             GestionarEstadisticasGatewayIntPort estadisticasGateway) {
-        this.estadisticasGateway = estadisticasGateway;
         this.globales = new EstadisticasGlobales(estadisticasGateway);
         this.consultas = new ConsultasEstadisticas(estadisticasGateway);
         this.historial = new HistorialEstadisticas(estadisticasGateway);

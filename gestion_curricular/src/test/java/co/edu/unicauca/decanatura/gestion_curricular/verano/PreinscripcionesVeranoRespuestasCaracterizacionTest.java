@@ -171,7 +171,7 @@ class PreinscripcionesVeranoRespuestasCaracterizacionTest {
 
     private static void recorrer(JsonNode nodo, String ruta, ArrayNode claves) {
         if (nodo.isObject()) {
-            nodo.fields().forEachRemaining(campo -> {
+            nodo.properties().forEach(campo -> {
                 String hija = ruta + "." + campo.getKey();
                 claves.add(hija + ":" + campo.getValue().getNodeType());
                 recorrer(campo.getValue(), hija, claves);
