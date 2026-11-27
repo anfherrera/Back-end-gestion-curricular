@@ -141,7 +141,7 @@
     "status": 400,
     "tipo": "application/json",
     "cuerpo": {
-      "nombre": "El nombre del rol debe tener entre 3 y 30 caracteres."
+      "nombre": "El nombre del rol debe tener entre 3 y 100 caracteres."
     }
   },
   "POST /api/roles {\"nombre\":\"NUEVO\"}": {

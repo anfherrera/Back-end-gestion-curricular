@@ -119,18 +119,6 @@ public final class SolicitudMapperPersistencia {
         return new AlDominio(Variante.CURSO).curso(entidad);
     }
 
-    /** Variante del gateway de cursos de verano (antes {@code mapperCurso}). */
-    public static CursoOfertadoVeranoEntity aEntidadCurso(CursoOfertadoVerano curso) {
-        Origen.exigir(curso);
-        return new AlaEntidad(Variante.CURSO).curso(curso);
-    }
-
-    /** Variante del gateway de cursos de verano: el estado sin su curso y con el valor tal cual. */
-    public static EstadoCursoOfertadoEntity aEntidadCurso(EstadoCursoOfertado estado) {
-        Origen.exigir(estado);
-        return AlaEntidad.estadoCursoSinCurso(estado);
-    }
-
     public static <D extends Solicitud> D aDominio(SolicitudEntity entidad, Class<D> tipo) {
         Origen.exigir(entidad);
         return new AlDominio(Variante.PRINCIPAL).solicitud(entidad, tipo);

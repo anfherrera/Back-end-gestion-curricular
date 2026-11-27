@@ -194,7 +194,7 @@
     "status": 400,
     "tipo": "application/json",
     "cuerpo": {
-      "codigo": "El código del programa debe tener entre 3 y 10 caracteres"
+      "codigo": "El código del programa debe tener entre 3 y 12 caracteres"
     }
   },
   "POST /api/programas {\"codigo\":\"NUE\",\"nombre_programa\":\"Programa nuevo\"}": {
