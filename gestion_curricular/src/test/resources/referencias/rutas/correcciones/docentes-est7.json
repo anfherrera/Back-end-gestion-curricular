@@ -194,7 +194,7 @@
     "status": 400,
     "tipo": "application/json",
     "cuerpo": {
-      "codigo_docente": "El código del docente debe tener entre 3 y 15 caracteres"
+      "codigo_docente": "El código del docente debe tener entre 3 y 12 caracteres"
     }
   },
   "POST /api/docentes {\"codigo_docente\":\"D009\",\"nombre_docente\":\"Docente nuevo\"}": {
